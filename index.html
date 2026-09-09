@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试知识库 · 学习脉络</title>
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --card:#1c2128; --border:#30363d;
+    --text:#e6edf3; --text2:#8b949e; --accent:#58a6ff; --accent2:#1f6feb;
+    --green:#3fb950; --orange:#d29922; --purple:#bc8cff; --teal:#39c5cf;
+    --radius:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+
+  /* topnav */
+  .topnav{
+    position:sticky;top:0;z-index:100;
+    background:rgba(13,17,23,.72); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .topnav-inner{
+    max-width:1100px;margin:0 auto;padding:12px 24px;
+    display:flex;align-items:center;gap:20px;
+  }
+  .logo{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px}
+  .logo .dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+  .nav-links{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  .nav-links a{
+    padding:6px 12px;border-radius:8px;font-size:13px;color:var(--text2);transition:.2s;
+  }
+  .nav-links a:hover{color:var(--text);background:var(--card)}
+  .nav-links a.active{color:var(--accent);background:var(--card)}
+
+  /* hero */
+  .hero{
+    max-width:1100px;margin:0 auto;padding:64px 24px 40px;text-align:center;
+  }
+  .hero .emoji{font-size:56px;margin-bottom:16px}
+  .hero h1{font-size:38px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px}
+  .hero h1 .grad{background:linear-gradient(90deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{color:var(--text2);font-size:16px;max-width:600px;margin:0 auto 24px}
+  .badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:6px 14px;border-radius:20px;font-size:13px;
+    background:var(--card);border:1px solid var(--border);color:var(--text2);
+  }
+  .badge b{color:var(--accent)}
+
+  /* sections */
+  .wrap{max-width:1100px;margin:0 auto;padding:20px 24px 80px}
+  .category{margin-top:40px}
+  .cat-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .cat-head .icon{font-size:24px}
+  .cat-head h2{font-size:20px;font-weight:700}
+  .cat-head .count{margin-left:auto;font-size:13px;color:var(--text2);background:var(--card);padding:3px 10px;border-radius:12px;border:1px solid var(--border)}
+
+  /* cards grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .card{
+    display:block;background:var(--card);border:1px solid var(--border);
+    border-radius:var(--radius);padding:20px;transition:.22s;position:relative;overflow:hidden;
+  }
+  .card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:0;transition:.22s}
+  .card:hover::before{opacity:1}
+  .card .c-emoji{font-size:28px;margin-bottom:10px}
+  .card h3{font-size:16px;font-weight:700;margin-bottom:8px}
+  .card p{font-size:13px;color:var(--text2);margin-bottom:14px;min-height:38px}
+  .card .meta{display:flex;align-items:center;gap:8px;font-size:12px}
+  .tag{padding:2px 9px;border-radius:10px;font-size:11px;border:1px solid var(--border);color:var(--text2)}
+  .tag.doc{color:var(--teal);border-color:rgba(57,197,207,.4)}
+  .tag.inter{color:var(--purple);border-color:rgba(188,140,255,.4)}
+  .card .go{margin-left:auto;color:var(--accent);font-weight:600}
+
+  /* empty placeholder */
+  .empty{
+    grid-column:1/-1;text-align:center;padding:28px;border:1px dashed var(--border);
+    border-radius:var(--radius);color:var(--text2);font-size:13px;background:rgba(255,255,255,.02);
+  }
+  .empty .plus{font-size:24px;display:block;margin-bottom:6px;opacity:.5}
+
+  /* load error */
+  .loaderr{
+    max-width:760px;margin:40px auto;padding:32px;border:1px solid var(--orange);
+    border-radius:var(--radius);background:rgba(210,153,34,.08);color:var(--text);
+  }
+  .loaderr h3{color:var(--orange);font-size:17px;margin-bottom:12px}
+  .loaderr code{background:var(--bg2);padding:2px 7px;border-radius:5px;color:var(--teal);font-size:13px}
+  .loaderr p{color:var(--text2);font-size:14px;margin-bottom:8px}
+
+  footer{max-width:1100px;margin:0 auto;padding:30px 24px 60px;text-align:center;color:var(--text2);font-size:12px;border-top:1px solid var(--border)}
+
+  @media(max-width:600px){
+    .hero h1{font-size:28px}
+    .nav-links{display:none}
+    .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="logo"><span class="dot"></span>测试知识库</div>
+    <div class="nav-links" id="navLinks"></div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="emoji">🗺️</div>
+  <h1>我的<span class="grad">测试知识脉络</span></h1>
+  <p>从抓包、日志到自动化与面试，把零散的学习资料串成一张可随时查阅的知识地图。点击任意卡片开始学习。</p>
+  <div class="badges">
+    <span class="badge">📚 <b id="totalCount">0</b> 份资料</span>
+    <span class="badge">📱 手机可看</span>
+    <span class="badge">☁️ 云端托管 · 免开机</span>
+    <span class="badge">🔄 持续更新</span>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+  <!-- 分类与卡片由 JS 依据 files.json 动态渲染 -->
+</main>
+
+<footer>
+  测试知识库 · 由 WorkBuddy 生成门户首页 · 部署于腾讯云 COS 静态托管 · 手机浏览器直接访问
+</footer>
+
+<script>
+// ===== 转义，防止标题/描述里的特殊字符破坏 HTML =====
+function esc(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+// ===== 依据 files.json 渲染整个页面 =====
+function render(data){
+  var main = document.getElementById('main');
+  var nav = document.getElementById('navLinks');
+  var total = 0;
+  var html = '';
+  var navHtml = '';
+
+  data.forEach(function(cat){
+    var items = cat.items || [];
+    total += items.length;
+    navHtml += '<a href="#' + esc(cat.id) + '">' + esc(cat.name) + '</a>';
+
+    html += '<section class="category" id="' + esc(cat.id) + '">';
+    html += '<div class="cat-head">';
+    html += '<span class="icon">' + esc(cat.icon) + '</span>';
+    html += '<h2>' + esc(cat.name) + '</h2>';
+    html += '<span class="count">' + (items.length > 0 ? (items.length + ' 份') : '待补充') + '</span>';
+    html += '</div>';
+    html += '<div class="grid">';
+
+    if(items.length === 0){
+      html += '<div class="empty"><span class="plus">＋</span>这里以后放「' + esc(cat.name) + '」相关笔记与教程的入口</div>';
+    } else {
+      items.forEach(function(it){
+        var tags = (it.tags || []).map(function(t){
+          var cls = t.cls ? (' class="' + esc(t.cls) + '"') : '';
+          return '<span class="tag' + cls + '">' + esc(t.text) + '</span>';
+        }).join('');
+        html += '<a class="card" href="' + esc(it.file) + '">';
+        html += '<div class="c-emoji">' + esc(it.emoji) + '</div>';
+        html += '<h3>' + esc(it.title) + '</h3>';
+        html += '<p>' + esc(it.desc) + '</p>';
+        html += '<div class="meta">' + tags + '<span class="go">开始 →</span></div>';
+        html += '</a>';
+      });
+    }
+
+    html += '</div></section>';
+  });
+
+  main.innerHTML = html;
+  nav.innerHTML = navHtml;
+  document.getElementById('totalCount').textContent = total;
+  bindScrollSpy();
+}
+
+// ===== 导航滚动高亮 =====
+function bindScrollSpy(){
+  var sections = document.querySelectorAll('section[id]');
+  var links = document.querySelectorAll('#navLinks a');
+  window.addEventListener('scroll', function(){
+    var cur = '';
+    sections.forEach(function(s){
+      if(window.scrollY >= s.offsetTop - 90) cur = s.getAttribute('id');
+    });
+    links.forEach(function(a){
+      a.classList.toggle('active', a.getAttribute('href') === '#' + cur);
+    });
+  });
+}
+
+// ===== 加载失败兜底提示 =====
+function showErr(){
+  document.getElementById('main').innerHTML =
+    '<div class="loaderr"><h3>⚠️ 未能加载文件目录 files.json</h3>' +
+    '<p>若你是<b>直接双击本地 index.html</b> 打开的：浏览器出于安全限制，本地文件无法读取 json，请改用下面任一方式：</p>' +
+    '<p>1. 通过 <b>COS 静态网站域名</b> 访问本页面（推荐，功能完整）；</p>' +
+    '<p>2. 或用命令行起个本地服务：<code>python -m http.server</code> 后访问 <code>http://localhost:8000/</code>。</p>' +
+    '<p style="margin-top:12px">若已在 COS 上仍报此错：请确认 <code>files.json</code> 已和 index.html 一起上传到同一目录。</p></div>';
+}
+
+// ===== 读取配置并渲染 =====
+fetch('files.json?_=' + Date.now())
+  .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(render)
+  .catch(showErr);
+</script>
+
+</body>
+</html>
