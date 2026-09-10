@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="JxWcf8hpci6MuJG3ipcPBc">
+<head data-page-node-id="8RAQhzQ07VXikU7Y7zrfIB">
+<meta charset="UTF-8" data-page-node-id="Iee22R1dPywvwwYbcKe1jd">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="Gc594VKepha52ew3BXNOkX">
+<title>requests 库快速入门 — 可上手的 HTTP 请求实战指南</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-card: #161b22;
+    --bg-code: #0d1117;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-muted: #8b949e;
+    --text-heading: #f0f6fc;
+    --accent: #58a6ff;
+    --accent-green: #3fb950;
+    --accent-orange: #d29922;
+    --accent-red: #f85149;
+    --accent-purple: #a371f7;
+    --accent-cyan: #39d2c0;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px;
+  }
+  .topnav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,17,23,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border); padding: 0 24px;
+    display: flex; align-items: center; gap: 6px; height: 52px; overflow-x: auto; white-space: nowrap;
+  }
+  .topnav a { color: var(--text-muted); text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  .topnav a:hover, .topnav a.active { color: var(--accent); background: rgba(88,166,255,0.1); }
+  .topnav .brand { color: var(--accent); font-weight: 700; font-size: 15px; margin-right: 8px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+  .hero { text-align: center; padding: 60px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+  .hero h1 { font-size: 2.4em; color: var(--text-heading); margin-bottom: 8px; }
+  .hero .emoji { font-size: 2.6em; display: block; margin-bottom: 8px; }
+  .hero .subtitle { color: var(--text-muted); font-size: 1.1em; }
+  .hero .badges { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px;
+    border-radius: 20px; font-size: 12px; font-weight: 600;
+    background: rgba(88,166,255,0.12); color: var(--accent); border: 1px solid rgba(88,166,255,0.25);
+  }
+  .badge.green { background: rgba(63,185,80,0.12); color: var(--accent-green); border-color: rgba(63,185,80,0.25); }
+  .badge.orange { background: rgba(210,153,34,0.12); color: var(--accent-orange); border-color: rgba(210,153,34,0.25); }
+  section { margin-bottom: 48px; }
+  section h2 {
+    font-size: 1.6em; color: var(--text-heading); padding-bottom: 8px;
+    border-bottom: 2px solid var(--border); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  section h2 .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--accent); color: #fff; font-size: 0.7em; font-weight: 700; flex-shrink: 0;
+  }
+  section h3 { font-size: 1.15em; color: var(--text-heading); margin: 24px 0 10px; }
+  section h4 { font-size: 1em; color: var(--accent); margin: 16px 0 6px; }
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 8px 0 16px 24px; }
+  li { margin-bottom: 4px; }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px; }
+  .card.tip { border-left: 3px solid var(--accent); }
+  .card.warning { border-left: 3px solid var(--accent-orange); }
+  .card.success { border-left: 3px solid var(--accent-green); }
+  .card.info { border-left: 3px solid var(--accent-cyan); }
+  .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: var(--radius); margin: 12px 0 16px; overflow: hidden; }
+  .code-block .header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 14px; background: rgba(255,255,255,0.03);
+    font-size: 12px; color: var(--text-muted); border-bottom: 1px solid var(--border);
+  }
+    .code-block .header .lang { color:#fff; font-size:11px; font-weight:700; letter-spacing:.5px; padding:1px 8px; border-radius:4px; margin-right:6px; background:rgba(88,166,255,0.18); border:1px solid rgba(88,166,255,0.40); }
+    .code-block .header .lang.lang-py { background:rgba(63,185,80,0.18); border-color:rgba(63,185,80,0.45); }
+    .code-block .header .lang.lang-java { background:rgba(248,81,73,0.18); border-color:rgba(248,81,73,0.45); }
+    .code-block .header .lang.lang-shell { background:rgba(210,153,34,0.18); border-color:rgba(210,153,34,0.45); }
+  .code-block pre {
+    padding: 14px 16px; overflow-x: auto; margin: 0;
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", Consolas, monospace;
+    font-size: 13px; line-height: 1.55;
+  }
+  .code-block .copy-btn {
+    background: none; border: 1px solid var(--border); color: var(--text-muted);
+    padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: all 0.15s;
+  }
+  .code-block .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .code-block .copy-btn.copied { color: var(--accent-green); border-color: var(--accent-green); }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6a7; }
+  .cmt { color: #8b949e; font-style: italic; }
+  .num { color: #79c0ff; }
+  .dec { color: #d2a8ff; }
+  .builtin { color: #ffa657; }
+  .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--border); }
+  .tab-btn {
+    padding: 8px 16px; background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 13px; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: rgba(255,255,255,0.03); color: var(--text-heading); font-weight: 600; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .step-list { counter-reset: step; list-style: none; margin-left: 0; }
+  .step-list li { counter-increment: step; position: relative; padding: 12px 0 12px 44px; border-bottom: 1px solid var(--border); }
+  .step-list li::before {
+    content: counter(step); position: absolute; left: 0; top: 12px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  details.accordion { margin: 12px 0; }
+  details.accordion summary {
+    cursor: pointer; padding: 10px 14px; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    font-weight: 600; color: var(--text-heading); list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  details.accordion summary::-webkit-details-marker { display: none; }
+  details.accordion summary::before { content: '▶'; font-size: 10px; transition: transform 0.2s; }
+  details.accordion[open] summary::before { transform: rotate(90deg); }
+  details.accordion .accordion-body {
+    padding: 12px 14px; border: 1px solid var(--border);
+    border-top: none; border-radius: 0 0 var(--radius) var(--radius); background: var(--bg-card);
+  }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.6em; }
+    .container { padding: 20px 14px 60px; }
+    section h2 { font-size: 1.3em; }
+  }
+</style>
+</head>
+<body data-page-node-id="iz8MnSMCEgVPhTOKmLldST">
+
+<nav class="topnav" data-page-node-id="1aLCyTpz6vySAkainPQOUC">
+  <span class="brand" data-page-node-id="M8Bsh38CavxKRdcbL5fRKF">📡 requests 入门</span>
+  <a href="#intro" data-page-node-id="kuEqgnJCe0lNQzsAPGQdQ9">简介</a>
+  <a href="#install" data-page-node-id="Q5XR8DmkQFBHgvOZXvVitA">安装</a>
+  <a href="#get" data-page-node-id="YHLV9kYvsvjfKrc2up0Axv">GET</a>
+  <a href="#post" data-page-node-id="TzHU1Fhi9RcqW0uHrIJ743">POST</a>
+  <a href="#headers" data-page-node-id="tqnugQNoZQ4hqvHRwNx0bg">请求头</a>
+  <a href="#params" data-page-node-id="boAUaQxuFY9td4bivT4QnG">参数传递</a>
+  <a href="#upload" data-page-node-id="GwCAQMup9767syHNUbuSzM">文件上传</a>
+  <a href="#session" data-page-node-id="Dp5zNGZRMopUJLIhbxG78h">Session</a>
+  <a href="#response" data-page-node-id="DeFSDFgaD76Z9tfOC2TR5P">响应处理</a>
+  <a href="#timeout" data-page-node-id="MM7Ro6V874DkdLiH0NeWQx">超时与异常</a>
+  <a href="#practice" data-page-node-id="1D8ADpbYkEuS8BjPn4qhKZ">实战</a>
+  <a href="#cheatsheet" data-page-node-id="6O0iPEeaBqwSYMrrpBa4Yh">速查卡</a>
+</nav>
+
+<header class="hero" data-page-node-id="1pKtBQ6JCBANCaEPuvDdva">
+  <span class="emoji" data-page-node-id="4WrhKyHT0slKy5EHLxz73h">📡</span>
+  <h1 data-page-node-id="78oaS01oMXkBRcEFAE9BCN">requests 库快速入门</h1>
+  <p class="subtitle" data-page-node-id="hytEjQwFQgTG8j1wqcJciK">Python 最流行的 HTTP 库 — 从发请求到接口测试，一步到位</p>
+  <div class="badges" data-page-node-id="43rrvsDHUKOZjcBIWBoQZ8">
+    <span class="badge" data-page-node-id="LX5bn4CF4w6aN6W5kLUg9e">⏱ 约 2-3 天掌握</span>
+    <span class="badge green" data-page-node-id="EFgaF0q2OJPS99hqbAV1LZ">🔥 人类最友好的 HTTP 库</span>
+    <span class="badge orange" data-page-node-id="XmY3l9OiiZCeOK1Ejvt3dx">🎯 接口测试必备</span>
+  </div>
+</header>
+
+<div class="container" data-page-node-id="INL5pt4qSsqpCdMyywzCyJ">
+
+<!-- ═══════════════ 1. 简介 ═══════════════ -->
+<section id="intro" data-page-node-id="NSoe1U79C5rptm4ZiaKRMB">
+  <h2 data-page-node-id="CjB1jzM75yFyRbp2MQus9R"><span class="num" data-page-node-id="9Jc8mZaris6lNf1Lm24qH0">1</span> 📖 requests 是什么？</h2>
+  <p data-page-node-id="UHVBSqEdAyzgmgjCkycQQC">requests 是 Python 最流行的 HTTP 库，<strong data-page-node-id="WlOM0tdoth358MPBBB0z0t">比内置的 urllib 简洁太多</strong>。它让你用几行代码就能发送 HTTP 请求、处理响应——是接口测试、爬虫、自动化脚本的基石。</p>
+
+  <div class="card tip" data-page-node-id="oAJFGnK0undK5oG37Lz30f">
+    <strong data-page-node-id="mEBEtsqBbSC2vciOK4BgEB">💡 一句话：</strong> requests = 用 Python 发 HTTP 请求。GET、POST、PUT、DELETE 全支持，语法极其简洁。
+  </div>
+
+  <table data-page-node-id="okX9Vy1EhIQ9LluOLAmEhe">
+    <tr data-page-node-id="m2t0jEjmsCMx4Z9ZU0iM8n"><th data-page-node-id="StpyWjIPGOoWo9BxGqJtVW">对比</th><th data-page-node-id="RYNjcFTk4AD1qEuurh0qjx">urllib（内置）</th><th data-page-node-id="iWQALYEcPQJrRtG2hgrAuV">requests</th></tr>
+    <tr data-page-node-id="7VRibTB9IHvpr1oq0x5yEJ"><td data-page-node-id="mMbspMafhkbHdzT5c9kjFQ">GET 请求</td><td data-page-node-id="HIh1nxebD7LdxafXiYWnFf"><code data-page-node-id="tCzbKBLJWn8HcSwrruYMqj">urllib.request.urlopen(url)</code></td><td data-page-node-id="mAh6iyXciXe7SZDXYTiLBi"><code data-page-node-id="sexFoakZsnRrtSmLFRgKN8">requests.get(url)</code></td></tr>
+    <tr data-page-node-id="VCw96K68vJKZAGQ1CyJRmN"><td data-page-node-id="RUMn3A7yXG8LpPrcQ3ETT8">POST JSON</td><td data-page-node-id="zcEV4vUVQa7KnBRFqUQwSr">需手动序列化 + 设 Content-Type</td><td data-page-node-id="opklzidp2ecPt5ZRaexfBE"><code data-page-node-id="2FXqLNmvDl1rb4QXBOmWvH">requests.post(url, json=data)</code></td></tr>
+    <tr data-page-node-id="epvwrty5Sp7egC7NskhKi0"><td data-page-node-id="hI67Y97DPdha4wzP3mOcpD">响应解析</td><td data-page-node-id="KvrrQg3mkbAg3haJT2lc9s">手动 <code data-page-node-id="nm38QBlBqPTEfF8Ub7XDQL">.read().decode()</code></td><td data-page-node-id="QLfwg2m49OmTEaWpVM5u8j"><code data-page-node-id="BTE48VzYE8QE4VvaXR2u19">resp.json()</code> 一行搞定</td></tr>
+    <tr data-page-node-id="qFCWs05Pfn4rihz2ZoMHff"><td data-page-node-id="G7MjNnPiEHBMFJhsSXBZ3l">Cookie 保持</td><td data-page-node-id="dGhYNJwkGkzxU5XAJflFtD">需手动管理</td><td data-page-node-id="AHOuYAoiPHDe8AY9KuAZqV"><code data-page-node-id="FC5qYO7WVq5dtR5gu59bNH">requests.Session()</code> 自动保持</td></tr>
+    <tr data-page-node-id="zveq3cfFSXZCPUXkHLHJ7x"><td data-page-node-id="nFC2GbxKhX4BDr4vbeE3jC">超时控制</td><td data-page-node-id="qzxZkzcnBbaMcYUqpE2lwa">需手动设置 socket</td><td data-page-node-id="kgJ14Q6OogYTe3aKzt4wdr"><code data-page-node-id="pgK5BurHH1TQQew3TXVEAK">timeout=5</code> 一个参数</td></tr>
+  </table>
+
+  <h3 data-page-node-id="NeVnIn1pN7xlTmPgvQ2B4A">HTTP 方法速览</h3>
+  <div class="card info" data-page-node-id="PMewUg1s5PSBlM6E11qBsl">
+    <table data-page-node-id="ygZIgZsUJbW98gN09GeZXT">
+      <tr data-page-node-id="O2qi3QMCCNBtFmNWxOsmlZ"><th data-page-node-id="m5j49Pu87aoYQB6KdapDD7">方法</th><th data-page-node-id="zRBPQXqZCOqJgsDKDwV5Vv">含义</th><th data-page-node-id="CRaOhxUvBf6qFozJ8NVcFE">典型场景</th></tr>
+      <tr data-page-node-id="tEivwGhgVz8CseQrDa5dCS"><td data-page-node-id="wpnXjlwCC4v4UbmuVqZ9yv"><strong data-page-node-id="fJACGI0aH6Vhb2YsDLEovr">GET</strong></td><td data-page-node-id="hRinrOjtNXdAQNDbRTl87w">获取数据</td><td data-page-node-id="CU9NamWC4B3ZxIch4EdrAZ">查询列表、获取详情</td></tr>
+      <tr data-page-node-id="phRHprzgeAfzcBHpq0palA"><td data-page-node-id="v0b9iytIEI23QDspLZ5HN6"><strong data-page-node-id="fDjOIuBHaagiFhx6y7TWKp">POST</strong></td><td data-page-node-id="OpgoWPm3UcGT9CNxWVhgT8">创建数据</td><td data-page-node-id="ChYAh9EOQJIPqEj0Gefoug">登录、提交表单、新增记录</td></tr>
+      <tr data-page-node-id="BhpRGDF0KWbr2gFv7yqs3D"><td data-page-node-id="Zk8uCgth5uqPPZ6Yb7HEsk"><strong data-page-node-id="Dm7TDa1PIJL88dh76HHJOv">PUT</strong></td><td data-page-node-id="Ebf1a6E93JlfiOrgh7xiAL">完整更新</td><td data-page-node-id="EfKUFT0rrJccE2mEBmyNmS">替换整个资源</td></tr>
+      <tr data-page-node-id="leYBZ6bqrBvySWHRM0OF2A"><td data-page-node-id="bt61zpeWbCaultIxUQ63T6"><strong data-page-node-id="ENR3eMm28J1PFyFTTZn2ab">PATCH</strong></td><td data-page-node-id="JCmR5J4l4rLBvYdUWtcWLJ">部分更新</td><td data-page-node-id="cit3LzBWaeUrysozb52hST">只改某个字段</td></tr>
+      <tr data-page-node-id="Q1vhxLdLIYLKyhapoEe5SP"><td data-page-node-id="NSDECNkmJhl0zGyc4tRzXG"><strong data-page-node-id="4y9OZi9shihT12Qkw9UBbg">DELETE</strong></td><td data-page-node-id="CLuLzUBZkErVfeF2j3x1z2">删除数据</td><td data-page-node-id="RRp31HHIKm6ZysohttxevY">删除记录</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════ 2. 安装 ═══════════════ -->
+<section id="install" data-page-node-id="gx4n5dE7LeAWk4XP3EmrhR">
+  <h2 data-page-node-id="L2AtJ9u0JVbP6zZxDhz42C"><span class="num" data-page-node-id="2FTUGXDcVGJlgI2GR01VQR">2</span> 📦 安装</h2>
+  <div class="tabs" data-page-node-id="s6QC9hiCyZ4x8YyD06cPJ6">
+    <button class="tab-btn active" onclick="switchTab('install', 'pip')" data-page-node-id="xtzorALAPDyCBVqMCiennK">pip</button>
+    <button class="tab-btn" onclick="switchTab('install', 'uv')" data-page-node-id="08BXaAEFjFGiVxZC0q02nj">uv</button>
+  </div>
+  <div class="tab-content active" id="install-pip" data-page-node-id="OWRqsQJJUnMFyCOMLVVd6I">
+    <div class="code-block" data-page-node-id="Av6pJC3fWvfh2cfDQKvBpC">
+      <div class="header" data-page-node-id="IuNRwtkuEbfyYcJ3FfFbDj"><span class="lang lang-shell">Shell</span><span data-page-node-id="OFvNxQtLiNuVz8BVvWpREK">终端</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="ee46MJeGoCH5I7Q5M1IY3W">📋 复制</button></div>
+      <pre data-page-node-id="4UPL8HzyKnrZkVWvcRyBu0"><code data-page-node-id="KOsPOPjIghiKXKr3gTeKp1">pip install requests</code></pre>
+    </div>
+  </div>
+  <div class="tab-content" id="install-uv" data-page-node-id="1it4q0lvomuCCBI2WOC5WD">
+    <div class="code-block" data-page-node-id="fiJyWPXf4YrdJyLbBE32EU">
+      <div class="header" data-page-node-id="dTxswhZS8JrZUlWFM7IpQU"><span class="lang lang-shell">Shell</span><span data-page-node-id="lVGZFxF54HsfrqJp3ODkBc">终端</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="KGbXgJk1NxXWRK7XEOcY3K">📋 复制</button></div>
+      <pre data-page-node-id="rzEEcD1HDi253Ku08M4Bja"><code data-page-node-id="9fkn5RFsV54a34wmHjXXS4">uv pip install requests</code></pre>
+    </div>
+  </div>
+
+  <div class="card success" style="margin-top:16px;" data-page-node-id="Ygwv8gooqwLwEDD5CuHhGd">
+    <strong data-page-node-id="8HqLSHf7yLuYFHyikWxoJo">✅ 验证安装：</strong>
+    <div class="code-block" data-page-node-id="YGPI2oFyh8uzwgEvgAc2aA">
+      <div class="header" data-page-node-id="L3vw1rtK8Zl4ZENfpBcFGq"><span class="lang lang-shell">Shell</span><span data-page-node-id="Zm2L0YOIfJwR7Lpn0m75XK">终端</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="anH2sGHMJx5mYArHqznsNE">📋 复制</button></div>
+      <pre data-page-node-id="XIFEqui3uld2ZshOij3dTb"><code data-page-node-id="csSmmRGZYZeeydGFQEIZeE">python -c <span class="str" data-page-node-id="F5Zn5cScDQtkR2YObDTSuX">"import requests; print(requests.__version__)"</span>
+<span class="cmt" data-page-node-id="YHG2hROeWDAScnVTZjHYxM"># 输出: 2.32.x</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 3. GET 请求 ═══════════════ -->
+<section id="get" data-page-node-id="gJpeS7oN0JytZ2poiQ0nZ9">
+  <h2 data-page-node-id="XEAP7YnCkM6F1GCbGSDXAC"><span class="num" data-page-node-id="D2dCpVrF8hi6Qqsj7B5QYC">3</span> 🌐 GET 请求 — 获取数据</h2>
+
+  <h3 data-page-node-id="PVf4kOyxCIOQTyhz3jF5W5">3.1 最简单的 GET</h3>
+  <div class="code-block" data-page-node-id="GlWwa6AHchTYi91FUJ8Wqe">
+    <div class="header" data-page-node-id="71DEvNdcDoO4LGsPqK2aFY"><span class="lang lang-py">Python</span><span data-page-node-id="BGQyUa2ETCtAgu18wtF2OV">基础 GET</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="AqvjHtZNue2x9BHIeRhGot">📋 复制</button></div>
+    <pre data-page-node-id="J00kgYCBYXUhHL790b6vz9"><code data-page-node-id="lrldHnsdezPBZ4lAEBNaQs"><span class="kw" data-page-node-id="6suqH5wrFlWI1axvWanb1N">import</span> requests
+
+<span class="cmt" data-page-node-id="aM3PpjceIbt8GJo27r1i1C"># 向 httpbin.org 发 GET 请求（一个测试用的网站）</span>
+resp = requests.get(<span class="str" data-page-node-id="7NYKqpf8mektAC5T2TDZOp">"https://httpbin.org/get"</span>)
+
+<span class="builtin" data-page-node-id="aovlTF9IRFsGeedF95ElVT">print</span>(resp.status_code)  <span class="cmt" data-page-node-id="vR1BwBPDWFEFBvmQ2GuZco"># 200</span>
+<span class="builtin" data-page-node-id="fvtlRzZiEXqKUbuavYYhmn">print</span>(resp.text)         <span class="cmt" data-page-node-id="vJGYG2JsUhjJl5XMLCLus8"># 响应文本</span>
+<span class="builtin" data-page-node-id="ARpjGfvrkMOdkXgbAgFgRi">print</span>(resp.json())       <span class="cmt" data-page-node-id="Vg1WfClRmmYX60jUDaSv7P"># 解析为字典</span></code></pre>
+  </div>
+
+  <h3 data-page-node-id="iwLzCemT5XGzrKlSsyFROU">3.2 带查询参数的 GET</h3>
+  <div class="code-block" data-page-node-id="onnAbwQJQkNNCSVEo4lRSG">
+    <div class="header" data-page-node-id="YTaB3bbjp47FmDFdAnMPcQ"><span class="lang lang-py">Python</span><span data-page-node-id="VZU45M2tN3cIMBqFDaW22x">带参数的 GET</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="VecLxhNlX820SsoQmESbBi">📋 复制</button></div>
+    <pre data-page-node-id="XV0HLgQj2T02QGGB1RY5sB"><code data-page-node-id="vHw66QqussoTw5tK4EAddX"><span class="cmt" data-page-node-id="BFMeINlw2wprbyR6yshUQe"># ✅ 正确方式：用 params 参数（自动 URL 编码）</span>
+params = {<span class="str" data-page-node-id="DGYjXu4hLCAN7R1UabsZkn">"q"</span>: <span class="str" data-page-node-id="Imlke4Wjzqn6PsAZ99lWEf">"python"</span>, <span class="str" data-page-node-id="4pmnuSJXQdpwfRvJS2BRwD">"page"</span>: <span class="num" data-page-node-id="aXQYiOPK2zZ1muvHiphRmy">1</span>}
+resp = requests.get(<span class="str" data-page-node-id="ACHqD1HNQQUsFD68GqmbMA">"https://httpbin.org/get"</span>, params=params)
+
+<span class="builtin" data-page-node-id="dUbt6NPUqIxBOZ8rw1edT0">print</span>(resp.url)
+<span class="cmt" data-page-node-id="cgCy2KNWL87JwH810U4ZL6"># https://httpbin.org/get?q=python&amp;page=1</span>
+
+<span class="cmt" data-page-node-id="l2GjawbEWedcHNyuX8TZVF"># ❌ 错误方式：手动拼接 URL（容易出错）</span>
+<span class="cmt" data-page-node-id="O6e2V4S9WRdeSHDPLTklao"># resp = requests.get("https://httpbin.org/get?q=python&amp;page=1")</span></code></pre>
+  </div>
+
+  <div class="card warning" data-page-node-id="SymphqimlFu3ppulNnAZH9">
+    <strong data-page-node-id="zkgsoZlgGbQ5H3lPIFJjJX">⚠️ 永远用 <code data-page-node-id="iizUMH2lKv3PoGOEBgMcth">params</code> 参数传查询字符串</strong>，不要手动拼 URL。requests 会自动处理 URL 编码（中文、特殊字符等）。
+  </div>
+</section>
+
+<!-- ═══════════════ 4. POST 请求 ═══════════════ -->
+<section id="post" data-page-node-id="dTGCqvSeGt4AN0GDL7U8W2">
+  <h2 data-page-node-id="v8vJkOAsAe7rb773exfMpI"><span class="num" data-page-node-id="oxu6YXJjyew7TaTEgxNF6A">4</span> 📤 POST 请求 — 提交数据</h2>
+
+  <p data-page-node-id="jQcrTp79WQ4KhV78O0c24R">POST 是最常用的写操作，有三种传数据方式：</p>
+
+  <div class="tabs" data-page-node-id="AYzKEerntg09Nln6SBTgCs">
+    <button class="tab-btn active" onclick="switchTab('post', 'json')" data-page-node-id="zDVyvlHHFRlGlEvF5GoEjO">JSON（最常用）</button>
+    <button class="tab-btn" onclick="switchTab('post', 'form')" data-page-node-id="tRMFUtPrOPkjjRaAV87MCA">表单 form-data</button>
+    <button class="tab-btn" onclick="switchTab('post', 'raw')" data-page-node-id="00M3QfBa7MH3YPvu3EtVhB">原始 body</button>
+  </div>
+
+  <div class="tab-content active" id="post-json" data-page-node-id="P3ksWNZJydyS4EYOj8LHef">
+    <div class="code-block" data-page-node-id="rzotUvKLssC2FGwVlk3qaA">
+      <div class="header" data-page-node-id="qKFMXVMMPJ2ppxMDEHPFQS"><span class="lang lang-py">Python</span><span data-page-node-id="VMAbot4IZxffHyqmnULBq7">POST JSON</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="H6LGtqBbyQ9Czw7iBDEz2H">📋 复制</button></div>
+      <pre data-page-node-id="Yz9aqUVkl1y4wcunqBoFKf"><code data-page-node-id="WvCmkb0XazUBs8zPxRMOUl"><span class="cmt" data-page-node-id="CEKqb5MxDoCn8CZlXFQiaI"># ✅ 方式1：json= 参数（推荐，自动设 Content-Type: application/json）</span>
+data = {<span class="str" data-page-node-id="r3Ps8crQyZ0Jnhg7jPH088">"username"</span>: <span class="str" data-page-node-id="HOC3ybFwxxuZrK0jLqlyxY">"testuser"</span>, <span class="str" data-page-node-id="jBUOo99n7nrkEmZuWMKnr0">"password"</span>: <span class="str" data-page-node-id="KcnfgpIg8aU0eEfh4wHImB">"123456"</span>}
+resp = requests.post(<span class="str" data-page-node-id="PMEIZFaBXbXv7jiqglj7MR">"https://httpbin.org/post"</span>, json=data)
+
+<span class="builtin" data-page-node-id="K52pVEDJP8Aw1CrjxAllhp">print</span>(resp.json()[<span class="str" data-page-node-id="sbXAtQqID8Q02zqx2idXgC">"json"</span>])
+<span class="cmt" data-page-node-id="LFVGRHERxhxgfwL2epgPd5"># {'username': 'testuser', 'password': '123456'}</span></code></pre>
+    </div>
+  </div>
+  <div class="tab-content" id="post-form" data-page-node-id="g5rDZOpEuAG3aSDENUatF3">
+    <div class="code-block" data-page-node-id="SgUfih6FCO9UcEoocHBDJR">
+      <div class="header" data-page-node-id="kpqOXd6acA11Y8bVCL5hfv"><span class="lang lang-py">Python</span><span data-page-node-id="X4531g5EhvLf24Kqhfr4FE">POST 表单</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="12csnTB9zRlHtdb27ggEWn">📋 复制</button></div>
+      <pre data-page-node-id="FEYt4W5R2biSrllNrpOxHq"><code data-page-node-id="zWKzPWMyPSIhZivHasBOlt"><span class="cmt" data-page-node-id="j5hf2Ndjz1PwRCGUJFDVKs"># 方式2：data= 参数（form-urlencoded 或 multipart）</span>
+data = {<span class="str" data-page-node-id="pfvGIfgVhFQ0ydsLKDu66A">"username"</span>: <span class="str" data-page-node-id="ptAA717qWuDAUJOlyZtWrh">"testuser"</span>, <span class="str" data-page-node-id="gCco71HqowPiWrBx6KayNU">"password"</span>: <span class="str" data-page-node-id="oH72BfsKxq7q6CTenaM9AV">"123456"</span>}
+resp = requests.post(<span class="str" data-page-node-id="08CcXXvbd6mX7JznKBhXl9">"https://httpbin.org/post"</span>, data=data)
+
+<span class="cmt" data-page-node-id="rvxgqNekSrRWGINun9SvPm"># 传文件（multipart/form-data）</span>
+files = {<span class="str" data-page-node-id="7bqL57Wn0DJj7nhpN91GTr">"file"</span>: (<span class="str" data-page-node-id="UvGIDioyBOfkYNeYVHBHUG">"report.xlsx"</span>, <span class="builtin" data-page-node-id="Iz9tIJCH1jdlIIa7AdFuW5">open</span>(<span class="str" data-page-node-id="ABm2AK0Xi15TDegAv8JphN">"report.xlsx"</span>, <span class="str" data-page-node-id="YWi1I2UuBUZKV5AfmZYrcW">"rb"</span>))}
+resp = requests.post(<span class="str" data-page-node-id="GYk90q7YlVPLhWZRrFReQe">"https://httpbin.org/post"</span>, files=files)</code></pre>
+    </div>
+  </div>
+  <div class="tab-content" id="post-raw" data-page-node-id="dTD4QA9O4QHh3zkJvh0j8V">
+    <div class="code-block" data-page-node-id="RBbtfWJYxvVRtrvpOqjJ29">
+      <div class="header" data-page-node-id="VNes9VA6Oeu1oT5dn8lHzL"><span class="lang lang-py">Python</span><span data-page-node-id="TFcjJaIdiLbEU22hTwaze2">POST 原始 body</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="Hb5tOLFygUP1LwzAPdq7lN">📋 复制</button></div>
+      <pre data-page-node-id="kMentE5B2iLpA8dr4pRnMU"><code data-page-node-id="f1qQDw6TMHdHn3THaSyqh3"><span class="cmt" data-page-node-id="DoxtTqTE70fDmxltvKPKu9"># 方式3：data= 传字符串（需手动设 Content-Type）</span>
+<span class="kw" data-page-node-id="qJYKy5DpkZ5RJOa5IYaf3a">import</span> json
+body = json.dumps({<span class="str" data-page-node-id="Kwh4ACitRAKRVCoRkUR5W6">"key"</span>: <span class="str" data-page-node-id="oVkrtVUw3yzyAg8T42i7ME">"value"</span>})
+resp = requests.post(
+    <span class="str" data-page-node-id="axhAOJ0Ge2CKZ8Us5ruCRc">"https://httpbin.org/post"</span>,
+    data=body,
+    headers={<span class="str" data-page-node-id="umls3BOUWfwKkDC5LFdA6r">"Content-Type"</span>: <span class="str" data-page-node-id="edfgAf7hlB767mIQIFuT93">"application/json"</span>}
+)</code></pre>
+    </div>
+  </div>
+
+  <div class="card tip" style="margin-top:16px;" data-page-node-id="J4O898YGtZ5skkEBkyKREI">
+    <strong data-page-node-id="mhBn4AJ55d6WzLGBiQFDDm">🔑 三种方式对比：</strong>
+    <table data-page-node-id="vNDokqwrOXoVhPZ1KTWoqr">
+      <tr data-page-node-id="zLCKXKYEFSAeEMwZNPXd3E"><th data-page-node-id="vQWRjMMaABCuHE3giBAbtf">方式</th><th data-page-node-id="ehY77Qw8gyWAAU3XhYytdl">参数</th><th data-page-node-id="KsOrWEXTycEa8Uq19TeFcV">Content-Type</th><th data-page-node-id="5cb5tVf96DcWahVcwh76QJ">场景</th></tr>
+      <tr data-page-node-id="vJAXmQI9xKQF58q6EhkWIc"><td data-page-node-id="NHjaYCSvY4uAmXKg41FvFo">JSON</td><td data-page-node-id="z6uTxyAJdPcWdzSX9sstFG"><code data-page-node-id="Eabf0C72wppV0xFslFlBnx">json={...}</code></td><td data-page-node-id="EYm9L3cOrpZHDFk6wjCAer">自动设 application/json</td><td data-page-node-id="HS6AxrF46zoALLS5BjJOMk">API 接口（最常用）</td></tr>
+      <tr data-page-node-id="EvS1SA6KCLsXINvBAbYOtp"><td data-page-node-id="JmSDEaHfRwSASB44cFPjIA">表单</td><td data-page-node-id="ere8YJSaquqb3j2KvQkNwE"><code data-page-node-id="eyZmFZ2lif0BeHytS6XgkS">data={...}</code></td><td data-page-node-id="XDbONdTmcArPx8xT1yvtHY">自动设 application/x-www-form-urlencoded</td><td data-page-node-id="fADOHLTjx7oHtjjNMBy2PL">传统表单提交</td></tr>
+      <tr data-page-node-id="AxFsvzmtrDRUxIW2HTNBA3"><td data-page-node-id="qEkVh84iFNsFCSEh97cVsj">文件</td><td data-page-node-id="v9HwwBp1hQkocZApYRGibS"><code data-page-node-id="rcCIvJO0hGmOkJ32poNeHk">files={...}</code></td><td data-page-node-id="jWJyNDncuYaBjth3KBc3tF">自动设 multipart/form-data</td><td data-page-node-id="l2ODA5uqiQxGrVpqNljJMh">文件上传</td></tr>
+    </table>
+  </div>
+
+  <h3 data-page-node-id="yB9aS6up8HVPvgMCSoB3CX">PUT / PATCH / DELETE</h3>
+  <div class="code-block" data-page-node-id="vXRtl8vMI4rthkekOf9EGE">
+    <div class="header" data-page-node-id="4sjq4JkHVwrRXriezIwNDf"><span class="lang lang-py">Python</span><span data-page-node-id="BBI6trFmRFeWMonD4vp1cG">PUT / PATCH / DELETE</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="FkpCC9JZDDuhW8w2LVOdAl">📋 复制</button></div>
+    <pre data-page-node-id="5WKRMRWQYNBa9hHPBjOd3J"><code data-page-node-id="X9YtEObK7uothFXUvGTSxd"><span class="cmt" data-page-node-id="AJUbcYL7uMDEbKLMFi3Eok"># PUT — 完整更新资源</span>
+resp = requests.put(<span class="str" data-page-node-id="8oLzrypp1TmhMMSj7r7COB">"https://httpbin.org/put"</span>, json={<span class="str" data-page-node-id="ifV3R1a7VqUx8t558BGv2K">"name"</span>: <span class="str" data-page-node-id="FTPQ9ZKRTxODX2z2srBe3I">"新名字"</span>})
+
+<span class="cmt" data-page-node-id="KY0VttYfahDnST3jnRH0tJ"># PATCH — 部分更新资源</span>
+resp = requests.patch(<span class="str" data-page-node-id="0ftAo5pGmKgszWm6tmcYca">"https://httpbin.org/patch"</span>, json={<span class="str" data-page-node-id="ADKkodBNDRxWqAhJk3Wxju">"status"</span>: <span class="str" data-page-node-id="LHKPfADITiAgMaPif6ZPq4">"done"</span>})
+
+<span class="cmt" data-page-node-id="CM9lu4CZymU3UFLrm0GvYN"># DELETE — 删除资源</span>
+resp = requests.delete(<span class="str" data-page-node-id="uwEEzjtfgRhJKjmdDRPdy8">"https://httpbin.org/delete"</span>)</code></pre>
+  </div>
+</section>
+
+<!-- ═══════════════ 5. 请求头 ═══════════════ -->
+<section id="headers" data-page-node-id="vm0LCrpcffVeA9EPsUnKlO">
+  <h2 data-page-node-id="0MMtLShNdAvytkceBxysVp"><span class="num" data-page-node-id="f6pcRnnKIleqOLReNfcarP">5</span> 📨 请求头 — 传递元信息</h2>
+
+  <div class="code-block" data-page-node-id="5f9zwdxLFFSqb5Er287uZi">
+    <div class="header" data-page-node-id="q6SRYZq0m0fvLGshlYb52o"><span class="lang lang-py">Python</span><span data-page-node-id="4nz3gr6ApcYc0amurtY3BY">自定义请求头</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="jR2wUuNR9pfFGpRGJtNyhD">📋 复制</button></div>
+    <pre data-page-node-id="FPbeA6PU0tBaqiOCEFiKS7"><code data-page-node-id="GS6giQwJQwx5KM8DExldw9"><span class="cmt" data-page-node-id="5z0oJdRgTXtrCmbHyv8pbh"># 方式1：headers 参数</span>
+headers = {
+    <span class="str" data-page-node-id="XWv0PTIGjQ9qgwfRhGnnhS">"Authorization"</span>: <span class="str" data-page-node-id="jlTgSP5FlD0qBfoE3kHuqz">"Bearer eyJhbGciOiJIUzI1NiIs..."</span>,
+    <span class="str" data-page-node-id="J0yzpGkTy0OdscBqFXCZii">"Content-Type"</span>: <span class="str" data-page-node-id="ibwyOjnE0gnGQMFsU8mejt">"application/json"</span>,
+    <span class="str" data-page-node-id="WA2KhX2Rruee1uInmRVyno">"User-Agent"</span>: <span class="str" data-page-node-id="Bu5uSuVVD9uWbTWb3ynID4">"MyTestBot/1.0"</span>,
+    <span class="str" data-page-node-id="GWIE95XrRbWwXh8Lx9r38A">"X-Custom-Header"</span>: <span class="str" data-page-node-id="M4c4PA5gs0GS1cuq61hS0E">"custom-value"</span>,
+}
+resp = requests.get(<span class="str" data-page-node-id="fROpuPaQIxSlp0eZz88lJV">"https://httpbin.org/headers"</span>, headers=headers)
+<span class="builtin" data-page-node-id="IU8uHnHZFaWngqKo78IZTq">print</span>(resp.json()[<span class="str" data-page-node-id="zwVGaeZrctFsoR27ooUxFJ">"headers"</span>])
+
+<span class="cmt" data-page-node-id="EKkFyV0DI4K2WwEqoPH03s"># 方式2：修改默认头（全局生效）</span>
+<span class="kw" data-page-node-id="fQKzNhELC6W8XiXX2aUqd7">from</span> requests.adapters import HTTPAdapter
+session = requests.Session()
+session.headers.update({<span class="str" data-page-node-id="za5IZqYrUHJr8EeDDKXVi5">"Authorization"</span>: <span class="str" data-page-node-id="p12wQwoSK6GtCBZXqupVom">"Bearer xxx"</span>})  <span class="cmt" data-page-node-id="sNEemJjlljSK8t0Cjpnl99"># 后续请求自动带上</span></code></pre>
+  </div>
+
+  <div class="card warning" data-page-node-id="oo3bnqqbLslBYBDUZL3iKw">
+    <strong data-page-node-id="mLMayUFsSXDHtMldOyOCIb">⚠️ 常见场景：</strong>
+    <ul data-page-node-id="2JDTGJN7ZEUuQ6TVQxM0YH">
+      <li data-page-node-id="IgenGmo8rlWzemtOSBRBey"><strong data-page-node-id="DcwEZzWy2ZA248kg8FAq4d">认证</strong>：<code data-page-node-id="xWXQDcnI9GSV9c5LFeaC8C">Authorization: Bearer &lt;token&gt;</code></li>
+      <li data-page-node-id="6lMdZggUsAHo6z5h7tZ7uK"><strong data-page-node-id="ekJe7B7KDB7J4UgNFcv460">API Key</strong>：<code data-page-node-id="ECWb9LzZGNleHCaX9THSbq">X-API-Key: &lt;key&gt;</code></li>
+      <li data-page-node-id="3JBhYI7wFwD6hqhSDWA8Aj"><strong data-page-node-id="IZy5bIWL6EDokOCuGWqVVG">模拟浏览器</strong>：<code data-page-node-id="AVW5fhSqXVfrDbtLXSzxwX">User-Agent: Mozilla/5.0 ...</code></li>
+      <li data-page-node-id="mG1N5WYsqGQizo3YbxEfvV"><strong data-page-node-id="kwfcehuiGi3iQFlV5hYr8k">指定内容类型</strong>：<code data-page-node-id="4nTL2foOEBFPdBMBDN0Dgj">Content-Type: application/json</code></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════ 6. 参数传递 ═══════════════ -->
+<section id="params" data-page-node-id="fGH80IP8hUP7pLY0faVSUs">
+  <h2 data-page-node-id="Xr6LZIHch9uQ9V1A7J5Z6r"><span class="num" data-page-node-id="1Ly95vRHgGLA0Ow4oPE8MA">6</span> 🔗 参数传递全解</h2>
+
+  <div class="code-block" data-page-node-id="AusRUAO3JZZ43wHsxo91D5">
+    <div class="header" data-page-node-id="mhONBIbFJHWTvMUr9niwpj"><span class="lang lang-py">Python</span><span data-page-node-id="Vo1SaMp3nHlYCD7kvvsIXl">各种参数传递方式</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="vcLzLOtZNz8DpfypGv0eAt">📋 复制</button></div>
+    <pre data-page-node-id="W5reEpn1OPMERepRUr57DB"><code data-page-node-id="OHLUobHT213DfeuElpPum8"><span class="cmt" data-page-node-id="dk9lUSA3D6U5NjE4DZq8Zq"># ① URL 查询参数（GET）</span>
+requests.get(<span class="str" data-page-node-id="pbGGfmmoegFj9FEg2thqAs">"https://api.example.com/users"</span>, params={<span class="str" data-page-node-id="XRvMRlS5hGDNw4dqHlGh7v">"page"</span>: <span class="num" data-page-node-id="hOTBXQ6R0WTpZe8bhS04zc">1</span>, <span class="str" data-page-node-id="57tUSf64j2q9g8TRKAo7SU">"size"</span>: <span class="num" data-page-node-id="WANngZpK5wcHBJyDLZ0m6t">20</span>})
+
+<span class="cmt" data-page-node-id="lpMywzDE0oFBteh7RHFfp9"># ② 路径参数（拼在 URL 里）</span>
+user_id = <span class="num" data-page-node-id="14M4AxLrikWs2oNyo2cDJF">123</span>
+requests.get(<span class="str" data-page-node-id="mrMVhnN2iBXgCbPTaHiFxk">f"https://api.example.com/users/{user_id}"</span>)
+
+<span class="cmt" data-page-node-id="EQ1LuID5XND4kAGVB39lVY"># ③ 请求体 JSON（POST/PUT）</span>
+requests.post(<span class="str" data-page-node-id="OJbr9CYtddHECQgq7ZsqSU">"https://api.example.com/users"</span>, json={<span class="str" data-page-node-id="X1r4NL9ty5c1b9Ylt0v3LI">"name"</span>: <span class="str" data-page-node-id="1utPPi5kHD6kH3p1omDSWL">"张三"</span>})
+
+<span class="cmt" data-page-node-id="eb0Ih3gs7oCrpVbpNbOHZp"># ④ 表单数据</span>
+requests.post(<span class="str" data-page-node-id="l9FPYL8t6o7nscBhkh6NBf">"https://api.example.com/login"</span>, data={<span class="str" data-page-node-id="Sz29n2X5afxLJXhRJHmFtD">"user"</span>: <span class="str" data-page-node-id="MKMAtasi0BItGny7StveE1">"admin"</span>, <span class="str" data-page-node-id="a3tT7mVqvV871r0A2wRJym">"pass"</span>: <span class="str" data-page-node-id="SWHUHkKHtJzuQavH8NnFn5">"123"</span>})
+
+<span class="cmt" data-page-node-id="lt8i3vAUHh1fIpTqCqnXMH"># ⑤ 请求头</span>
+requests.get(<span class="str" data-page-node-id="3vi2FylPWa901MkF9dPPSy">"https://api.example.com/data"</span>, headers={<span class="str" data-page-node-id="M2320MRtgQ6Yo85aKqG2Zr">"Authorization"</span>: <span class="str" data-page-node-id="jYiVRHiBUyKCNmHRFThY3n">"Bearer xxx"</span>})
+
+<span class="cmt" data-page-node-id="wOIGkVJWEFSLFCeTUdmCpW"># ⑥ Cookie</span>
+requests.get(<span class="str" data-page-node-id="RhxfOrp42j0euayZ6QKcvx">"https://api.example.com/data"</span>, cookies={<span class="str" data-page-node-id="tYoDcmk3ruPURPC2O6VrLH">"session_id"</span>: <span class="str" data-page-node-id="pjHgYJ6Aj4WPdb9wcef9fg">"abc123"</span>})</code></pre>
+  </div>
+</section>
+
+<!-- ═══════════════ 7. 文件上传 ═══════════════ -->
+<section id="upload" data-page-node-id="5OxjUUdNZqg8U9bBCuK2HB">
+  <h2 data-page-node-id="kGPh0BQj9JNuTDZIfenb2F"><span class="num" data-page-node-id="4X6YJGr4pWB5qDLcg6o8MT">7</span> 📎 文件上传</h2>
+
+  <div class="code-block" data-page-node-id="qT64x7O3NspZ1o9KjAD5hq">
+    <div class="header" data-page-node-id="9l07fRMoQswzWJZ3VBv3sJ"><span class="lang lang-py">Python</span><span data-page-node-id="ppTLj0H0uBNtSn4m1uvWKm">上传单个/多个文件</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="XFIs8yGhfcQlpF4SaSIMUi">📋 复制</button></div>
+    <pre data-page-node-id="nBczcHO1yyduJyoTbPa91J"><code data-page-node-id="BlXtj3pOF45LxuzJnXHr2l"><span class="cmt" data-page-node-id="fyrh9ETttnjuFz0DvAMPpw"># 上传单个文件</span>
+<span class="kw" data-page-node-id="gEtVcDFQWJDB8xS0GItI9I">with</span> <span class="builtin" data-page-node-id="nlWMObSeufTXODjYv9BDbZ">open</span>(<span class="str" data-page-node-id="Sk35sDth98mt61J6rSEFXJ">"screenshot.png"</span>, <span class="str" data-page-node-id="4tk1qIl4HEw6RLfAIpNqRn">"rb"</span>) <span class="kw" data-page-node-id="UNLuekaXjX8KGCMXhHePPO">as</span> f:
+    resp = requests.post(
+        <span class="str" data-page-node-id="8SExYGdDHsc74JVq6xpRS6">"https://httpbin.org/post"</span>,
+        files={<span class="str" data-page-node-id="FkpURDHF1Lk5OswC9nTqrX">"file"</span>: (<span class="str" data-page-node-id="VWqgDhkxKmCq0ByFJGHfwU">"screenshot.png"</span>, f, <span class="str" data-page-node-id="qXebf6c5RTBeJCX2pPBH67">"image/png"</span>)}
+    )
+
+<span class="cmt" data-page-node-id="wLoRwt52bpbo7LBlTYmvPk"># 上传多个文件</span>
+files = [
+    (<span class="str" data-page-node-id="vWlhyeG0IpM3kD9gpv733l">"files"</span>, (<span class="str" data-page-node-id="AT7w6xTUXjYCHIoc1dbPoK">"a.png"</span>, <span class="builtin" data-page-node-id="Q5a2DcOmpBCRfE1QA8WGYL">open</span>(<span class="str" data-page-node-id="VS85tL1VwFylGCF5XzPsto">"a.png"</span>, <span class="str" data-page-node-id="EzmsgB15MoPogqiy5E9lEV">"rb"</span>))),
+    (<span class="str" data-page-node-id="m8qRYGaOcVybDonMGA65dq">"files"</span>, (<span class="str" data-page-node-id="IaLvDBQv2pfrU36FLZ53J4">"b.png"</span>, <span class="builtin" data-page-node-id="MiBzUndab7MUAE4QBShpj0">open</span>(<span class="str" data-page-node-id="cwH5dKpt0B03J39RJJPaVP">"b.png"</span>, <span class="str" data-page-node-id="RATTvJ2WGVIEHUKytgqGYg">"rb"</span>))),
+]
+resp = requests.post(<span class="str" data-page-node-id="XiGedrhiV2D50txW1oN7tc">"https://httpbin.org/post"</span>, files=files)
+
+<span class="cmt" data-page-node-id="F7IHweCSTUO5zooiusdIhe"># 混合上传（文件 + 普通字段）</span>
+data = {<span class="str" data-page-node-id="VBAzo5nysPVQoTMViTOXYQ">"description"</span>: <span class="str" data-page-node-id="Vw9dRD6Mx2A1jaqs3SyhC3">"测试截图"</span>}
+files = {<span class="str" data-page-node-id="8xFRZkaJH5BaFnLPpfKptl">"file"</span>: <span class="builtin" data-page-node-id="C7i9qme3dH3OTrrGZaNDcm">open</span>(<span class="str" data-page-node-id="BO5UNVAXqiUCxcrOBao9kd">"screenshot.png"</span>, <span class="str" data-page-node-id="pcoloYqSue6ofGqX2YWJGd">"rb"</span>)}
+resp = requests.post(<span class="str" data-page-node-id="jPLdCUEuPbNsVsIkIW6GQu">"https://httpbin.org/post"</span>, data=data, files=files)</code></pre>
+  </div>
+
+  <div class="card warning" data-page-node-id="XGsPeVzS6EtFKXNqMPqhom">
+    <strong data-page-node-id="1oKhimqX9DsNQeoSLmjyEa">⚠️ 注意：</strong> 文件字段用 <code data-page-node-id="TyoAIbd20v0HQModUJDRnQ">files=</code>，普通文本字段用 <code data-page-node-id="J6loxg2OknjZB9RyV35AAF">data=</code>。不要混在一起用 <code data-page-node-id="DoxszEGJJF4ZZsPEhNJttz">json=</code>。
+  </div>
+</section>
+
+<!-- ═══════════════ 8. Session ═══════════════ -->
+<section id="session" data-page-node-id="8lX8HzHWwJJfXAxLCKIBfN">
+  <h2 data-page-node-id="KKupoEYEiLkUA3zqifDKeK"><span class="num" data-page-node-id="CZwvuXETqqH5rAefBOryFx">8</span> 🍪 Session — 保持会话状态</h2>
+
+  <p data-page-node-id="sqxTrXNA0RdxThHu7Aani1">Session 是 requests 中<strong data-page-node-id="JQFTtTt8q458pa8XjkPDL5">最重要的高级功能</strong>。它能自动保持 Cookie、共享请求头，是模拟登录场景的必备技能。</p>
+
+  <div class="code-block" data-page-node-id="91dpZVxvU9Czb0QO12BhS6">
+    <div class="header" data-page-node-id="WTgXX7olCE8JsNxIEIx1Wt"><span class="lang lang-py">Python</span><span data-page-node-id="raSYSAV6ZXA0l3AqDM2aRk">Session 模拟登录</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="1eHrK7yFkFbTi5P3wiVWsv">📋 复制</button></div>
+    <pre data-page-node-id="JZHYaGudxzFu14yUCED30S"><code data-page-node-id="JtqDDcjzK8ox4s6SUqkGYo"><span class="kw" data-page-node-id="bxPKd0xdpv70SRJF9RYjzt">import</span> requests
+
+session = requests.Session()
+
+<span class="cmt" data-page-node-id="mASoiQnW5ZK44bALcMIhMl"># ① 设置公共请求头（后续所有请求自动带上）</span>
+session.headers.update({
+    <span class="str" data-page-node-id="kktskDmOUyDkWFhdOyt910">"User-Agent"</span>: <span class="str" data-page-node-id="oRGcfDbPWsVcwGxELZSPrH">"Mozilla/5.0 (Windows NT 10.0; Win64; x64)"</span>
+})
+
+<span class="cmt" data-page-node-id="vjqLpJX2Mox6sbrAoWgpAM"># ② 登录（Cookie 自动保存到 session）</span>
+login_data = {<span class="str" data-page-node-id="TsEChDJ8ozX4ZZDnTsYYOT">"username"</span>: <span class="str" data-page-node-id="VCy5HTYWmEQ7ykbsfG4htB">"testuser"</span>, <span class="str" data-page-node-id="8OxMyFR5iPQmJt3dCYrUcL">"password"</span>: <span class="str" data-page-node-id="EBpHYnfXtW91Cr1OHv3HpV">"123456"</span>}
+resp = session.post(<span class="str" data-page-node-id="zFGLGE24Ef3HZyoEgrQ2PE">"https://example.com/login"</span>, data=login_data)
+<span class="builtin" data-page-node-id="5EO16L98cCX2aJmTHpyfnx">print</span>(<span class="str" data-page-node-id="81CWiSBDHYmhvL7NSAsVka">f"登录状态: {resp.status_code}"</span>)
+
+<span class="cmt" data-page-node-id="nDm7faZipLwkE32kmLC11w"># ③ 后续请求自动携带登录 Cookie，无需手动处理</span>
+resp = session.get(<span class="str" data-page-node-id="FGiCeyB4zbxLdsrqZgDMun">"https://example.com/profile"</span>)
+<span class="builtin" data-page-node-id="OSoTNtzUvNmUmi3cQJ5YKF">print</span>(<span class="str" data-page-node-id="ugktZkLdmQSxi1nv4zbjmQ">f"用户信息: {resp.text[:100]}"</span>)
+
+<span class="cmt" data-page-node-id="tgKYPHqThMPOU6AVTE7EmE"># ④ 关闭 session（释放连接）</span>
+session.close()</code></pre>
+  </div>
+
+  <div class="card tip" data-page-node-id="lOf4a9FV5BwF3AhFOJGdBF">
+    <strong data-page-node-id="al3c0xY2DnM3P7bU8cSjSI">💡 Session 的三大好处：</strong>
+    <ol data-page-node-id="K7FrUXCQbc0wLwrQXjPppL">
+      <li data-page-node-id="VptRlJWkFjYeLRYj2VSiVz"><strong data-page-node-id="fCoh61CYhOOmLGsmEfsdem">Cookie 自动保持</strong> — 登录后续请求无需手动传 Cookie</li>
+      <li data-page-node-id="wdJocc1zpYS4ECpH902qOd"><strong data-page-node-id="py70wpxdDrObDBNs71a1Lr">请求头共享</strong> — <code data-page-node-id="lT5ZdFxPRil7PlCEtNpEZj">session.headers.update()</code> 一次设置，全局生效</li>
+      <li data-page-node-id="C3NUSG252uxZv6X3pJjR5n"><strong data-page-node-id="pvvi16ra8rETlVisa9QaRD">连接池复用</strong> — 多次请求复用 TCP 连接，性能更好</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 9. 响应处理 ═══════════════ -->
+<section id="response" data-page-node-id="buAWw1jxrosHcmntiGmso9">
+  <h2 data-page-node-id="CxpOiyU0faH1XqspGBFYxE"><span class="num" data-page-node-id="zE2oXwMKFvgQ5KTCvMjP9r">9</span> 📥 响应处理 — 从 Response 对象中提取数据</h2>
+
+  <div class="code-block" data-page-node-id="PkIxYMszcpYGKkhYcTp6cr">
+    <div class="header" data-page-node-id="bDfmVgmv9sF9XpFrg4pfNb"><span class="lang lang-py">Python</span><span data-page-node-id="hOE4ZxxdSa3LDCNka0Xchg">Response 对象常用属性和方法</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="K7lZlHBXZDTone3uZQ2Bdc">📋 复制</button></div>
+    <pre data-page-node-id="nKMRJ6jXK3FnxJGOQR9C2g"><code data-page-node-id="DO8iYbv0DIkyY3Ao78ZeOl">resp = requests.get(<span class="str" data-page-node-id="0FPFJfA6pkIYQVtdPlxlpW">"https://httpbin.org/get"</span>)
+
+<span class="cmt" data-page-node-id="oE1QVjHC2QYOBiPJ2eJm31"># ── 状态码 ──</span>
+<span class="builtin" data-page-node-id="IIS21UBTk7DXbTEDYDoxwh">print</span>(resp.status_code)       <span class="cmt" data-page-node-id="C6otfrBUo3yICtI2vv2gCn"># 200</span>
+<span class="builtin" data-page-node-id="UEPs2GrQjCj7ZWBiOVQejE">print</span>(resp.ok)                <span class="cmt" data-page-node-id="DahYm7vV1UfDTaERWe9DPO"># True（2xx 为 True）</span>
+
+<span class="cmt" data-page-node-id="rWdaGgTDCh5JIKYfKzsPmq"># ── 响应内容 ──</span>
+<span class="builtin" data-page-node-id="AwGCHo74u4hzhOrBZGM70H">print</span>(resp.text)              <span class="cmt" data-page-node-id="Lm0r6orYtTtajb3L6AJN1Z"># 文本内容（str）</span>
+<span class="builtin" data-page-node-id="8GCoVFFSgiBOTcpGV8wQdo">print</span>(resp.content)           <span class="cmt" data-page-node-id="ypHEyBCmTErnYhYCh91UhL"># 二进制内容（bytes）</span>
+<span class="builtin" data-page-node-id="QiEF6b0z9bIIIwBAHOjMU7">print</span>(resp.json())            <span class="cmt" data-page-node-id="dwTH3eR1yrDSEoMDBxBoxY"># 解析 JSON → dict/list</span>
+<span class="builtin" data-page-node-id="WNkh1FClAXyiSt7d9iFZSS">print</span>(resp.encoding)          <span class="cmt" data-page-node-id="ppJJgbZNgmJKBGvdq8kSRI"># 编码，如 'utf-8'</span>
+
+<span class="cmt" data-page-node-id="H3huCI1Jqq4Frzz3FxUGyX"># ── 响应头 ──</span>
+<span class="builtin" data-page-node-id="OuhqfUnJywdGn8wFnrwKmI">print</span>(resp.headers)           <span class="cmt" data-page-node-id="hzABqqdGii46kZQgEORGup"># 响应头字典</span>
+<span class="builtin" data-page-node-id="NHehrLD22Ro6Tdw7rw2UNL">print</span>(resp.headers[<span class="str" data-page-node-id="sdoLlP9YyeusgB6sABdRNo">"Content-Type"</span>])  <span class="cmt" data-page-node-id="LBXzgXnGpLeobXFExdSVJU"># application/json</span>
+
+<span class="cmt" data-page-node-id="uTYGpHCqBev3lyWcGL1WkT"># ── 请求信息（调试用）──</span>
+<span class="builtin" data-page-node-id="NXyE2FHtP4bqkEVJNeVmBx">print</span>(resp.request.url)       <span class="cmt" data-page-node-id="Ny2Mc1SR2Apblwodtw6pI7"># 实际请求的 URL</span>
+<span class="builtin" data-page-node-id="DEwE7bOVABplAATTOpOgOC">print</span>(resp.request.headers)   <span class="cmt" data-page-node-id="BhfbPmmcXauMB9iyK0XYFw"># 实际发送的请求头</span>
+<span class="builtin" data-page-node-id="dU9jtHMuVa7lqxRGBiHjP4">print</span>(resp.request.body)      <span class="cmt" data-page-node-id="56EQgp67DAaYWgg6OjY23W"># 实际发送的请求体</span>
+
+<span class="cmt" data-page-node-id="bbGSCW53pQKBUoLiM46YZ2"># ── 耗时 ──</span>
+<span class="builtin" data-page-node-id="czkIvwvxlAJgka050z78WB">print</span>(resp.elapsed.total_seconds())  <span class="cmt" data-page-node-id="PnHrvXKS2mk5WSjUrLD07H"># 请求耗时（秒）</span>
+
+<span class="cmt" data-page-node-id="vFRzNCFFeucWCdKxqwQTnf"># ── 历史重定向 ──</span>
+<span class="builtin" data-page-node-id="o2FmySEHzQo8bPw5N9FAsd">print</span>(resp.history)           <span class="cmt" data-page-node-id="2tAUqQFqPkCc8Tqi4G6hsk"># 重定向历史列表</span>
+<span class="builtin" data-page-node-id="HAhMAZVnHMDtzDZ9HtJz3q">print</span>(resp.url)               <span class="cmt" data-page-node-id="j2RNNrARJw9MwCyjRHz5di"># 最终 URL（重定向后）</span></code></pre>
+  </div>
+
+  <div class="card info" data-page-node-id="kOi7u1912IHTRtOthkKqkC">
+    <strong data-page-node-id="98Iaf2SjiPEyRn91DVju2K">📊 常用状态码：</strong>
+    <table data-page-node-id="Rn6gxB8rxJHq9oBGDJ2eeK">
+      <tr data-page-node-id="eTBBO5nFDHA5AWH1Obwqzl"><th data-page-node-id="IrLmObujhKBFa78iz3vz14">状态码</th><th data-page-node-id="frAFeSS2truFezX5QZwYCm">含义</th><th data-page-node-id="YPGnyqJGPGGI710uFq9kPZ">测试中的处理</th></tr>
+      <tr data-page-node-id="Qn1u4xYVEwLAuuXTV7lqwj"><td data-page-node-id="MgNasHV2TuUSXyfvD0MW9Z">200</td><td data-page-node-id="BOao8H68ky25NVZpQak7Dz">成功</td><td data-page-node-id="HuXkIg4D9rAvbCxm1XkMm1">正常校验响应体</td></tr>
+      <tr data-page-node-id="M0CJfhAPrjvUUKVVXBTcxZ"><td data-page-node-id="bpBtSPq6mIxA1ReeI6oQuL">201</td><td data-page-node-id="CyTSHMXY6xFDbrUD4rN1qE">创建成功</td><td data-page-node-id="6YjlPqwHhH25B9gezZr3Uy">POST 返回新资源</td></tr>
+      <tr data-page-node-id="tpBo5XNnmGkStnXTVQ3Kcg"><td data-page-node-id="bnodXEnMGyvQQz5RVQMuuF">400</td><td data-page-node-id="NbdgdlnC8HQVITMGyHVrA6">请求参数错误</td><td data-page-node-id="GQh6f91GLswWo6kM2qxTOx">校验错误提示</td></tr>
+      <tr data-page-node-id="jgHG49srrBfN08FPhYrxAw"><td data-page-node-id="ISovRu2lHiGziFhIfSf9Ll">401</td><td data-page-node-id="0uVXI1fCSfm76FvDpXkKD0">未认证</td><td data-page-node-id="eENBDfVqfREloYTj46OCrj">Token 过期/无效</td></tr>
+      <tr data-page-node-id="ISPvpS5JE1CheSVdVpotVr"><td data-page-node-id="ciBerEgpIb3KHPgPkvoef0">403</td><td data-page-node-id="oddSHpnafs5TPsBHI81Jrx">无权限</td><td data-page-node-id="SN1qx8KWsg4keBk0HznpLs">权限校验</td></tr>
+      <tr data-page-node-id="VmBSO9lW1tH6NKbNkHQigq"><td data-page-node-id="yRBvUM7muXAMWVkfPTLU53">404</td><td data-page-node-id="jCUyuHxfhigvw99flvabQa">资源不存在</td><td data-page-node-id="DHeVHWmC6BxC77pcbv4muS">边界测试</td></tr>
+      <tr data-page-node-id="wvJlcL8PmRHkL7Q7uWwai9"><td data-page-node-id="IdkF1ll9WMusU3KvDgF2mq">500</td><td data-page-node-id="ICafTpCv5eShbxSYpEZ437">服务器内部错误</td><td data-page-node-id="bHzPfZZcdpylmOnClEUIN5">异常场景</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════ 10. 超时与异常 ═══════════════ -->
+<section id="timeout" data-page-node-id="4sfpkqmDJWQXMtmLVzl30O">
+  <h2 data-page-node-id="7QPbiAENPQjMhUK7D0tTAe"><span class="num" data-page-node-id="SAH5QddIw3C4YYmKCOHi3t">10</span> ⏱️ 超时设置与异常处理</h2>
+
+  <h3 data-page-node-id="FneQnDVUnKsgHi3zRfOEgV">10.1 超时设置</h3>
+  <div class="code-block" data-page-node-id="O3ynhKS8HpDuzTiV9lAHt2">
+    <div class="header" data-page-node-id="yRL1aOW2e0DMc2C5VM4TBt"><span class="lang lang-py">Python</span><span data-page-node-id="ARga73aAKZSD2Tl48kMEUv">超时设置</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="ZYxeoUujtcae8R7JF4dnN6">📋 复制</button></div>
+    <pre data-page-node-id="7B9r9XMMxZD9hEAwXoY38q"><code data-page-node-id="xLoO3aOAhVS3nx1dTiJt8U"><span class="cmt" data-page-node-id="XS8waWt6PPL8NJHTP30fmM"># 方式1：连接超时（秒）</span>
+resp = requests.get(<span class="str" data-page-node-id="USV3kf1bE6jmEobxs1oJaQ">"https://api.example.com"</span>, timeout=<span class="num" data-page-node-id="XnpeVbJzbchPk3MQhcXxCT">5</span>)
+
+<span class="cmt" data-page-node-id="yiFlBOnLHWGwUQ06aDpu7n"># 方式2：连接超时 + 读取超时（推荐）</span>
+resp = requests.get(<span class="str" data-page-node-id="TJri1DHqgmTDVSxIo49Afh">"https://api.example.com"</span>, timeout=(<span class="num" data-page-node-id="qbAoFouaVM8rKvX7IDJsKR">3.05</span>, <span class="num" data-page-node-id="9vbXeQuIzTDBXXnJHl1hKr">10</span>))
+<span class="cmt" data-page-node-id="PyMmW1pOQl8zYMskXk2g3J"># 连接超时 3.05s，读取超时 10s</span>
+
+<span class="cmt" data-page-node-id="ZlBJu30zgGTpAuwNwqud8S"># ⚠️ 永远不要不设 timeout！网络问题会导致程序永久卡死</span></code></pre>
+  </div>
+
+  <div class="card warning" data-page-node-id="yniLkBfhaIFP95zh5FloRJ">
+    <strong data-page-node-id="Zo5KlYoOMnXDbbI8Kt5InI">⚠️ 铁律：每个 requests 调用都必须带 <code data-page-node-id="OHsB3AvLCxJEvRY16Mw86v">timeout</code> 参数。</strong> 不设超时的请求一旦遇到网络问题，程序会永久阻塞。
+  </div>
+
+  <h3 data-page-node-id="LX4elMV3Qo34rYqpIe9bIP">10.2 异常处理</h3>
+  <div class="code-block" data-page-node-id="8RVfFg6Mu0pphv7YwUiloq">
+    <div class="header" data-page-node-id="fjlctsmf9RAKOUJDhIrriS"><span class="lang lang-py">Python</span><span data-page-node-id="QIyjw8zA66EFoBT5PUvxZW">异常处理最佳实践</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="la3PSrGowHWjAF3agNTJtv">📋 复制</button></div>
+    <pre data-page-node-id="54MeAoNHRADQegaAlITnv1"><code data-page-node-id="nZONcDcSYU8aeNY5DPhBGR"><span class="kw" data-page-node-id="HfJm24KL9fTIrl1NqAF4xX">import</span> requests
+
+<span class="kw" data-page-node-id="2UrhJgPqpOELdz4Kfq1RCH">try</span>:
+    resp = requests.get(<span class="str" data-page-node-id="o1MRas3FFVKyUtASxT2Rck">"https://api.example.com/data"</span>, timeout=<span class="num" data-page-node-id="kobCt7xYz7fZRrSCtf6SWT">10</span>)
+
+    <span class="cmt" data-page-node-id="NKEusaSpP0lSCQrXDJjgxA"># 检查 HTTP 状态码（非 2xx 会抛出 HTTPError）</span>
+    resp.raise_for_status()
+
+    <span class="cmt" data-page-node-id="ZeVzHr3OWnhSt0gJZPoLEV"># 解析 JSON（如果格式不对会抛出 JSONDecodeError）</span>
+    data = resp.json()
+    <span class="builtin" data-page-node-id="aO4wfZOK7DmWvagQuN0YrQ">print</span>(data)
+
+<span class="kw" data-page-node-id="1x8ECHeOwQGUovEfD4qdhn">except</span> requests.exceptions.ConnectionError:
+    <span class="builtin" data-page-node-id="Rn3T50ZXCAZJGodC9XDnoT">print</span>(<span class="str" data-page-node-id="6tCFTHHIEpIwDExxGMGamC">"❌ 连接失败：网络不通或地址错误"</span>)
+
+<span class="kw" data-page-node-id="G5Vz0z5bDkpZfEKiC5NXJj">except</span> requests.exceptions.Timeout:
+    <span class="builtin" data-page-node-id="KreC4VlOs3PzbId2ktEsmH">print</span>(<span class="str" data-page-node-id="DR9CHg2FuPDqcI21kTpq5V">"⏰ 请求超时"</span>)
+
+<span class="kw" data-page-node-id="qEbcNnHk048NZ3LoG3C33i">except</span> requests.exceptions.HTTPError <span class="kw" data-page-node-id="tn86xDiAoglqvMM9RtPQ47">as</span> e:
+    <span class="builtin" data-page-node-id="CAdfqoOuS0iBalOI2NZN2G">print</span>(<span class="str" data-page-node-id="2GflOlpyFawniGx8WnKFRt">f"⚠️ HTTP 错误：{e}"</span>)  <span class="cmt" data-page-node-id="mFDlTZBWn4YGEtf7eVkG7a"># 如 404、500</span>
+
+<span class="kw" data-page-node-id="hkO9p4JCSyloeDX0TTrm4R">except</span> requests.exceptions.RequestException <span class="kw" data-page-node-id="VfIQ3hcJeolhXLVrOGEvoh">as</span> e:
+    <span class="builtin" data-page-node-id="sAH8iz52J9AgZfgSqoqWpC">print</span>(<span class="str" data-page-node-id="6EBYiIRQdJUFPaD028HgEi">f"🔴 请求异常：{e}"</span>)  <span class="cmt" data-page-node-id="5YaghW67iaDUTNvWUMaCYC"># 所有异常的基类</span></code></pre>
+  </div>
+
+  <div class="card tip" data-page-node-id="8OqODAo5rHCSUpqHTHtFlS">
+    <strong data-page-node-id="9geBwFDSbTMkG7PX4fizit">💡 异常层次（从上到下越来越通用）：</strong>
+    <br data-page-node-id="IkavHd4uvxTGEY3HsnOdyj"><code data-page-node-id="jkZgYMaD9VEPSJWv9UqfCk">ConnectionError</code> → 网络不通
+    <br data-page-node-id="asuOJslCt1rrjVS2e4gBpF"><code data-page-node-id="1luO4QyVJXAtr5KHu8oTat">Timeout</code> → 超时
+    <br data-page-node-id="8TZJWQ429igb88oR18MMjI"><code data-page-node-id="XaWwyakPhS3MXFZ3eHRRzj">HTTPError</code> → 状态码非 2xx（需调 raise_for_status 触发）
+    <br data-page-node-id="2KoE4A9ImJloKvgBe3oQ0e"><code data-page-node-id="R2WhQgNqJq7u9T9TX2YpCk">RequestException</code> → 所有请求异常的基类
+  </div>
+</section>
+
+<!-- ═══════════════ 11. 实战 ═══════════════ -->
+<section id="practice" data-page-node-id="ynZ1frG5RO3RelDSfjnZnn">
+  <h2 data-page-node-id="n8zfYUsXpsPWj9OimzRF6Z"><span class="num" data-page-node-id="YmToDqv3MaYf7X6XU4H4H6">11</span> 🛠️ 实战案例</h2>
+
+  <details class="accordion" data-page-node-id="IH6OtxRisKjWsBV1FkdEwz">
+    <summary data-page-node-id="9hiLhjGa9x2T6UERTqpy8V">案例 1：完整的登录 + 鉴权流程</summary>
+    <div class="accordion-body" data-page-node-id="jQajMKNfcN5BF3Qc8flHyq">
+      <div class="code-block" data-page-node-id="InfV5l0Isy59SSYUIY5B5C">
+        <div class="header" data-page-node-id="QtuplFUpXK6L4t46ekOAPR"><span class="lang lang-py">Python</span><span data-page-node-id="UhPoNkhl9gnqV4WA8iSNpp">test_auth.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="tNAAS6MA34SjbBDzukAJtO">📋 复制</button></div>
+        <pre data-page-node-id="XmBqYJrAEqLxTSaxYS2FRO"><code data-page-node-id="NPVFLGjjFSkgDTJbZNHUIW"><span class="kw" data-page-node-id="NKR2pRYi9DQiwTHqSDrq7R">import</span> requests
+<span class="kw" data-page-node-id="mrdJX8KCrdQH9ZWEr9UsJu">import</span> pytest
+
+BASE_URL = <span class="str" data-page-node-id="YOQwXtkobqXKg2EvCy3bC1">"https://api.example.com"</span>
+
+<span class="kw" data-page-node-id="4Dd7q7bq09lzpwTCAs5uUg">class</span> <span class="fn" data-page-node-id="Jo5eE0A4Q9gRZ6rCtFhsYE">TestAuth</span>:
+    <span class="str" data-page-node-id="TCjhLPK3aB8XeyyObaBPMY">"""认证模块测试"""</span>
+
+    <span class="kw" data-page-node-id="AOjxn3xyCBoAACnWWOusE4">def</span> <span class="fn" data-page-node-id="Wqh2c1okzRmvlNamAppSYt">test_login_success</span>(self):
+        <span class="str" data-page-node-id="9mIUtVSqDYutkbsiZ3dGf6">"""正常登录"""</span>
+        resp = requests.post(
+            <span class="str" data-page-node-id="irkfozt1veoF6LpurZ189Q">f"{BASE_URL}/api/login"</span>,
+            json={<span class="str" data-page-node-id="7RoTkvYlCOjtd0E2zE8SVK">"username"</span>: <span class="str" data-page-node-id="Iky0LkQOOqR9t6X0xBcGAN">"admin"</span>, <span class="str" data-page-node-id="9a8Yn2yC1oqinYzMmOhGbA">"password"</span>: <span class="str" data-page-node-id="EJx1bb7dVURyjkqp7pUj0L">"123456"</span>},
+            timeout=<span class="num" data-page-node-id="ot9XePo7lL4v6uCwx9rPFt">10</span>
+        )
+        <span class="kw" data-page-node-id="EQFYmiHfwObC3ZYow0EoQM">assert</span> resp.status_code == <span class="num" data-page-node-id="6epcSAP40c7XIQ74oV2ySM">200</span>
+        data = resp.json()
+        <span class="kw" data-page-node-id="8C119NEKa4bzCbiYGVpAqB">assert</span> <span class="str" data-page-node-id="FTEQZ6J2GG2HcfEUKcBTNC">"token"</span> <span class="kw" data-page-node-id="o1QwcPEOVKiEEJouhNl6t4">in</span> data
+        <span class="kw" data-page-node-id="fQzBq5dvrUOofoDCWqLTI0">assert</span> <span class="builtin" data-page-node-id="g6GDemrKaGMzHSnm5MZOGM">len</span>(data[<span class="str" data-page-node-id="eNH7Oyb9OQ9Q1CacrDLZDY">"token"</span>]) > <span class="num" data-page-node-id="LXt2KpjFDRMZGB60XsQE6E">0</span>
+
+    <span class="kw" data-page-node-id="iTNG2qETykpigbGdXQNvUF">def</span> <span class="fn" data-page-node-id="WGmDcZNoxlDdn43hoveG0v">test_login_wrong_password</span>(self):
+        <span class="str" data-page-node-id="kLGBXYDhyXMnZSqDXork1a">"""密码错误"""</span>
+        resp = requests.post(
+            <span class="str" data-page-node-id="2i47Wao5uHNHPcqUmOfiMC">f"{BASE_URL}/api/login"</span>,
+            json={<span class="str" data-page-node-id="XtFmvz1wP9YAdoyCJ7Fy28">"username"</span>: <span class="str" data-page-node-id="l1CDGiga5xaD1urjo7TsaJ">"admin"</span>, <span class="str" data-page-node-id="CBIS3SbRNHRxnP41icAxGz">"password"</span>: <span class="str" data-page-node-id="v8HQPHVr1ot9OxMhnh1rpN">"wrong"</span>},
+            timeout=<span class="num" data-page-node-id="Fxza15LfrBwpypzqFAA04G">10</span>
+        )
+        <span class="kw" data-page-node-id="lXcCrUVVNrcCwu8WAChaXn">assert</span> resp.status_code == <span class="num" data-page-node-id="tsv3UMizaIw4USnDRwLW5Q">401</span>
+
+    <span class="kw" data-page-node-id="FAICryNTKvZxpsDCcF8hFD">def</span> <span class="fn" data-page-node-id="DQo4bFMZSvi8snLnLST6JR">test_access_protected_resource</span>(self):
+        <span class="str" data-page-node-id="oIdfADivsiGH99opunvxBR">"""用 token 访问受保护资源"""</span>
+        <span class="cmt" data-page-node-id="kys5IjgaavheJSgQatAuBl"># 先登录</span>
+        login_resp = requests.post(
+            <span class="str" data-page-node-id="BhR1Jy34sxDbqx57BKvmNO">f"{BASE_URL}/api/login"</span>,
+            json={<span class="str" data-page-node-id="3BxiBXCcmgrHF9s10UNOTF">"username"</span>: <span class="str" data-page-node-id="rMcYO5Wvxc8kmTVxLwKXwy">"admin"</span>, <span class="str" data-page-node-id="0i2GDSNpzV46QggBYqePZn">"password"</span>: <span class="str" data-page-node-id="2tLwsvY7coNHJ8GnOCHtQH">"123456"</span>},
+            timeout=<span class="num" data-page-node-id="yrB6kYYiXRPUN4RCFpl6hZ">10</span>
+        )
+        token = login_resp.json()[<span class="str" data-page-node-id="2WOKGsyunPqvYqA2noLbGm">"token"</span>]
+
+        <span class="cmt" data-page-node-id="FaLBcvA9Lo33KQjTX6CVj9"># 用 token 访问</span>
+        resp = requests.get(
+            <span class="str" data-page-node-id="5FL1Fb3Jrurm0f5qHwC8wg">f"{BASE_URL}/api/profile"</span>,
+            headers={<span class="str" data-page-node-id="sFA6E1xGTXxPRFADGtdKB6">"Authorization"</span>: <span class="str" data-page-node-id="4T2fl40As8GHHdMWCOixax">f"Bearer {token}"</span>},
+            timeout=<span class="num" data-page-node-id="EXoOj40jwxyhILjAMoE5Bv">10</span>
+        )
+        <span class="kw" data-page-node-id="598qiWXliYZU6uMAfJ4FYP">assert</span> resp.status_code == <span class="num" data-page-node-id="TcNjw6M0qjZzCxoe4ipekN">200</span>
+        <span class="kw" data-page-node-id="AIOuF9KMiE96j1ogaYgLDT">assert</span> resp.json()[<span class="str" data-page-node-id="dpo7CTQy91bF3ccr8kq6fS">"username"</span>] == <span class="str" data-page-node-id="NtxL8Dgc2IOezwIUKeRpjo">"admin"</span></code></pre>
+      </div>
+    </div>
+  </details>
+
+  <details class="accordion" data-page-node-id="FV4uVK6yZHuSUVYzg6je7E">
+    <summary data-page-node-id="rA914cgdOPdc64vDfQJyJW">案例 2：分页数据拉取（含重试机制）</summary>
+    <div class="accordion-body" data-page-node-id="ZfqJRp17yhLxVxaDd2vFgA">
+      <div class="code-block" data-page-node-id="YqJUKtpK0UgLeJoQ7DeI0k">
+        <div class="header" data-page-node-id="G0rHiANIleVfxEELICOyq8"><span class="lang lang-py">Python</span><span data-page-node-id="PivTbC6ucNBCDdKC7wWny8">test_pagination.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="HIwCD25ybdI1NjlBbxQFGf">📋 复制</button></div>
+        <pre data-page-node-id="CoE61fSfagWkqPTvAKBTcc"><code data-page-node-id="ntoGmrrp5qBMkBg0Wx15xr"><span class="kw" data-page-node-id="YgdbKK5RdqD7QYuHeMgGbT">import</span> requests
+<span class="kw" data-page-node-id="Nh4FNh3AmCPAM7HRIgMtpl">import</span> time
+
+<span class="kw" data-page-node-id="WaTEZmxiBCmYlM5WPLawIq">def</span> <span class="fn" data-page-node-id="MprGUcUBn8xEusmnZZGOzL">fetch_all_pages</span>(base_url, max_retries=<span class="num" data-page-node-id="cUCtoiciTIhd7dD8bybBUU">3</span>):
+    <span class="str" data-page-node-id="vHu08XuHCtOgKWeTAW5CDJ">"""拉取所有分页数据（带重试）"""</span>
+    all_items = []
+    page = <span class="num" data-page-node-id="7oIfX9o7ltIueEubEvJD5J">1</span>
+
+    <span class="kw" data-page-node-id="UcHD5nSHUikVEweZ9pJWPg">while</span> <span class="kw" data-page-node-id="IZYEDYqfoz5Q4b2egpLmqF">True</span>:
+        <span class="kw" data-page-node-id="yNR2oJqgw8B8TqxEXUmhZD">for</span> attempt <span class="kw" data-page-node-id="lKyGWVil1sFfrxciJB09AF">in</span> <span class="builtin" data-page-node-id="u51EG9clxtY80N9vLN8q2P">range</span>(max_retries):
+            <span class="kw" data-page-node-id="bIVSiPLQpQnA1ht3xQkdMU">try</span>:
+                resp = requests.get(
+                    <span class="str" data-page-node-id="PV0dK6bW5GNLHFg7OTmDel">f"{base_url}/api/items"</span>,
+                    params={<span class="str" data-page-node-id="6yHNqzKHiZrwsYQI8qGzwB">"page"</span>: page, <span class="str" data-page-node-id="rsKCVxrgGtqoNvuB7Z8MBf">"size"</span>: <span class="num" data-page-node-id="JOZHUPY0h43OcGHKwU2bd4">100</span>},
+                    timeout=(<span class="num" data-page-node-id="TUrpZTnVXYEnfYCMrvYC8f">3</span>, <span class="num" data-page-node-id="odqcZWBgvqd5J2teESZHA8">10</span>)
+                )
+                resp.raise_for_status()
+                <span class="kw" data-page-node-id="fZSlPNh4hUwJIX19AltuIh">break</span>  <span class="cmt" data-page-node-id="DK24ln31LUBX8hQiy93qGg"># 成功则跳出重试循环</span>
+            <span class="kw" data-page-node-id="dkmf77xP4pC7s5dFWcezlQ">except</span> requests.exceptions.RequestException <span class="kw" data-page-node-id="yVubu0RB5ltXKIefxHobzj">as</span> e:
+                <span class="kw" data-page-node-id="4tvrhKGDad4HMq8ajPj4yO">if</span> attempt == max_retries - <span class="num" data-page-node-id="lc7fC5vJ0Bd85fFpqZGrrI">1</span>:
+                    <span class="kw" data-page-node-id="zI62UI4pkEkElJb1Ioc3Os">raise</span>  <span class="cmt" data-page-node-id="xn3uwHOGQS2BAoG8Lf4U5G"># 最后一次仍失败，抛出异常</span>
+                time.sleep(<span class="num" data-page-node-id="jrIlQ01qbhvB90G7Na8apK">2</span> ** attempt)  <span class="cmt" data-page-node-id="WDQa0T75AhaiCGXh0Hmzhd"># 指数退避：1s, 2s, 4s</span>
+
+        data = resp.json()
+        items = data.get(<span class="str" data-page-node-id="4TK8thGEMzML9qcCFqVoAJ">"items"</span>, [])
+        all_items.extend(items)
+
+        <span class="cmt" data-page-node-id="ZX89DNPALKskJEaG0So4f0"># 判断是否还有下一页</span>
+        <span class="kw" data-page-node-id="L1CEsbBZ0OiR6mE17s0dw9">if</span> <span class="builtin" data-page-node-id="QLV13NU7Wo1iZK0VsPyiJE">len</span>(items) < <span class="num" data-page-node-id="hjn1TiZtdnZy9W6tb8GCOE">100</span> <span class="kw" data-page-node-id="X2SsEkoT3ErpwSOsi3LWJ2">or</span> page >= data.get(<span class="str" data-page-node-id="u4xdKaQBxCvKuioDFViMjP">"total_pages"</span>, <span class="num" data-page-node-id="8gtgwe7mvbdubY8vN5Z0ay">1</span>):
+            <span class="kw" data-page-node-id="veea75Wk5bqKdMSAK9qRye">break</span>
+        page += <span class="num" data-page-node-id="nOVFv3vPeI587wstcYp7sp">1</span>
+
+    <span class="kw" data-page-node-id="mXPlzPbRyvAtVN2uHR84D7">return</span> all_items
+
+<span class="cmt" data-page-node-id="3GJmfIcFyvqFBWHoKb3CMy"># 使用</span>
+items = fetch_all_pages(<span class="str" data-page-node-id="xeJx4AMjGrC3G6tYZcfbhI">"https://api.example.com"</span>)
+<span class="builtin" data-page-node-id="dz2CbaQHQAL6U06iykA9K6">print</span>(<span class="str" data-page-node-id="vyXpmIqyCr07RHhygP9Wa7">f"共拉取 {len(items)} 条数据"</span>)</code></pre>
+      </div>
+    </div>
+  </details>
+
+  <details class="accordion" data-page-node-id="yEZ6mSV0OD40aL17TQEcfw">
+    <summary data-page-node-id="NgeF1c1DkYoRGdub0GXisk">案例 3：结合 pytest 做接口自动化（完整项目结构）</summary>
+    <div class="accordion-body" data-page-node-id="L7cF57vy21z6wGP5gR493p">
+      <div class="code-block" data-page-node-id="CRWw9sGkezH1f3LgKdXhGK">
+        <div class="header" data-page-node-id="VdFkI6jhTEl6mny4zvlGot"><span class="lang lang-py">Python</span><span data-page-node-id="NwNEnUrIxvw20M3vvGVfPe">项目结构</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="resRrIs7rdCuijeNpRC8CW">📋 复制</button></div>
+        <pre data-page-node-id="x76FgCPj6tAwBrCE94UQl3"><code data-page-node-id="rv1UKgR4kkNcRSfBhLQrfr">api_test/
+├── conftest.py          <span class="cmt" data-page-node-id="oSffcqIWHhTpmplZ32lbwu"># 共享 fixture</span>
+├── config.py            <span class="cmt" data-page-node-id="wTE5SRMB5oPmUeIQBThdw0"># 环境配置</span>
+├── test_user_api.py     <span class="cmt" data-page-node-id="wUBc3CjKdSFN78JpgEluDU"># 用户模块测试</span>
+├── test_order_api.py    <span class="cmt" data-page-node-id="jZyyfD00dPxPgXvF90bgiw"># 订单模块测试</span>
+└── test_battle_api.py   <span class="cmt" data-page-node-id="vnqQfaCGjtxgvoeHT8Csra"># 战斗模块测试</span></code></pre>
+      </div>
+      <div class="code-block" data-page-node-id="BVOSww7pd8sZGtiEl85EIo">
+        <div class="header" data-page-node-id="kYT0tGBBZaDPNBvTHFdS6B"><span class="lang lang-py">Python</span><span data-page-node-id="GzAtxjsVRQmC2vdJTL5mjp">conftest.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="iaBUszzxQCIvJ5GtuBX3dg">📋 复制</button></div>
+        <pre data-page-node-id="S2fmrChKPTlzOtUEZjU8jg"><code data-page-node-id="3Qb3yALjx9sOairRwKYEj0"><span class="str" data-page-node-id="8hOLuq1ohvaNcJFAkgGpDS">"""共享 fixture"""</span>
+<span class="kw" data-page-node-id="NP37CXeCsoBjVwYgrlC9x7">import</span> pytest
+<span class="kw" data-page-node-id="OqMF4qMGsNkzwETyaWR9yY">import</span> requests
+
+BASE_URL = <span class="str" data-page-node-id="yXSIvCZnzuYnaSYhggrvjA">"https://api.example.com"</span>
+
+<span class="dec" data-page-node-id="RBO6FfD2IQ38t2LgN18Csk">@pytest.fixture(scope="session")</span>
+<span class="kw" data-page-node-id="kDvosNxl4D1Fkv5T4BZWLf">def</span> <span class="fn" data-page-node-id="J3NDGUCr8EDhsWCN3y1YSa">auth_token</span>():
+    <span class="str" data-page-node-id="ClVr3pIVsrUA4FNY1tX5A0">"""会话级：整个测试会话只登录一次"""</span>
+    resp = requests.post(
+        <span class="str" data-page-node-id="YGxxX7jeM5qOsljrqZFEEV">f"{BASE_URL}/api/login"</span>,
+        json={<span class="str" data-page-node-id="3fBSlJnqhwWZ6TFWlJOBXN">"username"</span>: <span class="str" data-page-node-id="ZWAP5kcxAFf9M5w65Z3wUD">"testuser"</span>, <span class="str" data-page-node-id="s6RpobIF2lT7HNFuMOavgj">"password"</span>: <span class="str" data-page-node-id="CF7iJOADBjNmqR0lCp6FWi">"123456"</span>},
+        timeout=<span class="num" data-page-node-id="FPFPnjvBFYxGzeoB7tQGAX">10</span>
+    )
+    resp.raise_for_status()
+    <span class="kw" data-page-node-id="WhVBnIX3fIt3ZxNw9JyhPd">return</span> resp.json()[<span class="str" data-page-node-id="qE3sZ2Tom1WLOpQdqZJgRw">"token"</span>]
+
+<span class="dec" data-page-node-id="wcath0K4oKREEpEJ6Seka2">@pytest.fixture</span>
+<span class="kw" data-page-node-id="jn7MA4FOiIpmfIkR6U69Kv">def</span> <span class="fn" data-page-node-id="XWBhCiIbrGeJaep67DvuLG">headers</span>(auth_token):
+    <span class="str" data-page-node-id="TERshQpS5pAp7CAudhCKpC">"""每个测试函数获取带 token 的请求头"""</span>
+    <span class="kw" data-page-node-id="TwaAtaLDL1CkQe6VCsZZt9">return</span> {<span class="str" data-page-node-id="7yGnMePvq89HOaRDeBA68e">"Authorization"</span>: <span class="str" data-page-node-id="anOYuEYLWJDEpU6mAYwbti">f"Bearer {auth_token}"</span>}
+
+<span class="dec" data-page-node-id="U8LOUkFsweZZf4KURbNu7L">@pytest.fixture</span>
+<span class="kw" data-page-node-id="0RKJmVmDIG1hpMbR4Dvt1A">def</span> <span class="fn" data-page-node-id="Ay5Dtl2XFL07k0cHpdhqxj">api</span>(headers):
+    <span class="str" data-page-node-id="ESBZ2WwjTnFN8fTTzolFYJ">"""封装好的 requests 调用（自动带 token 和 timeout）"""</span>
+    <span class="kw" data-page-node-id="BK4CSaGOHAwUsiQE1IXCRE">def</span> <span class="fn" data-page-node-id="SPnk3lFejEgbfsixpgrjVr">_get</span>(path, **kwargs):
+        kwargs.setdefault(<span class="str" data-page-node-id="mHfDzfF2pnawaQ9hC1gLWY">"timeout"</span>, <span class="num" data-page-node-id="dZMCxf0xHCBL3xCBAGOmD4">10</span>)
+        <span class="kw" data-page-node-id="xcdymGS1c5yC7mLSAA7RyU">return</span> requests.get(<span class="str" data-page-node-id="Sd1q50CyvdOmId2eBGxbUD">f"{BASE_URL}{path}"</span>, headers=headers, **kwargs)
+    <span class="kw" data-page-node-id="2Fc7FqMiJAgINGjffbMYxX">def</span> <span class="fn" data-page-node-id="UN4oSeItyuTpGyv4PyPPCy">_post</span>(path, json_data=None, **kwargs):
+        kwargs.setdefault(<span class="str" data-page-node-id="lVieLVRF4sHFEkYDDYV4GM">"timeout"</span>, <span class="num" data-page-node-id="Ju7QSRew7AIzWf10oU5K0w">10</span>)
+        <span class="kw" data-page-node-id="4Uoqp5GjO1KhmV6PlFr69f">return</span> requests.post(<span class="str" data-page-node-id="NNWKsqrgrFEwlpVyFHFwUN">f"{BASE_URL}{path}"</span>, json=json_data, headers=headers, **kwargs)
+    <span class="kw" data-page-node-id="A6FtyH8c0dEtdZwkEvye5v">return</span> {<span class="str" data-page-node-id="Cp6hBP319dhRZjkhvXlpFP">"get"</span>: _get, <span class="str" data-page-node-id="oxq8sEGPZXqubx6OCABaud">"post"</span>: _post}</code></pre>
+      </div>
+      <div class="code-block" data-page-node-id="TAz92NRjQVjEU0tIcm7Q9A">
+        <div class="header" data-page-node-id="40zzF9QUOcqnZcbwCkDsjH"><span class="lang lang-py">Python</span><span data-page-node-id="soeHEr0wKKXrpQRgWf3wfE">test_user_api.py — 使用封装好的 api fixture</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="MlnNR5C9kMFkzTRdZ0qhWl">📋 复制</button></div>
+        <pre data-page-node-id="5KBAWQetIA0kATYkNjpzvQ"><code data-page-node-id="lecnyAF6gfx7i9l66zvKb3"><span class="kw" data-page-node-id="DjFFG9SrWvi5CLKR7NZCCS">import</span> pytest
+
+<span class="kw" data-page-node-id="mTBCkWvPFIOmaNguFvGTLl">def</span> <span class="fn" data-page-node-id="7M3Fab6qzCCXyQCR45WpUq">test_get_user_list</span>(api):
+    resp = api[<span class="str" data-page-node-id="M1t9K5TC1XtvZ2b3y4mwgf">"get"</span>](<span class="str" data-page-node-id="66450WRZtktD2Tr17VjPOl">"/api/users"</span>)
+    <span class="kw" data-page-node-id="MyXVWqJNGOsUwYuwhYsFLb">assert</span> resp.status_code == <span class="num" data-page-node-id="5xlg4VoOFolcyXpm690BiV">200</span>
+    <span class="kw" data-page-node-id="GGHyYF3Gfq93qTCcimPWcw">assert</span> <span class="builtin" data-page-node-id="I4mYNdL4BHojwquCAwNlWy">len</span>(resp.json()[<span class="str" data-page-node-id="ecH77uBEuvekE6FC5Uxrm4">"users"</span>]) > <span class="num" data-page-node-id="b6NiYGiFAYfuzs9J5Kw6Av">0</span>
+
+<span class="kw" data-page-node-id="TgXThbMvtcpU1G9yQukWGv">def</span> <span class="fn" data-page-node-id="74I8FUHqi8i5cdUJACGD8X">test_create_user</span>(api):
+    resp = api[<span class="str" data-page-node-id="FcbSNECbRMj0nGz9E8hPYP">"post"</span>](<span class="str" data-page-node-id="wI9KMBGavIYAeB6W29kaqE">"/api/users"</span>, json_data={<span class="str" data-page-node-id="fHHIeLh28YuNzz6eMoYJks">"name"</span>: <span class="str" data-page-node-id="N2WfDXhkEFOWdKALDZ4wPu">"测试用户"</span>})
+    <span class="kw" data-page-node-id="I1YHZphlITNpE6DfrICKOp">assert</span> resp.status_code == <span class="num" data-page-node-id="bO8KGDnA2CqBeZmGiCJVCj">201</span>
+    <span class="kw" data-page-node-id="RxhKNNDQKjgDRGqhbAqYZn">assert</span> resp.json()[<span class="str" data-page-node-id="SbPJyQDc7AR5YZHKpBtOPo">"name"</span>] == <span class="str" data-page-node-id="af8F63EiUfzqwaX6eBFAIX">"测试用户"</span></code></pre>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ═══════════════ 12. 速查卡 ═══════════════ -->
+<section id="cheatsheet" data-page-node-id="4AFNawQJoKeVYO21CksyLW">
+  <h2 data-page-node-id="rPOgbRCFq4CMSDXHh4bMvL"><span class="num" data-page-node-id="XyaAt2F6FHUZ9qmFU4PPI9">12</span> 🗂️ 速查卡</h2>
+
+  <div class="card" data-page-node-id="PdHOgq2XOkmU90pVDDjO9X">
+    <h4 style="margin-top:0;" data-page-node-id="8J5rabAZV18JV96mFadoju">HTTP 方法</h4>
+    <table data-page-node-id="YgVwFQ0Wv6w3G4MymQU4GV">
+      <tr data-page-node-id="zyemhCM1Muwqr8VE8UtZhI"><th data-page-node-id="hYFUcG3fsLh9pC5twvARqW">操作</th><th data-page-node-id="NqZCmTyaQi2rJhyTJlLD8H">代码</th></tr>
+      <tr data-page-node-id="BF32Mvy3ZafQ6AJ3Ci7iZ4"><td data-page-node-id="6Tzr1m3EIL6DQXl4440XWW">GET</td><td data-page-node-id="e6y8DygxdqJ5H86WRiPla9"><code data-page-node-id="aFM2FSDkW3hdzNWvPu803F">requests.get(url, params={...}, headers={...})</code></td></tr>
+      <tr data-page-node-id="yxj2o1kBFx1pG6LwlBqhb6"><td data-page-node-id="3Ko2A7YqfkBjn6tpnXVYeB">POST (JSON)</td><td data-page-node-id="46TskWlR0F1wKcxttwUqAZ"><code data-page-node-id="g1VibRL8cVGMnZBBAarHB5">requests.post(url, json={...})</code></td></tr>
+      <tr data-page-node-id="ZhEoztrBWdwFqGWNG3LFOk"><td data-page-node-id="SdoNDa0ZWGnzq6kQpfRvyO">POST (表单)</td><td data-page-node-id="dGhGlJSgxQxX7tcDRyn6Y2"><code data-page-node-id="VykYhKeKgFWAZsgAa4rr9F">requests.post(url, data={...})</code></td></tr>
+      <tr data-page-node-id="yJnyHjRHGx6IxW8U8oFliL"><td data-page-node-id="IxRpZqaf1AiWcXe1FnNnEh">POST (文件)</td><td data-page-node-id="BGHvfApB72Q9plKcU4BANk"><code data-page-node-id="IQGxfXD38fNvjD9Q8B0pEv">requests.post(url, files={...})</code></td></tr>
+      <tr data-page-node-id="LAtadrmahCq5H88pW9ANHx"><td data-page-node-id="8W8w6Y62iOUfqGBwmPbOIc">PUT</td><td data-page-node-id="aqE5D4kHJi3gIqiM9r7xJQ"><code data-page-node-id="v95BH6ObFtQ06aucITQBKg">requests.put(url, json={...})</code></td></tr>
+      <tr data-page-node-id="pCfNZAkaDZ69Za2HZ3yAhG"><td data-page-node-id="AVfrvW8XVoXZ4OfEIFq8iR">PATCH</td><td data-page-node-id="pCcyycongDEO7WEK5SHStN"><code data-page-node-id="1LqqjNhDZCR7zBbxKmCvLZ">requests.patch(url, json={...})</code></td></tr>
+      <tr data-page-node-id="CGYPlwb6XeeXHroIjRWItF"><td data-page-node-id="hZK8RUWz9333nYc7TLDNDP">DELETE</td><td data-page-node-id="EwhwhcJO00EQVPExqFElJa"><code data-page-node-id="3r7A3g8BHemUGf9Lh7rLjX">requests.delete(url)</code></td></tr>
+    </table>
+  </div>
+
+  <div class="card" data-page-node-id="5XRbtQIy6PQ8IarPJkxdJw">
+    <h4 style="margin-top:0;" data-page-node-id="tNA2Ovbsob6PcBmqFko3eS">Response 常用</h4>
+    <table data-page-node-id="txvk1ITnMEcVKgthskENSC">
+      <tr data-page-node-id="UPdYy7kbC4xkrlhrkyNPRx"><th data-page-node-id="DyHXkMVUxVtnPQZRpmdxoL">属性/方法</th><th data-page-node-id="tGN1HFrsVDPwAyjlcgaLo3">说明</th></tr>
+      <tr data-page-node-id="wvGbPr0bLWKiBBpgm8AP7v"><td data-page-node-id="Kv0UrtrJqvTJaN7UNaqVle"><code data-page-node-id="9x2qfPRZxd34WSNrCn30BH">resp.status_code</code></td><td data-page-node-id="iwHjfo0EOtsgtYERnslp57">HTTP 状态码</td></tr>
+      <tr data-page-node-id="ps0JbfjblpQjLPjbo6JxrD"><td data-page-node-id="LNiDFPiF9vuoOW7k1sz7NB"><code data-page-node-id="fVmgfzwHW3ueqWBEtey7r5">resp.ok</code></td><td data-page-node-id="QFcxRmyBhrauno9bK7Yxjb">2xx 为 True</td></tr>
+      <tr data-page-node-id="jE4RUifskSyM24JvkQpRTb"><td data-page-node-id="GcZX0qK1iHSeA5QRGXF96g"><code data-page-node-id="ixCV5mu8DfMsBaLByGzsUH">resp.text</code></td><td data-page-node-id="rktgNuSRH28BfYRIZ0PrFE">文本内容</td></tr>
+      <tr data-page-node-id="AJBh5rBCdI3W1zwesdJjBW"><td data-page-node-id="JrBKti2QqFWTmxr9X0jvRo"><code data-page-node-id="YgxHHsuQtPfa0kHvUJrAkM">resp.json()</code></td><td data-page-node-id="VjgScPru4Bzu0CHNl7ukaa">解析 JSON</td></tr>
+      <tr data-page-node-id="KWLLMeHkE4ihYED5Rt02Zn"><td data-page-node-id="WHV2ZzTkQMMx5QfPxbjfmi"><code data-page-node-id="CVJCfv8fzYwnkf3mJBuxjW">resp.content</code></td><td data-page-node-id="5fJ471mHXd6KbVZE7CGEEY">二进制内容</td></tr>
+      <tr data-page-node-id="EfnF7mOGNH7N9lHr7BZBJW"><td data-page-node-id="0mXLqUixlPZ9mhvildOPWS"><code data-page-node-id="PvtTLugSaFxEwLGDH1WpBZ">resp.headers</code></td><td data-page-node-id="gMA7svaHCSxdDQzwOhjx81">响应头字典</td></tr>
+      <tr data-page-node-id="GWdGIkC4ll5GzW2S1FPliO"><td data-page-node-id="3sU5xIi7K9EeEknQJTnjjp"><code data-page-node-id="i6YlFDlxzvf62BrJInbfqk">resp.elapsed.total_seconds()</code></td><td data-page-node-id="BNoS1WQQv04TZLxZMtYj0j">耗时（秒）</td></tr>
+    </table>
+  </div>
+
+  <div class="card" data-page-node-id="kIdFndtcDGQftsdIUyGbEF">
+    <h4 style="margin-top:0;" data-page-node-id="x7FEcZf88Z8iMkY1F19jdN">异常类型</h4>
+    <table data-page-node-id="9pV1G0OgD4NW19mn0pO9RN">
+      <tr data-page-node-id="RkQFE95bGLkEJ7OTFHKGFK"><th data-page-node-id="pKcBgLfAOsj7nJ8FgnQJdA">异常</th><th data-page-node-id="1ONhse4qHcMqT2DBrW99cU">触发场景</th></tr>
+      <tr data-page-node-id="5p95cDbI6vIJDdC48Rlj0J"><td data-page-node-id="uy5Fb0PS2gzhPHPLf9MZ4f"><code data-page-node-id="cBIEOc5ojPIl4QoyfwHhQc">ConnectionError</code></td><td data-page-node-id="UFRrgtLWmeGOTEpgMXeoWh">网络不通、DNS 解析失败</td></tr>
+      <tr data-page-node-id="2mNpPWbezZTDRTfB1MIgio"><td data-page-node-id="7ROEhoF77EcXxKyJ1X0NhX"><code data-page-node-id="5JR2F8ghRIjMy9ypZU5MHN">Timeout</code></td><td data-page-node-id="aRUh8LlZkoG0RBHCPIwj9T">超过 timeout 设定时间</td></tr>
+      <tr data-page-node-id="jSoGNswdnBLkDDKige0Duv"><td data-page-node-id="CY2Ec3DSUaH86VvzkQ2ea9"><code data-page-node-id="13p6yWF39m51BvOzHKhWGv">HTTPError</code></td><td data-page-node-id="6KO6fv8xS3Z2es0tO9nJEv">调用 raise_for_status() 且状态码非 2xx</td></tr>
+      <tr data-page-node-id="4NewEJcSQkoGKPFQOxv23D"><td data-page-node-id="mpOyxhdrMYeIW5SPtm8A0v"><code data-page-node-id="wzRU6VMqlDGAnUbxrBDrE1">JSONDecodeError</code></td><td data-page-node-id="TcnzG1t4CEtp9BKSbXnbLd">响应不是合法 JSON</td></tr>
+      <tr data-page-node-id="APHVZuaXE3xvkxG9CarQKt"><td data-page-node-id="GmdRQ0F8FRaZHIXL35Xk7V"><code data-page-node-id="KIp1CJeWA04KGh2dlRYkYA">RequestException</code></td><td data-page-node-id="tEQjcKHMpoa1UK7aV2CxHH">所有异常的基类</td></tr>
+    </table>
+  </div>
+</section>
+
+</div>
+
+<script>
+function switchTab(group, tab) {
+  document.querySelectorAll(`[id^="${group}-"]`).forEach(el => el.classList.remove('active'));
+  document.getElementById(`${group}-${tab}`).classList.add('active');
+  const btns = document.querySelectorAll('.tabs .tab-btn');
+  btns.forEach(b => {
+    if (b.getAttribute('onclick').includes(`'${tab}'`)) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+}
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = '✅ 已复制'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 复制'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.topnav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.getAttribute('id'); });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === `#${current}`) a.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
