@@ -256,6 +256,8 @@
     .note{min-height:88px;font-size:13px}
     .gate-input{font-size:26px;letter-spacing:11px}
     .gate-dots{gap:12px}
+    /* 手机背景诗句缩小，避免过大、避免两列挤碰 */
+    .poem-line{font-size:clamp(13px,4.2vw,17px);letter-spacing:1px;padding:0 2px}
   }
 </style>
 </head>
@@ -299,8 +301,10 @@
   </div>
   <div class="toolbar" data-page-node-id="OqAUvMpN2IttX00klA9HAX">
     <button class="btn primary" id="scanBtn" onclick="scanRepo()" data-page-node-id="4ORMoFCqzq8xZV4gIzyymm">🔍 仓库检索</button>
+    <button class="btn" id="syncBtn" onclick="openSyncModal()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemm">☁️ 云同步</button>
   </div>
   <div class="scan-status" id="scanStatus" data-page-node-id="PXaT5G2WmyzadcNFeAP1l0"></div>
+  <div class="scan-status" id="syncStatus" data-page-node-id="PXaT5G2WmyzadcNFeAP1l1"></div>
 </header>
 
 <!-- 便签区（标题下方） -->
@@ -312,7 +316,7 @@
   <div class="notes-grid" id="notesGrid" data-page-node-id="AvzuAh5h9I0XJbbYsbjQM3"></div>
 </section>
 
-<div class="hint" data-page-node-id="yjnbFGN4d93XkTDcV0oAxJ">💡 提示：按住卡片拖动到目标板块即可归类；「常用网址」在待分类区点 <b data-page-node-id="wADnLKg4WBMftG8KYzaFI1">＋ 添加网址</b> 录入。所有内容自动保存在本浏览器，刷新不丢失。</div>
+<div class="hint" data-page-node-id="yjnbFGN4d93XkTDcV0oAxJ">💡 提示：按住卡片拖动到目标板块即可归类；「常用网址」在待分类区点 <b data-page-node-id="wADnLKg4WBMftG8KYzaFI1">＋ 添加网址</b> 录入。点 <b>☁️ 云同步</b> 设置 GitHub 令牌后，便签/网址/分类可在手机、电脑、平板间自动同步。</div>
 
 <main class="wrap" id="main" data-page-node-id="6z4FD0nxpqheCcXHrXAGr0">
   <!-- 板块与卡片由 JS 渲染 -->
@@ -336,6 +340,30 @@
   </div>
 </div>
 
+<!-- 云同步设置弹窗 -->
+<div class="modal-mask" id="syncModal">
+  <div class="modal" style="max-width:440px">
+    <h3>☁️ 云同步设置</h3>
+    <p style="font-size:12.5px;color:var(--text2);line-height:1.7;margin:0 0 12px">
+      把便签、常用网址、卡片分类同步到 GitHub 仓库的 <code>site-data.json</code>，
+      这样手机、电脑、平板打开看到的是<b>同一份数据</b>。<br>
+      <b>读取</b>公开仓库无需密钥；<b>写入</b>需要一个 GitHub 个人访问令牌（PAT），
+      只勾 <code>repo</code> 权限即可，可随时在 GitHub 撤销。
+    </p>
+    <label for="syncTokenInput">GitHub 个人访问令牌（PAT）</label>
+    <input type="password" id="syncTokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+    <div style="font-size:11.5px;color:var(--text2);margin-top:6px;line-height:1.6">
+      创建路径：GitHub 右上角头像 → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token，勾选 <b>repo</b> 后生成并复制粘贴到此处。
+    </div>
+    <div class="modal-btns" style="margin-top:14px">
+      <button class="btn" onclick="closeSyncModal()">关闭</button>
+      <button class="btn" onclick="syncPull()">⬇️ 从云端拉取</button>
+      <button class="btn primary" onclick="saveTokenAndPush()">💾 保存并同步</button>
+    </div>
+    <div class="modal-status" id="syncModalStatus"></div>
+  </div>
+</div>
+
 <script src="site-config.js"></script>
 <script>
 // 兜底：若 site-config.js 未加载成功，用默认配置，避免进不去
@@ -347,6 +375,9 @@ var GH_REPO  = 'knowledge-site';
 var LS_LAYOUT = 'zhishi-pulse-layout-v1';
 var LS_LINKS  = 'zhishi-pulse-links-v1';
 var LS_NOTES  = 'zhishi-pulse-notes-v1';
+var LS_TOKEN  = 'zhishi-pulse-token-v1';   // 本设备记住的 GitHub PAT
+var DATA_FILE = 'site-data.json';          // 仓库里存放同步数据的文件
+var SYNC_BRANCH = 'main';
 
 var SECTIONS = [
   {id:'basic', icon:'🧱', name:'基础知识'},
@@ -421,19 +452,27 @@ function initLayout(){
   });
   return layout;
 }
-function saveLayout(){ try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){} }
+function saveLayout(){ try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){} scheduleSync(); }
 
 // ===== LINKS =====
 function loadLinks(){
   try{ var s = JSON.parse(localStorage.getItem(LS_LINKS)); return Array.isArray(s) ? s : []; }catch(e){ return []; }
 }
-function saveLinks(){ try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){} }
+function saveLinks(){ try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){} scheduleSync(); }
 
 // ===== NOTES =====
 function loadNotes(){
   try{ var s = JSON.parse(localStorage.getItem(LS_NOTES)); return Array.isArray(s) ? s : null; }catch(e){ return null; }
 }
-function saveNotes(){ try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){} }
+function saveNotes(){ try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){} scheduleSync(); }
+
+// 防抖自动同步：有令牌时，数据改动 2 秒后自动推送到云端
+var _syncTimer = null;
+function scheduleSync(){
+  if(!getToken()) return;            // 未设令牌 → 只存本地
+  if(_syncTimer) clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(function(){ syncPush(); }, 2000);
+}
 function initNotes(){
   var saved = loadNotes();
   if(saved){ return saved; }
@@ -817,6 +856,131 @@ function boot(){
   LAYOUT = initLayout();
   renderNotes();
   render();
+  // 启动后自动尝试从云端拉取最新数据（无需令牌，公开仓库可读）
+  syncPull(true);
+}
+
+// ===== 云同步（GitHub site-data.json） =====
+function getToken(){ try{ return localStorage.getItem(LS_TOKEN) || ''; }catch(e){ return ''; } }
+function setToken(v){ try{ if(v) localStorage.setItem(LS_TOKEN, v); else localStorage.removeItem(LS_TOKEN); }catch(e){} }
+
+function collectData(){
+  // 汇总三类需要同步的数据
+  return {
+    layout: LAYOUT,
+    links: LINKS,
+    notes: NOTES,
+    updatedAt: new Date().toISOString()
+  };
+}
+function applyData(d){
+  if(!d || typeof d !== 'object') return false;
+  if(d.layout && typeof d.layout === 'object'){
+    var base = {basic:[],dev:[],test:[],memo:[],inbox:[]};
+    SEC_IDS.forEach(function(id){ base[id] = Array.isArray(d.layout[id]) ? d.layout[id] : []; });
+    base.inbox = Array.isArray(d.layout.inbox) ? d.layout.inbox : [];
+    LAYOUT = base;
+    try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){}
+  }
+  if(Array.isArray(d.links)){ LINKS = d.links; try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){} }
+  if(Array.isArray(d.notes)){ NOTES = d.notes; try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){} }
+  return true;
+}
+
+// 读取仓库里的 site-data.json（走 jsDelivr CDN，免 GitHub API 限流）
+function fetchCloudData(cb){
+  // 优先 jsDelivr CDN；加时间戳参数绕过 CDN/浏览器缓存，确保拿到最新
+  var url = 'https://cdn.jsdelivr.net/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '/' + DATA_FILE + '?t=' + Date.now();
+  fetch(url)
+    .then(function(r){ if(r.status === 404){ return null; } if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(j){
+      if(!j){ cb(null, 'notfound'); return; }
+      cb(j, 'ok');
+    })
+    .catch(function(err){ cb(null, err.message); });
+}
+
+// 把数据写回仓库（需要 PAT）
+function pushCloudData(token, cb){
+  var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/' + DATA_FILE;
+  var payload = {
+    message: 'sync: 更新知识脉络数据 ' + new Date().toLocaleString('zh-CN'),
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(collectData())))),
+    branch: SYNC_BRANCH
+  };
+  // 写入需要先拿到文件当前 sha（若已存在）
+  fetch(url + '?ref=' + SYNC_BRANCH, {headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token}})
+    .then(function(r){ return r.status === 404 ? {sha:null} : r.json(); })
+    .then(function(existing){
+      if(existing.sha) payload.sha = existing.sha;
+      return fetch(url, {
+        method:'PUT',
+        headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},
+        body: JSON.stringify(payload)
+      });
+    })
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, json:j}; }); })
+    .then(function(res){ cb(res.ok, res.json); })
+    .catch(function(err){ cb(false, {message: err.message}); });
+}
+
+// 从云端拉取并覆盖本地（silent=true 时不弹提示，仅静默失败）
+function syncPull(silent){
+  var st = document.getElementById('syncStatus');
+  fetchCloudData(function(data, why){
+    if(data){
+      applyData(data);
+      renderNotes();
+      render();
+      if(!silent && st) st.textContent = '✅ 已从云端同步最新数据（更新于 ' + (data.updatedAt||'未知') + '）';
+    } else {
+      if(!silent){
+        if(why === 'notfound') st.textContent = 'ℹ️ 云端还没有同步数据。点「保存并同步」把本机数据上传一次即可。';
+        else st.textContent = '⚠️ 拉取失败：' + why;
+      }
+    }
+  });
+}
+
+// 保存到仓库（需要 PAT）
+function syncPush(cb){
+  var token = getToken();
+  var st = document.getElementById('syncStatus');
+  if(!token){
+    if(cb){ cb(false, 'no-token'); }
+    else { st.textContent = '⚠️ 未设置令牌，无法写入。点「☁️ 云同步」粘贴 GitHub PAT。'; }
+    return;
+  }
+  if(st) st.textContent = '🔼 正在同步到云端...';
+  pushCloudData(token, function(ok, res){
+    if(ok){
+      if(st) st.textContent = '✅ 已同步到云端（' + collectData().updatedAt + '），其他设备刷新即可看到。';
+      if(cb) cb(true);
+    } else {
+      var msg = (res && (res.message || res.error)) || '未知错误';
+      if(st) st.textContent = '⚠️ 同步失败：' + msg + (msg.indexOf('401')!==-1||msg.indexOf('Bad credentials')!==-1 ? '（令牌无效或已过期，请重新粘贴）' : '');
+      if(cb) cb(false, msg);
+    }
+  });
+}
+
+// ===== 云同步弹窗 =====
+function openSyncModal(){
+  document.getElementById('syncTokenInput').value = getToken();
+  document.getElementById('syncModalStatus').textContent = '';
+  document.getElementById('syncModal').classList.add('show');
+}
+function closeSyncModal(){ document.getElementById('syncModal').classList.remove('show'); }
+function saveTokenAndPush(){
+  var token = document.getElementById('syncTokenInput').value.trim();
+  var status = document.getElementById('syncModalStatus');
+  if(!token){ status.textContent = '⚠️ 请粘贴 GitHub PAT（以 ghp_ 开头）。'; return; }
+  setToken(token);
+  status.textContent = '🔼 正在同步到云端...';
+  syncPush(function(ok, why){
+    if(ok){ status.textContent = '✅ 同步成功！令牌已记住，本设备后续改动会自动同步。'; closeSyncModal(); }
+    else { status.textContent = '⚠️ 同步失败：' + why + '（令牌已先保存，修正后可重试）。'; }
+  });
 }
 
 // ---------- 诗词背景 ----------
