@@ -723,7 +723,7 @@ function bindScrollSpy(){
 }
 
 // ===== 仓库检索 =====
-// 递归扫描仓库目录，收集所有 HTML 文件（含子文件夹）
+// 递归扫描仓库目录，收集所有 HTML 文件（含子文件夹）—— 作为兜底方案
 function scanDir(path){
   var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/' + (path || '') + '?ref=' + SYNC_BRANCH;
   return fetch(url, {headers:{'Accept':'application/vnd.github+json'}})
@@ -745,6 +745,23 @@ function scanDir(path){
       });
     });
 }
+// 优先走 jsDelivr data API：一次性返回仓库全部文件、免 GitHub 未认证限流（60次/时 → 403）
+// 失败时退回递归 Contents API 兜底。jsDelivr 的 name 即相对仓库根的路径（含子文件夹）。
+function scanAllFiles(){
+  var url = 'https://data.jsdelivr.com/v1/packages/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '?t=' + Date.now();
+  return fetch(url, {headers:{'Accept':'application/json'}})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(pkg){
+      var files = (pkg && pkg.files) || [];
+      return files
+        .filter(function(it){ return it.type === 'file' && /\.html?$/i.test(it.name); })
+        .map(function(it){
+          var fullPath = it.name;                  // 相对仓库根的完整路径（含子文件夹）
+          return { name: fullPath.split('/').pop(), path: fullPath };
+        });
+    })
+    .catch(function(){ return scanDir(''); });      // jsDelivr 失败 → 退回 Contents API
+}
 
 function scanRepo(){
   var btn = document.getElementById('scanBtn');
@@ -752,7 +769,7 @@ function scanRepo(){
   btn.disabled = true;
   status.textContent = '🔍 正在扫描仓库 ' + GH_USER + '/' + GH_REPO + ' ...';
 
-  scanDir('').then(function(files){
+  scanAllFiles().then(function(files){
     // 排除首页 index.html 自身
     var scanned = files.filter(function(f){
       return decodeURIComponent(f.name) !== 'index.html';
