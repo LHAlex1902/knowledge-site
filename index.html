@@ -1007,17 +1007,30 @@ function applyData(d){
   return true;
 }
 
-// 读取仓库里的 site-data.json（走 jsDelivr CDN，免 GitHub API 限流）
+// 读取仓库里的 site-data.json
+// 优先用「页面自身所在域名」(location.origin) 读取：GitHub Pages 直出、实时无 CDN 缓存；
+// jsDelivr CDN 有缓存(可能滞后数小时)，仅作兜底。加时间戳参数防浏览器缓存。
 function fetchCloudData(cb){
-  // 优先 jsDelivr CDN；加时间戳参数绕过 CDN/浏览器缓存，确保拿到最新
-  var url = 'https://cdn.jsdelivr.net/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '/' + DATA_FILE + '?t=' + Date.now();
-  fetch(url)
-    .then(function(r){ if(r.status === 404){ return null; } if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(function(j){
-      if(!j){ cb(null, 'notfound'); return; }
-      cb(j, 'ok');
-    })
-    .catch(function(err){ cb(null, err.message); });
+  var ts = '?t=' + Date.now();
+  // 1) 同源读取（页面托管在 lh1902.top 时，实时最新、不受 GitHub API 限流）
+  var sameOrigin = (location.protocol === 'http:' || location.protocol === 'https:')
+    ? location.origin + '/' + DATA_FILE + ts
+    : null;
+  function tryFetch(url, fallback){
+    return fetch(url).then(function(r){
+      if(r.status === 404) return null;
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).catch(function(err){ return fallback ? fallback() : Promise.reject(err); });
+  }
+  var chain = sameOrigin
+    ? tryFetch(sameOrigin, function(){ return tryFetch(
+        'https://cdn.jsdelivr.net/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '/' + DATA_FILE + ts); })
+    : tryFetch('https://cdn.jsdelivr.net/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '/' + DATA_FILE + ts);
+  chain.then(function(j){
+    if(!j){ cb(null, 'notfound'); return; }
+    cb(j, 'ok');
+  }).catch(function(err){ cb(null, err.message); });
 }
 
 // 把数据写回仓库（需要 PAT）。带 409 冲突自动重试：
