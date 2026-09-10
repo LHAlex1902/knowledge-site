@@ -142,6 +142,11 @@
   .cat-head .icon{font-size:22px}
   .cat-head h2{font-size:19px;font-weight:700}
   .cat-head .count{margin-left:auto;font-size:13px;color:var(--text2);background:var(--card);padding:3px 10px;border-radius:12px;border:1px solid var(--border)}
+  /* 板块上移/下移按钮组：位于数量左侧 */
+  .sec-move{margin-left:auto;display:inline-flex;align-items:center;gap:6px}
+  .sec-move + .count{margin-left:0}          /* 有按钮组时，数量不再独占右推 */
+  .sec-move .mv{padding:2px 8px;font-size:11px;line-height:1.5;border-radius:8px}
+  .sec-move .mv:disabled{opacity:.3;cursor:not-allowed}
 
   /* cards grid —— App 图标式小方块 */
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px;min-height:60px;
@@ -324,7 +329,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-10.4</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-10.6</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -384,11 +389,10 @@ var DATA_FILE = 'site-data.json';          // 仓库里存放同步数据的文�
 var SYNC_BRANCH = 'main';
 
 var SECTIONS = [
-  {id:'basic', icon:'🧱', name:'基础知识'},
-  {id:'dev',   icon:'💻', name:'开发'},
-  {id:'test',  icon:'🧪', name:'测试'},
-  {id:'memo',  icon:'⚡', name:'速记手册'},
-  {id:'links', icon:'🔗', name:'常用网址'}
+  {id:'dev',     icon:'💻', name:'开发'},
+  {id:'test',    icon:'🧪', name:'测试'},
+  {id:'summary', icon:'📝', name:'总结与回顾'},
+  {id:'links',   icon:'🔗', name:'常用网址'}
 ];
 var SEC_IDS = SECTIONS.map(function(s){return s.id;});
 
@@ -443,9 +447,17 @@ function canonFile(tk){
 }
 // 把整个 layout 的 token 批量规范化
 function canonLayout(layout){
-  var out = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
+  var out = {dev:[],test:[],summary:[],links:[],inbox:[]};
   SEC_IDS.forEach(function(id){ out[id] = (layout[id]||[]).map(canonFile); });
   out.inbox = (layout.inbox||[]).map(canonFile);
+  // 兼容旧数据：已删除的板块（基础知识 basic / 速记手册 memo）里的条目并入「待分类」，避免丢失
+  ['basic','memo'].forEach(function(dead){
+    (layout[dead]||[]).forEach(function(tk){
+      var t = canonFile(tk);
+      for(var k in out){ if(out[k].indexOf(t) !== -1) return; }   // 已在其他板块则跳过
+      out.inbox.push(t);
+    });
+  });
   return out;
 }
 
@@ -481,12 +493,12 @@ function initLayout(){
   var saved = null;
   try{ saved = JSON.parse(localStorage.getItem(LS_LAYOUT)); }catch(e){}
   if(saved && typeof saved === 'object'){
-    var base = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
+    var base = {dev:[],test:[],summary:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(saved[id]) ? saved[id] : []; });
     base.inbox = Array.isArray(saved.inbox) ? saved.inbox : [];
     return canonLayout(base);
   }
-  var layout = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
+  var layout = {dev:[],test:[],summary:[],links:[],inbox:[]};
   Object.keys(META).forEach(function(file){
     var sec = NAME2SEC[file] || 'inbox';
     layout[sec].push(file);
@@ -511,7 +523,7 @@ function saveNotes(){ try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES))
 var _syncTimer = null;
 var _booted = false;          // 启动初始化阶段不触发推送（避免一开页面就推空改动）
 var _lastPushedFp = null;     // 上次成功推送/拉取的数据指纹（不含 updatedAt，用于跳过无变化的推送）
-function dataFp(){ return JSON.stringify({l:LAYOUT, k:LINKS, n:NOTES}); }
+function dataFp(){ return JSON.stringify({l:LAYOUT, k:LINKS, n:NOTES, s:sectionOrder()}); }
 function scheduleSync(){
   if(!_booted) return;               // 初始化阶段（boot 中）不推
   if(!getToken()) return;            // 未设令牌 → 只存本地
@@ -618,6 +630,43 @@ function itemHtml(token){
   return cardHtml(token);
 }
 
+// ===== 板块排序（上移/下移）=====
+// 顺序保存在 localStorage，并随云同步一起上传，保证各设备一致。
+var LS_SECTIONS = 'zhishi-pulse-sections-order-v1';
+function sectionOrder(){ return SECTIONS.map(function(s){ return s.id; }); }
+// 按给定 id 序列重排 SECTIONS（原地修改，保持数组引用不变）
+function applySectionOrder(ids){
+  if(!Array.isArray(ids) || !ids.length) return;
+  var byId = {};
+  SECTIONS.forEach(function(s){ byId[s.id] = s; });
+  var ordered = [];
+  ids.forEach(function(id){ if(byId[id]){ ordered.push(byId[id]); delete byId[id]; } });
+  // 补上未出现在保存顺序里的板块（如新增板块），保持其原有相对顺序
+  SECTIONS.forEach(function(s){ if(byId[s.id]){ ordered.push(s); delete byId[s.id]; } });
+  SECTIONS.length = 0;
+  ordered.forEach(function(s){ SECTIONS.push(s); });
+}
+function loadSectionOrder(){
+  try{
+    var s = JSON.parse(localStorage.getItem(LS_SECTIONS));
+    if(Array.isArray(s)) applySectionOrder(s);
+  }catch(e){}
+}
+function saveSectionOrder(){
+  try{ localStorage.setItem(LS_SECTIONS, JSON.stringify(sectionOrder())); }catch(e){}
+  scheduleSync();
+}
+// dir: -1 上移 / +1 下移
+function moveSection(id, dir){
+  var i = -1;
+  SECTIONS.forEach(function(s, k){ if(s.id === id) i = k; });
+  var j = i + dir;
+  if(i < 0 || j < 0 || j >= SECTIONS.length) return;   // 已在首/末，忽略
+  var tmp = SECTIONS[i]; SECTIONS[i] = SECTIONS[j]; SECTIONS[j] = tmp;
+  saveSectionOrder();
+  render();
+}
+
 // ===== 渲染：主区域板块 =====
 function render(){
   var main = document.getElementById('main');
@@ -625,7 +674,7 @@ function render(){
   var html = '';
   var navHtml = '';
 
-  SECTIONS.forEach(function(sec){
+  SECTIONS.forEach(function(sec, si){
     var items = LAYOUT[sec.id] || [];
     navHtml += '<a href="#sec-'+sec.id+'">'+esc(sec.name)+'</a>';
     html += '<section class="category" id="sec-'+sec.id+'" data-sec="'+sec.id+'">';
@@ -635,6 +684,13 @@ function render(){
     if(sec.id === 'links'){
       html += '<button class="btn mini" onclick="openLinkModal(null,\'links\')" style="margin-left:8px">＋ 添加网址</button>';
     }
+    // 板块上移/下移按钮（位于数量左侧；首末板块对应按钮禁用）
+    html += '<span class="sec-move">'
+         +  '<button class="btn mini mv" title="上移板块" aria-label="上移板块"'+(si === 0 ? ' disabled' : '')
+         +  ' onclick="moveSection(\''+sec.id+'\',-1)">▲</button>'
+         +  '<button class="btn mini mv" title="下移板块" aria-label="下移板块"'+(si === SECTIONS.length-1 ? ' disabled' : '')
+         +  ' onclick="moveSection(\''+sec.id+'\',1)">▼</button>'
+         +  '</span>';
     html += '<span class="count">'+(sec.id==='links' ? items.length+' 个' : items.length+' 份')+'</span>';
     html += '</div>';
     html += '<div class="grid" data-sec="'+sec.id+'">';
@@ -981,6 +1037,7 @@ function boot(){
   NOTES = initNotes();
   saveNotes();
   LAYOUT = initLayout();
+  loadSectionOrder();   // 先套用本机保存的板块顺序，云端数据到达后可能再覆盖
   renderNotes();
   render();
   // 启动后自动尝试从云端拉取最新数据（无需令牌，公开仓库可读）
@@ -1019,18 +1076,19 @@ function getToken(){ try{ return localStorage.getItem(LS_TOKEN) || ''; }catch(e)
 function setToken(v){ try{ if(v) localStorage.setItem(LS_TOKEN, v); else localStorage.removeItem(LS_TOKEN); }catch(e){} }
 
 function collectData(){
-  // 汇总三类需要同步的数据
+  // 汇总需要同步的数据（含板块顺序 sections）
   return {
     layout: LAYOUT,
     links: LINKS,
     notes: NOTES,
+    sections: sectionOrder(),
     updatedAt: new Date().toISOString()
   };
 }
 function applyData(d){
   if(!d || typeof d !== 'object') return false;
   if(d.layout && typeof d.layout === 'object'){
-    var base = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
+    var base = {dev:[],test:[],summary:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(d.layout[id]) ? d.layout[id] : []; });
     base.inbox = Array.isArray(d.layout.inbox) ? d.layout.inbox : [];
     LAYOUT = canonLayout(base);
@@ -1038,6 +1096,11 @@ function applyData(d){
   }
   if(Array.isArray(d.links)){ LINKS = d.links; try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){} }
   if(Array.isArray(d.notes)){ NOTES = d.notes; try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){} }
+  // 板块顺序（云端为准），并写回本机
+  if(Array.isArray(d.sections) && d.sections.length){
+    applySectionOrder(d.sections);
+    try{ localStorage.setItem(LS_SECTIONS, JSON.stringify(sectionOrder())); }catch(e){}
+  }
   _lastPushedFp = dataFp();   // 刚拉下来的内容即"已同步"，避免随即又推回去
   return true;
 }
