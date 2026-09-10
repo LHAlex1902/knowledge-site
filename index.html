@@ -330,7 +330,9 @@
 <div class="modal-mask" id="linkModal" data-page-node-id="n6jw6bGLF5AhVEzXcPk8vg">
   <div class="modal" data-page-node-id="8WFqLzDsIE3g5cWg7ajxYE">
     <h3 id="linkModalTitle" data-page-node-id="mt06UBl4xiIsqyFlrpEm1d">添加常用网址</h3>
-    <label for="linkUrlInput" data-page-node-id="twAsmgGYAfbBiPfA49NLpC">网址 URL</label>
+    <label for="linkNameInput" data-page-node-id="twAsmgGYAfbBiPfA49NLpC">显示名称（可选，留空则自动取网址名）</label>
+    <input type="text" id="linkNameInput" placeholder="如：deepseek、bilibili" autocomplete="off" maxlength="24" data-page-node-id="CLtHJ7teiKlylNhHKHJ3wG">
+    <label for="linkUrlInput" data-page-node-id="twAsmgGYAfbBiPfA49NLpD">网址 URL</label>
     <input type="text" id="linkUrlInput" placeholder="https://example.com" autocomplete="off" data-page-node-id="CLtHJ7teiKlylNhHKHJ3wF">
     <div class="modal-btns" data-page-node-id="oJheUa7hkI9KNYpgmWRGuJ">
       <button class="btn" onclick="closeLinkModal()" data-page-node-id="D0qpLYNoNAj5hQtNPm4saO">取消</button>
@@ -383,7 +385,8 @@ var SECTIONS = [
   {id:'basic', icon:'🧱', name:'基础知识'},
   {id:'dev',   icon:'💻', name:'开发'},
   {id:'test',  icon:'🧪', name:'测试'},
-  {id:'memo',  icon:'⚡', name:'速记手册'}
+  {id:'memo',  icon:'⚡', name:'速记手册'},
+  {id:'links', icon:'🔗', name:'常用网址'}
 ];
 var SEC_IDS = SECTIONS.map(function(s){return s.id;});
 
@@ -434,18 +437,34 @@ function uid(){ return Date.now().toString(36) + Math.random().toString(36).slic
 function hostOf(url){
   try{ return new URL(url).hostname; }catch(e){ return url; }
 }
+// 从网址提取简要名称：www.bilibili.com → bilibili；github.com → github
+function shortNameOf(url){
+  var h = hostOf(url);
+  if(!h || h === url) return url;              // 不是合法网址，原样返回
+  h = h.replace(/^www\./i, '');                // 去掉 www.
+  // 常见二级后缀（如 com.cn / co.jp），保留主体
+  var parts = h.split('.');
+  if(parts.length >= 3){
+    var last2 = parts.slice(-2).join('.');
+    var known2 = ['com.cn','net.cn','org.cn','gov.cn','co.jp','co.uk','com.tw','com.hk','com.au','co.kr','com.sg'];
+    if(known2.indexOf(last2) !== -1){
+      return parts.slice(-3).join('.');        // 取最后三段：xxx.com.cn
+    }
+  }
+  return parts[0];                             // 取主域名第一段
+}
 
 // ===== LAYOUT =====
 function initLayout(){
   var saved = null;
   try{ saved = JSON.parse(localStorage.getItem(LS_LAYOUT)); }catch(e){}
   if(saved && typeof saved === 'object'){
-    var base = {basic:[],dev:[],test:[],memo:[],inbox:[]};
+    var base = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(saved[id]) ? saved[id] : []; });
     base.inbox = Array.isArray(saved.inbox) ? saved.inbox : [];
     return base;
   }
-  var layout = {basic:[],dev:[],test:[],memo:[],inbox:[]};
+  var layout = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
   Object.keys(META).forEach(function(file){
     var sec = NAME2SEC[file] || 'inbox';
     layout[sec].push(file);
@@ -532,13 +551,15 @@ function totalCount(){
 // ===== 渲染：单个文件卡片 =====
 function cardHtml(token){
   var m = META[token] || {};
-  var title = m.title || token.replace(/\.html?$/i,'');
+  var title = m.title || token.replace(/\.html?$/i,'').split('/').pop();
   var emoji = m.emoji || '📄';
   var tags = (m.tags || []).map(function(t){
     var cls = t.cls ? (' class="'+esc(t.cls)+'"') : '';
     return '<span class="tag'+cls+'">'+esc(t.text)+'</span>';
   }).join('');
-  return '<a class="card" draggable="true" data-item="'+esc(token)+'" href="'+esc(token)+'" title="'+esc(title)+'">'+
+  // token 可能含子文件夹路径与中文，逐段编码（保留 / 分隔符）
+  var href = token.split('/').map(function(seg){ return encodeURIComponent(seg); }).join('/');
+  return '<a class="card" draggable="true" data-item="'+esc(token)+'" href="'+esc(href)+'" title="'+esc(title)+'">'+
       '<span class="grip">⠿</span>'+
       '<div class="c-emoji"><span class="fi-bg">'+esc(emoji)+'</span></div>'+
       '<div class="c-name">'+esc(title)+'</div>'+
@@ -551,13 +572,14 @@ function linkCardHtml(id){
   var lk = LINKS.filter(function(x){return x.id===id;})[0];
   if(!lk) return '';
   var host = hostOf(lk.url);
+  var shortName = lk.name ? lk.name : shortNameOf(lk.url);   // 优先自定义名称，否则自动简要名称
   var iconSrc = lk.icon || ('https://www.google.com/s2/favicons?domain='+encodeURIComponent(host)+'&sz=64');
   var tags = '<span class="tag link">网址</span>';
-  return '<a class="card is-link" draggable="true" data-item="link:'+esc(id)+'" href="'+esc(lk.url)+'" target="_blank" rel="noopener" title="'+esc(lk.title||host)+'">'+
+  return '<a class="card is-link" draggable="true" data-item="link:'+esc(id)+'" href="'+esc(lk.url)+'" target="_blank" rel="noopener" title="'+esc(lk.url)+'">'+
       '<span class="grip">⠿</span>'+
       '<button class="card-edit" title="编辑" onclick="editLink(event,\''+id+'\')">✎</button>'+
       '<div class="c-emoji"><span class="fi-bg">🌐</span><img class="fi-img" src="'+esc(iconSrc)+'" loading="lazy" onerror="this.style.display=\'none\'"></div>'+
-      '<div class="c-name">'+esc(lk.title || host)+'</div>'+
+      '<div class="c-name">'+esc(shortName)+'</div>'+
       '<div class="c-tags">'+tags+'</div>'+
     '</a>';
 }
@@ -584,11 +606,18 @@ function render(){
     html += '<div class="cat-head">';
     html += '<span class="icon">'+sec.icon+'</span>';
     html += '<h2>'+esc(sec.name)+'</h2>';
-    html += '<span class="count">'+items.length+' 份</span>';
+    if(sec.id === 'links'){
+      html += '<button class="btn mini" onclick="openLinkModal(null,\'links\')" style="margin-left:8px">＋ 添加网址</button>';
+    }
+    html += '<span class="count">'+(sec.id==='links' ? items.length+' 个' : items.length+' 份')+'</span>';
     html += '</div>';
     html += '<div class="grid" data-sec="'+sec.id+'">';
     if(items.length === 0){
-      html += '<div class="empty"><span class="plus">＋</span>把卡片拖到这里，或点「仓库检索」拉取新教程</div>';
+      if(sec.id === 'links'){
+        html += '<div class="empty"><span class="plus">＋</span>点上方「添加网址」录入常用网站，或把其他板块的网址卡片拖到这里</div>';
+      } else {
+        html += '<div class="empty"><span class="plus">＋</span>把卡片拖到这里，或点「仓库检索」拉取新教程</div>';
+      }
     } else {
       items.forEach(function(tk){ html += itemHtml(tk); });
     }
@@ -694,44 +723,80 @@ function bindScrollSpy(){
 }
 
 // ===== 仓库检索 =====
+// 递归扫描仓库目录，收集所有 HTML 文件（含子文件夹）
+function scanDir(path){
+  var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/' + (path || '') + '?ref=' + SYNC_BRANCH;
+  return fetch(url, {headers:{'Accept':'application/vnd.github+json'}})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(items){
+      if(!Array.isArray(items)) return [];   // 单个文件对象（不应出现在目录扫描）
+      var htmls = [];
+      var subs = [];
+      items.forEach(function(it){
+        if(it.type === 'file'){
+          if(/\.html?$/i.test(it.name)) htmls.push(it);
+        } else if(it.type === 'dir'){
+          subs.push(scanDir(it.path));        // 递归进入子文件夹
+        }
+      });
+      return Promise.all(subs).then(function(results){
+        results.forEach(function(arr){ htmls = htmls.concat(arr); });
+        return htmls;
+      });
+    });
+}
+
 function scanRepo(){
   var btn = document.getElementById('scanBtn');
   var status = document.getElementById('scanStatus');
   btn.disabled = true;
   status.textContent = '🔍 正在扫描仓库 ' + GH_USER + '/' + GH_REPO + ' ...';
 
-  var apiUrl = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/?ref=main';
-  fetch(apiUrl, {headers:{'Accept':'application/vnd.github+json'}})
-    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(function(files){
-      var added = 0;
-      files.forEach(function(f){
-        if(f.type === 'file' && /\.html?$/i.test(f.name)){
-          var name = decodeURIComponent(f.name);
-          if(!META[name]){
-            META[name] = {
-              emoji:'📄',
-              title:name.replace(/\.html?$/i,''),
-              desc:'仓库中的教程文件，点击打开。',
-              tags:[{cls:'',text:'仓库文件'}]
-            };
-          }
-          var placed = false;
-          SEC_IDS.forEach(function(id){ if(LAYOUT[id].indexOf(name)!==-1) placed=true; });
-          if(!placed && LAYOUT.inbox.indexOf(name) === -1){
-            LAYOUT.inbox.push(name);
-            added++;
-          }
-        }
+  scanDir('').then(function(files){
+    // 排除首页 index.html 自身
+    var scanned = files.filter(function(f){
+      return decodeURIComponent(f.name) !== 'index.html';
+    });
+
+    // 建立“文件名 → 仓库实际路径”映射
+    var nameToPath = {};
+    scanned.forEach(function(f){ nameToPath[decodeURIComponent(f.name)] = f.path; });
+
+    // 按文件名对齐：若教程被移动到子文件夹，把旧 token 更新为新路径，保持原分类不丢
+    SEC_IDS.forEach(function(id){
+      LAYOUT[id] = (LAYOUT[id] || []).map(function(tk){
+        if(typeof tk !== 'string' || tk.indexOf('link:') === 0) return tk;
+        return nameToPath.hasOwnProperty(tk) ? nameToPath[tk] : tk;
       });
-      saveLayout();
-      render();
-      if(added === 0){
-        status.textContent = '✅ 扫描完成：没有发现新文件（仓库里的 HTML 都已归类或在待分类区）。';
-      } else {
-        status.textContent = '✅ 发现 ' + added + ' 个新文件，已放入「📥 待分类」区。拖动卡片到上方板块即可归类。';
+    });
+
+    var added = 0;
+    scanned.forEach(function(f){
+      var name = decodeURIComponent(f.name);
+      var path = f.path;
+      if(!META[path]){   // 用实际路径作 key，子文件夹文件也能正确渲染
+        META[path] = {
+          emoji:'📄',
+          title: name.replace(/\.html?$/i,''),
+          desc:'仓库中的教程文件，点击打开。',
+          tags:[{cls:'',text:'仓库文件'}]
+        };
       }
-    })
+      var placed = false;
+      SEC_IDS.forEach(function(id){ if(LAYOUT[id].indexOf(path) !== -1) placed = true; });
+      if(!placed && LAYOUT.inbox.indexOf(path) === -1){
+        LAYOUT.inbox.push(path);
+        added++;
+      }
+    });
+    saveLayout();
+    render();
+    if(added === 0){
+      status.textContent = '✅ 扫描完成：没有发现新文件（仓库里 ' + scanned.length + ' 个 HTML 均已归类或在待分类区）。';
+    } else {
+      status.textContent = '✅ 发现 ' + added + ' 个新文件，已放入「📥 待分类」区。拖动卡片到上方板块即可归类。';
+    }
+  })
     .catch(function(err){
       status.textContent = '⚠️ 检索失败：' + err.message + '（可能是网络或 API 速率限制，稍后再试）。';
     })
@@ -740,9 +805,12 @@ function scanRepo(){
 
 // ===== 常用网址：弹窗 =====
 var EDIT_LINK_ID = null;
-function openLinkModal(id){
+var LINK_TARGET_SEC = 'inbox';   // 新增网址默认落入的板块
+function openLinkModal(id, targetSec){
   EDIT_LINK_ID = id || null;
+  LINK_TARGET_SEC = targetSec || 'inbox';
   var input = document.getElementById('linkUrlInput');
+  var nameInput = document.getElementById('linkNameInput');
   var titleEl = document.getElementById('linkModalTitle');
   var btnEl = document.getElementById('linkSubmitBtn');
   var status = document.getElementById('linkModalStatus');
@@ -752,10 +820,12 @@ function openLinkModal(id){
     titleEl.textContent = '编辑网址';
     btnEl.textContent = '保存';
     input.value = lk ? lk.url : '';
+    nameInput.value = lk && lk.name ? lk.name : '';
   } else {
     titleEl.textContent = '添加常用网址';
     btnEl.textContent = '添加';
     input.value = '';
+    nameInput.value = '';
   }
   document.getElementById('linkModal').classList.add('show');
   setTimeout(function(){ input.focus(); }, 30);
@@ -772,26 +842,30 @@ function normalizeUrl(v){
 }
 function submitLink(){
   var input = document.getElementById('linkUrlInput');
+  var nameInput = document.getElementById('linkNameInput');
   var url = normalizeUrl(input.value);
+  var customName = (nameInput.value || '').trim();
   var status = document.getElementById('linkModalStatus');
   if(!url){ status.textContent = '⚠️ 请输入网址。'; return; }
 
   if(EDIT_LINK_ID){
     var lk = LINKS.filter(function(x){return x.id===EDIT_LINK_ID;})[0];
-    if(lk){ lk.url = url; lk.title = '读取中…'; lk.desc=''; lk.icon=''; }
+    if(lk){ lk.url = url; lk.name = customName; lk.title = customName ? customName : '读取中…'; lk.desc=''; lk.icon=''; }
   } else {
     var id = uid();
-    LINKS.push({id:id, url:url, title:'读取中…', desc:'', icon:''});
-    // 放进待分类区
-    if(LAYOUT.inbox.indexOf('link:'+id) === -1) LAYOUT.inbox.push('link:'+id);
+    LINKS.push({id:id, url:url, name:customName, title: customName ? customName : '读取中…', desc:'', icon:''});
+    // 放进目标板块（常用网址板块 or 待分类）
+    var token = 'link:'+id;
+    var dest = (SEC_IDS.indexOf(LINK_TARGET_SEC)!==-1) ? LINK_TARGET_SEC : 'inbox';
+    if(LAYOUT[dest].indexOf(token) === -1) LAYOUT[dest].push(token);
   }
   saveLinks(); saveLayout();
   closeLinkModal();
   render();
 
-  // 异步抓取网页信息
+  // 异步抓取网页信息（有自定义名称则不覆盖名称，仅补图标/描述）
   var targetId = EDIT_LINK_ID || id;
-  fetchLinkMeta(url, targetId);
+  fetchLinkMeta(url, targetId, customName);
 }
 
 // 编辑网址卡片（点 ✎）
@@ -802,7 +876,7 @@ function editLink(e, id){
 }
 
 // 通过 CORS 代理抓取网页 title / description / favicon
-function fetchLinkMeta(url, id){
+function fetchLinkMeta(url, id, customName){
   var proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
   fetch(proxy)
     .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
@@ -810,17 +884,20 @@ function fetchLinkMeta(url, id){
       var info = parseHtmlMeta(html, url);
       var lk = LINKS.filter(function(x){return x.id===id;})[0];
       if(lk){
-        if(info.title) lk.title = info.title;
+        // 有自定义名称则保留，不覆盖；否则用抓取的标题
+        if(!lk.name){
+          if(info.title) lk.title = info.title;
+          else if(!lk.title || lk.title==='读取中…') lk.title = hostOf(url);
+        }
         if(info.desc) lk.desc = info.desc;
         if(info.icon) lk.icon = info.icon;
-        if(!lk.title || lk.title==='读取中…') lk.title = hostOf(url);
       }
       saveLinks(); render();
     })
     .catch(function(){
-      // 抓取失败：用域名兜底
+      // 抓取失败：用域名兜底（有自定义名称则不覆盖）
       var lk = LINKS.filter(function(x){return x.id===id;})[0];
-      if(lk && (!lk.title || lk.title==='读取中…')) lk.title = hostOf(url);
+      if(lk && !lk.name && (!lk.title || lk.title==='读取中…')) lk.title = hostOf(url);
       saveLinks(); render();
     });
 }
@@ -857,7 +934,33 @@ function boot(){
   renderNotes();
   render();
   // 启动后自动尝试从云端拉取最新数据（无需令牌，公开仓库可读）
-  syncPull(true);
+  // 迁移在数据最终确定后（syncPull 回调）执行，避免被云端覆盖
+  syncPull(true, function(){ migrateLinksToSection(); render(); });
+}
+
+// 一次性迁移：把散落在各板块/待分类里的网址卡片(link:*)统一归入「常用网址」板块
+function migrateLinksToSection(){
+  var flag = 'zhishi-pulse-migrate-links-v1';
+  try{ if(localStorage.getItem(flag)) return; }catch(e){}
+  var moved = false;
+  // 从所有板块和待分类里收集网址 token
+  var linkTokens = [];
+  SEC_IDS.forEach(function(id){
+    LAYOUT[id] = (LAYOUT[id]||[]).filter(function(tk){
+      if(typeof tk==='string' && tk.indexOf('link:')===0){ linkTokens.push(tk); return false; }
+      return true;
+    });
+  });
+  LAYOUT.inbox = (LAYOUT.inbox||[]).filter(function(tk){
+    if(typeof tk==='string' && tk.indexOf('link:')===0){ linkTokens.push(tk); return false; }
+    return true;
+  });
+  // 去重后放入常用网址板块
+  linkTokens.forEach(function(tk){
+    if(LAYOUT.links.indexOf(tk) === -1){ LAYOUT.links.push(tk); moved = true; }
+  });
+  if(moved) saveLayout();
+  try{ localStorage.setItem(flag, '1'); }catch(e){}
 }
 
 // ===== 云同步（GitHub site-data.json） =====
@@ -876,7 +979,7 @@ function collectData(){
 function applyData(d){
   if(!d || typeof d !== 'object') return false;
   if(d.layout && typeof d.layout === 'object'){
-    var base = {basic:[],dev:[],test:[],memo:[],inbox:[]};
+    var base = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(d.layout[id]) ? d.layout[id] : []; });
     base.inbox = Array.isArray(d.layout.inbox) ? d.layout.inbox : [];
     LAYOUT = base;
@@ -924,8 +1027,8 @@ function pushCloudData(token, cb){
     .catch(function(err){ cb(false, {message: err.message}); });
 }
 
-// 从云端拉取并覆盖本地（silent=true 时不弹提示，仅静默失败）
-function syncPull(silent){
+// 从云端拉取并覆盖本地（silent=true 时不弹提示，仅静默失败；done 在拉取流程结束后调用）
+function syncPull(silent, done){
   var st = document.getElementById('syncStatus');
   fetchCloudData(function(data, why){
     if(data){
@@ -939,6 +1042,7 @@ function syncPull(silent){
         else st.textContent = '⚠️ 拉取失败：' + why;
       }
     }
+    if(done){ try{ done(); }catch(e){} }
   });
 }
 
