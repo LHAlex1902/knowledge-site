@@ -507,7 +507,11 @@ function saveNotes(){ try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES))
 
 // 防抖自动同步：有令牌时，数据改动 2 秒后自动推送到云端
 var _syncTimer = null;
+var _booted = false;          // 启动初始化阶段不触发推送（避免一开页面就推空改动）
+var _lastPushedFp = null;     // 上次成功推送/拉取的数据指纹（不含 updatedAt，用于跳过无变化的推送）
+function dataFp(){ return JSON.stringify({l:LAYOUT, k:LINKS, n:NOTES}); }
 function scheduleSync(){
+  if(!_booted) return;               // 初始化阶段（boot 中）不推
   if(!getToken()) return;            // 未设令牌 → 只存本地
   if(_syncTimer) clearTimeout(_syncTimer);
   _syncTimer = setTimeout(function(){ syncPush(); }, 2000);
@@ -980,6 +984,7 @@ function boot(){
   // 启动后自动尝试从云端拉取最新数据（无需令牌，公开仓库可读）
   // 迁移在数据最终确定后（syncPull 回调）执行，避免被云端覆盖
   syncPull(true, function(){ migrateLinksToSection(); render(); });
+  _booted = true;   // 初始化完成，之后的数据改动才允许自动推送（避免开页面就推空改动）
 }
 
 // 一次性迁移：把散落在各板块/待分类里的网址卡片(link:*)统一归入「常用网址」板块
@@ -1031,33 +1036,72 @@ function applyData(d){
   }
   if(Array.isArray(d.links)){ LINKS = d.links; try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){} }
   if(Array.isArray(d.notes)){ NOTES = d.notes; try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){} }
+  _lastPushedFp = dataFp();   // 刚拉下来的内容即"已同步"，避免随即又推回去
   return true;
 }
 
 // 读取仓库里的 site-data.json
-// 优先用「页面自身所在域名」(location.origin) 读取：GitHub Pages 直出、实时无 CDN 缓存；
-// jsDelivr CDN 有缓存(可能滞后数小时)，仅作兜底。加时间戳参数防浏览器缓存。
+// 【重要事实】GitHub Pages 的边缘缓存**忽略查询串**（实测：任意不同 ?r= 都命中同一 ETag），
+// 且响应头为 Cache-Control: max-age=600 —— 改了文件后，边缘节点最长 10 分钟才刷新。
+// 所以 ?t= 时间戳对 Pages 无效，必须换成更实时的读取源。
+// 读取源按"实时性"依次尝试，取第一个成功者：
+//   1) GitHub Contents API —— 不受 Pages 边缘缓存影响、TTL 仅 60s，最实时（公开仓库免令牌，带令牌更佳）
+//   2) 同源 Pages 直读   —— 可能滞后 ≤10 分钟
+//   3) raw.githubusercontent —— 独立 CDN 链路，缓存与 Pages 不共享
+//   4) jsDelivr          —— 仅兜底（可能滞后数小时）
+function b64ToUtf8(b64){
+  try{ return decodeURIComponent(escape(atob(String(b64).replace(/\n/g,'')))); }
+  catch(e){ try{ return atob(String(b64).replace(/\n/g,'')); }catch(e2){ return ''; } }
+}
 function fetchCloudData(cb){
-  var ts = '?t=' + Date.now();
-  // 1) 同源读取（页面托管在 lh1902.top 时，实时最新、不受 GitHub API 限流）
-  var sameOrigin = (location.protocol === 'http:' || location.protocol === 'https:')
-    ? location.origin + '/' + DATA_FILE + ts
-    : null;
-  function tryFetch(url, fallback){
-    return fetch(url).then(function(r){
+  var ts = '&t=' + Date.now();
+  var tk = getToken();
+  function jget(url, opt){
+    return fetch(url, opt).then(function(r){
       if(r.status === 404) return null;
       if(!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
-    }).catch(function(err){ return fallback ? fallback() : Promise.reject(err); });
+    });
   }
-  var chain = sameOrigin
-    ? tryFetch(sameOrigin, function(){ return tryFetch(
-        'https://cdn.jsdelivr.net/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '/' + DATA_FILE + ts); })
-    : tryFetch('https://cdn.jsdelivr.net/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '/' + DATA_FILE + ts);
-  chain.then(function(j){
-    if(!j){ cb(null, 'notfound'); return; }
-    cb(j, 'ok');
-  }).catch(function(err){ cb(null, err.message); });
+  // 源①：GitHub Contents API —— 最实时(TTL 60s)，但未认证会被限流(60次/时→403)，故仅在有令牌时用
+  function apiSrc(){
+    var h = {'Accept':'application/vnd.github+json'};
+    if(tk) h['Authorization'] = 'token ' + tk;
+    return jget('https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/' + DATA_FILE + '?ref=' + SYNC_BRANCH + ts,
+        {headers:h, cache:'no-store'})
+      .then(function(j){ return j ? JSON.parse(b64ToUtf8(j.content)) : null; });
+  }
+  // 源②：同源 Pages 直读（可能滞后 ≤10 分钟）
+  function sameSrc(){
+    if(location.protocol !== 'http:' && location.protocol !== 'https:') return Promise.resolve(null);
+    return jget(location.origin + '/' + DATA_FILE + '?x=1' + ts, {cache:'no-store'});
+  }
+  // 源③：raw.githubusercontent —— 独立 CDN 链路，缓存与 Pages 不共享
+  function rawSrc(){
+    return jget('https://raw.githubusercontent.com/' + GH_USER + '/' + GH_REPO + '/' + SYNC_BRANCH + '/' + DATA_FILE + '?x=1' + ts, {cache:'no-store'});
+  }
+  // 源④：jsDelivr —— 仅最后兜底（可能滞后数小时）
+  function jsdSrc(){
+    return jget('https://cdn.jsdelivr.net/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '/' + DATA_FILE + '?x=1' + ts, {cache:'no-store'});
+  }
+  function tsof(d){ return (d && d.updatedAt) ? (Date.parse(d.updatedAt) || 0) : 0; }
+
+  var first = tk ? apiSrc() : Promise.resolve(null);
+  first.catch(function(){ return null; }).then(function(dApi){
+    if(dApi){ cb(dApi, 'ok'); return; }
+    // 无令牌：同源与 raw 并行取，选 updatedAt 更新的一份（两个缓存互相独立，降低滞后概率）
+    Promise.allSettled([sameSrc(), rawSrc()]).then(function(rs){
+      var cands = [];
+      rs.forEach(function(x){ if(x.status === 'fulfilled' && x.value) cands.push(x.value); });
+      if(cands.length){
+        cands.sort(function(a, b){ return tsof(b) - tsof(a); });
+        cb(cands[0], 'ok');
+        return;
+      }
+      jsdSrc().then(function(j){ if(j) cb(j, 'ok'); else cb(null, 'notfound'); })
+              .catch(function(e){ cb(null, e.message); });
+    });
+  });
 }
 
 // 把数据写回仓库（需要 PAT）。带 409 冲突自动重试：
@@ -1068,8 +1112,15 @@ function pushCloudData(token, cb){
   var MAX_TRY = 4;
 
   function putOnce(tryLeft){
-    // 1) 先拿文件当前 sha（若已存在）
-    return fetch(url + '?ref=' + SYNC_BRANCH, {headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token}})
+    // 1) 先拿文件当前 sha（若已存在）。
+    // 【关键】必须禁用 HTTP 缓存：GitHub Contents API 的 GET 响应带
+    // `Cache-Control: public, max-age=60`，若命中浏览器缓存会拿到"过期 sha"，
+    // PUT 必然 409；且几秒内的重试全会复用同一个旧 sha → 重试完全无效。
+    // 加 cache:'no-store' + 时间戳参数，强制每次取到实时 sha。
+    return fetch(url + '?ref=' + SYNC_BRANCH + '&t=' + Date.now(), {
+        headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},
+        cache:'no-store'
+      })
       .then(function(r){ return r.status === 404 ? {sha:null} : r.json(); })
       .then(function(existing){
         var payload = {
@@ -1123,7 +1174,7 @@ function syncPull(silent, done){
 // 保存到仓库（需要 PAT）
 var _pushing = false;   // 并发锁：true 表示有一次推送正在进行
 var _needRepull = false; // 推送期间若有新改动，标记为待补推
-function syncPush(cb){
+function syncPush(cb, force){
   var token = getToken();
   var st = document.getElementById('syncStatus');
   if(!token){
@@ -1131,6 +1182,11 @@ function syncPush(cb){
     else { st.textContent = '⚠️ 未设置令牌，无法写入。点「☁️ 云同步」粘贴 GitHub PAT。'; }
     return;
   }
+  // 内容与上次推送/拉取的一致 → 跳过，避免"无变化也产生新提交"
+  // （每次推送都新生成 updatedAt → 新 blob → sha 轮换，是 409 反复出现的根源之一）
+  // force=true（手动点"保存并同步"）时忽略该判断，强制回写一次。
+  var fp = dataFp();
+  if(!force && _lastPushedFp === fp){ if(cb) cb(true, 'nochange'); return; }
   // 已有推送在进行 → 标记待补推，等当前完成后自动再推一次最新数据（避免两个 PUT 抢同一 SHA）
   if(_pushing){ _needRepull = true; if(cb) cb(true, 'queued'); return; }
   _pushing = true;
@@ -1138,7 +1194,8 @@ function syncPush(cb){
   pushCloudData(token, function(ok, res){
     _pushing = false;
     if(ok){
-      if(st) st.textContent = '✅ 已同步到云端（' + collectData().updatedAt + '），其他设备刷新即可看到。';
+      _lastPushedFp = fp;             // 记录本次成功推送的内容指纹
+      if(st) st.textContent = '✅ 已同步到云端（' + new Date().toLocaleString('zh-CN') + '），其他设备刷新即可看到。';
       if(cb) cb(true);
     } else {
       var msg = (res && (res.message || res.error)) || '未知错误';
@@ -1166,7 +1223,7 @@ function saveTokenAndPush(){
   syncPush(function(ok, why){
     if(ok){ status.textContent = '✅ 同步成功！令牌已记住，本设备后续改动会自动同步。'; closeSyncModal(); }
     else { status.textContent = '⚠️ 同步失败：' + why + '（令牌已先保存，修正后可重试）。'; }
-  });
+  }, true);   // force=true：手动同步忽略"内容未变"的去重，确保一定写一次
 }
 
 // ---------- 诗词背景 ----------
