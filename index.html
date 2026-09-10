@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-page-node-id="ASQAJgqzNV7u3PBO79uEFJ">
-<head data-page-node-id="Lqae1A2hZH0rOhtgJhToWz">
-<meta charset="UTF-8" data-page-node-id="jpu8Ue4svaDIyoxBq1wJ26">
-<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="fsXWCDJOEeWxysEWR7XASI">
+<html lang="zh-CN" data-page-node-id="gHSqrTAvoTpHMA1K8X7jqi">
+<head data-page-node-id="b1NZ51HIss9jqYmJpXO44K">
+<meta charset="UTF-8" data-page-node-id="3MpWYE1F9qesSiaCB0AjJD">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="PwqeGshK2AdjukctF2ij8L">
+<meta name="robots" content="noindex,nofollow">
 <title>知识脉络 · 学习地图</title>
 <style>
   :root{
@@ -19,6 +20,40 @@
     -webkit-font-smoothing:antialiased;
   }
   a{color:inherit;text-decoration:none}
+
+  /* ===== 诗词背景层（底层、不可点击、仅显示） ===== */
+  .poem-bg{
+    position:fixed;inset:0;z-index:0;overflow:hidden;
+    pointer-events:none; /* 不拦截任何点击/拖拽 */
+  }
+  /* 每个“单元”＝两句诗，绝对定位散乱排布于整页 */
+  .poem-unit{
+    position:absolute;
+    display:flex;flex-direction:row;direction:rtl; /* 右起第一句，向左排列 */
+    align-items:flex-start;
+    user-select:none;
+  }
+  .poem-line{
+    writing-mode:vertical-rl;          /* 从上往下竖排 */
+    text-orientation:upright;
+    font-family:"Mao Zedong","毛泽东字体","STXingkai","STKaiti","KaiTi","楷体",serif;
+    font-size:clamp(20px,2.6vw,30px);
+    line-height:1.85;letter-spacing:3px;
+    color:rgba(212,175,55,.55);        /* 严肃烫金，清晰可见但不刺眼 */
+    white-space:nowrap;
+    padding:0 5px;
+  }
+  /* 让所有内容浮在诗词背景之上（topnav 自带 z-index:100 吸顶，无需处理） */
+  .hero,.notes-sec,.hint,.wrap,footer,.gate{position:relative;z-index:1}
+
+  /* hero 诗句引用 */
+  .hero-quote{
+    color:#e60000 !important;font-weight:800;
+    font-family:"Mao Zedong","毛泽东字体","STXingkai","STKaiti","KaiTi","楷体",serif;
+    font-size:clamp(22px,3.6vw,30px);
+    letter-spacing:3px;margin:0 auto 22px;line-height:1.6;
+    text-shadow:0 2px 14px rgba(230,0,0,.35);
+  }
 
   /* topnav */
   .topnav{
@@ -66,6 +101,7 @@
   .btn.primary{background:var(--accent2);border-color:var(--accent2);color:#fff}
   .btn.primary:hover{background:var(--accent);color:#fff}
   .btn:disabled{opacity:.5;cursor:wait}
+  .btn.mini{padding:5px 12px;font-size:13px;border-radius:9px}
   .scan-status{font-size:12px;color:var(--text2);margin-top:10px;min-height:16px}
 
   /* hint */
@@ -74,6 +110,30 @@
     font-size:12.5px;color:var(--text2);text-align:center;margin-bottom:8px;
   }
   .hint b{color:var(--accent)}
+
+  /* ===== 便签区 ===== */
+  .notes-sec{max-width:1180px;margin:0 auto;padding:8px 24px 4px}
+  .notes-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .notes-head h2{font-size:16px;font-weight:700;display:flex;align-items:center;gap:7px}
+  .notes-head .add-note{margin-left:auto}
+  .notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+  .note{
+    position:relative;border-radius:var(--radius);padding:14px 34px 14px 16px;
+    min-height:96px;color:#23262f;font-weight:500;font-size:14px;
+    box-shadow:0 4px 14px rgba(0,0,0,.28);transition:.2s;cursor:text;
+    display:flex;align-items:flex-start;
+  }
+  .note:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.38)}
+  .note .note-body{
+    flex:1;outline:none;min-height:52px;word-break:break-word;line-height:1.5;font-weight:500;
+  }
+  .note .note-body:empty:before{content:attr(data-ph);opacity:.45}
+  .note .note-del{
+    position:absolute;top:8px;right:9px;width:20px;height:20px;line-height:18px;
+    border:none;border-radius:50%;background:rgba(0,0,0,.12);color:#23262f;
+    font-size:15px;cursor:pointer;text-align:center;padding:0;transition:.2s;
+  }
+  .note .note-del:hover{background:rgba(0,0,0,.3)}
 
   /* sections */
   .wrap{max-width:1180px;margin:0 auto;padding:16px 24px 80px}
@@ -101,7 +161,9 @@
   .card:hover::before{opacity:1}
   .card.dragging{opacity:.4;cursor:grabbing}
   .card .grip{position:absolute;right:8px;top:7px;color:var(--text2);font-size:12px;opacity:.35}
-  .card .c-emoji{font-size:32px;margin-bottom:8px;line-height:1}
+  .card .c-emoji{position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;margin-bottom:8px}
+  .card .fi-bg{font-size:30px;line-height:1}
+  .card .fi-img{position:absolute;width:34px;height:34px;object-fit:contain;border-radius:4px}
   .card .c-name{
     font-size:12.5px;font-weight:600;line-height:1.35;margin-bottom:6px;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
@@ -111,6 +173,15 @@
   .tag{padding:1px 7px;border-radius:9px;font-size:10.5px;border:1px solid var(--border);color:var(--text2)}
   .tag.doc{color:var(--teal);border-color:rgba(57,197,207,.4)}
   .tag.inter{color:var(--purple);border-color:rgba(188,140,255,.4)}
+  .tag.link{color:var(--accent);border-color:rgba(88,166,255,.4)}
+  /* 网址卡片右上角编辑钮 */
+  .card .card-edit{
+    position:absolute;left:8px;top:7px;width:18px;height:18px;line-height:16px;
+    border:none;border-radius:50%;background:rgba(255,255,255,.06);color:var(--text2);
+    font-size:12px;cursor:pointer;text-align:center;padding:0;opacity:0;transition:.2s;
+  }
+  .card.is-link:hover .card-edit{opacity:1}
+  .card .card-edit:hover{color:var(--accent);background:rgba(88,166,255,.15)}
 
   /* inbox（待分类）区 */
   #inbox .cat-head .icon{color:var(--orange)}
@@ -122,59 +193,161 @@
   }
   .empty .plus{font-size:22px;display:block;margin-bottom:6px;opacity:.5}
 
+  /* ===== 添加/编辑网址弹窗 ===== */
+  .modal-mask{
+    position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);
+    display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-mask.show{display:flex}
+  .modal{
+    width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--border);
+    border-radius:14px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .modal h3{font-size:17px;margin-bottom:14px}
+  .modal label{display:block;font-size:12.5px;color:var(--text2);margin-bottom:6px}
+  .modal input[type=text]{
+    width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);
+    background:var(--bg);color:var(--text);font-size:14px;outline:none;margin-bottom:12px;
+  }
+  .modal input[type=text]:focus{border-color:var(--accent)}
+  .modal-btns{display:flex;gap:10px;justify-content:flex-end}
+  .modal-status{font-size:12px;color:var(--text2);margin-top:10px;min-height:16px}
+
+  /* ===== 密码门禁 ===== */
+  .gate{
+    position:fixed;inset:0;z-index:300;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+  }
+  .gate.hide{display:none}
+  .gate-box{text-align:center;max-width:340px;width:100%}
+  .gate-box .g-emoji{font-size:46px;margin-bottom:14px}
+  .gate-box h2{font-size:20px;font-weight:800;margin-bottom:6px}
+  .gate-box .g-sub{color:var(--text2);font-size:13px;margin-bottom:22px}
+  .gate-dots{display:flex;gap:14px;justify-content:center;margin-bottom:18px}
+  .gate-dots i{
+    width:15px;height:15px;border-radius:50%;border:1.5px solid var(--border);
+    background:transparent;display:block;transition:.15s;
+  }
+  .gate-dots i.on{background:var(--accent);border-color:var(--accent);transform:scale(1.05)}
+  .gate-input{
+    width:100%;text-align:center;letter-spacing:14px;
+    font-size:30px;font-weight:700;padding:12px 8px;border-radius:12px;
+    border:1px solid var(--border);background:var(--bg2);color:var(--text);
+    outline:none;caret-color:var(--accent);
+  }
+  .gate-input:focus{border-color:var(--accent)}
+  .gate-input.err{border-color:#f85149;animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+  .gate-tip{color:var(--text2);font-size:12px;margin-top:14px;min-height:16px}
+  .gate-tip.err{color:#f85149}
+
   footer{max-width:1180px;margin:0 auto;padding:30px 24px 60px;text-align:center;color:var(--text2);font-size:12px;border-top:1px solid var(--border)}
 
   @media(max-width:600px){
     .hero h1{font-size:27px}
+    .hero p{font-size:14px}
     .nav-links{display:none}
     .grid{grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px}
     .card{min-height:96px;padding:12px 6px 10px}
-    .card .c-emoji{font-size:28px}
+    .card .c-emoji{width:36px;height:36px}
+    .card .fi-bg{font-size:26px}
+    .card .fi-img{width:30px;height:30px}
+    .notes-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+    .note{min-height:88px;font-size:13px}
+    .gate-input{font-size:26px;letter-spacing:11px}
+    .gate-dots{gap:12px}
   }
 </style>
 </head>
-<body data-page-node-id="fSfDO9AYecyxMI8RBNc0C0">
+<body data-page-node-id="rJJrNDRHMPCemoVjolmUNU">
 
-<nav class="topnav" data-page-node-id="JEiFtohKfUBFlh2yc6sWfA">
-  <div class="topnav-inner" data-page-node-id="Ge9ROWUsQP8HD9w1IVWLLx">
-    <div class="logo" data-page-node-id="YLilRAvanyyd4FVieYp69N"><span class="dot" data-page-node-id="ATRecE3sfKzpuwTnG5f3I4"></span>知识脉络</div>
-    <div class="nav-links" id="navLinks" data-page-node-id="EnI00IXcJbRCmMLWPU9U8G"></div>
+<!-- 密码门禁 -->
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <div class="g-emoji">🔒</div>
+    <h2>知识脉络</h2>
+    <div class="g-sub">请输入 4 位访问密码</div>
+    <div class="gate-dots" id="gateDots">
+      <i></i><i></i><i></i><i></i>
+    </div>
+    <input type="text" class="gate-input" id="gateInput" inputmode="numeric"
+      maxlength="4" autocomplete="off" placeholder="••••">
+    <div class="gate-tip" id="gateTip"></div>
+  </div>
+</div>
+
+<!-- 诗词背景层（随机毛泽东诗词，竖排烫金，仅显示不可点击） -->
+<div class="poem-bg" id="poemBg" aria-hidden="true"></div>
+
+<nav class="topnav" data-page-node-id="MMqZMxdeOp2iCGnHV9rLgd">
+  <div class="topnav-inner" data-page-node-id="qMTvV578s4rpDudiY8t2FA">
+    <div class="logo" data-page-node-id="7LIB6R5PgBqDAYBcQdE9rr"><span class="dot" data-page-node-id="8XDB3Ez3iDBaJhhW36gMsw"></span>知识脉络</div>
+    <div class="nav-links" id="navLinks" data-page-node-id="Jnwm1f2VcRfbadpR8SnSpi"></div>
   </div>
 </nav>
 
-<header class="hero" data-page-node-id="cadrQxzI5wdD4BpsDo5ibV">
-  <div class="emoji" data-page-node-id="RornTuNdNhxMk5tSm8JcdH">🗺️</div>
-  <h1 data-page-node-id="P2EXW3LtwpCQU1ns6aSZiQ"><span class="grad" data-page-node-id="KRoUJiODdD7eiTxOCuCcWF">知识脉络</span></h1>
-  <p data-page-node-id="nShMYymLKBPu90svLvWHcf">把零散的学习资料串成一张可随时查阅的知识地图。点「仓库检索」拉取仓库里的新教程，再把卡片拖动到下方合适的板块归类。</p>
-  <div class="badges" data-page-node-id="dAuJQoYeH4nZWCwy5BwOeT">
-    <span class="badge" data-page-node-id="e56AVj7crcZjpB8D3dBMpF">📚 <b id="totalCount" data-page-node-id="GTw8igMBYDYJbcUNjwczvg">0</b> 份资料</span>
-    <span class="badge" data-page-node-id="cyO8RlN7yEIMLF5quhvFc0">📱 手机可看</span>
-    <span class="badge" data-page-node-id="5giM7p3IODnOnSxnR4Iv1J">☁️ GitHub Pages · 免备案</span>
-    <span class="badge" data-page-node-id="BWreH0OOOf9LJHBxGfmHQW">🖱️ 拖拽分类</span>
+<header class="hero" data-page-node-id="uRR7NHDMMLdSmCjI7xJcJK">
+  <div class="emoji" data-page-node-id="zwhQ12ptAZgwDWA9626XEN">🗺️</div>
+  <h1 data-page-node-id="MaRJvnBmrEHA59Pk2DsI5w"><span class="grad" data-page-node-id="YOoFOV7DqUtUPm9cFaXRxS">知识脉络</span></h1>
+  <p class="hero-quote" data-page-node-id="tM25Qr4txgHutDe5vfCR4U">孩儿立志出乡关，学不成名誓不还</p>
+  <div class="badges" data-page-node-id="q2CtIEMxfqHMgsDrgpfRJP">
+    <span class="badge" data-page-node-id="eweTM9Unv8dQVUzJ8tnaHt">📚 <b id="totalCount" data-page-node-id="8WbRzQFipetEcnXxkXGDh2">0</b> 份资料</span>
+    <span class="badge" data-page-node-id="0kQplbZKVAMREclQh9hjLk">📌 便签</span>
+    <span class="badge" data-page-node-id="245IbpXZEEiLeKyCl37Xhl">🔗 常用网址</span>
+    <span class="badge" data-page-node-id="eNDLUm8tMWmU8j5VbXnfnX">📱 手机可看</span>
+    <span class="badge" data-page-node-id="awZ1ocHmUi6ZOvWHP4RUj2">🖱️ 拖拽分类</span>
   </div>
-  <div class="toolbar" data-page-node-id="rFAFrZJ7pQePxcJliLCh2x">
-    <button class="btn primary" id="scanBtn" onclick="scanRepo()" data-page-node-id="oJ0hj06KjjXZ3whvSn6xdx">🔍 仓库检索</button>
+  <div class="toolbar" data-page-node-id="OqAUvMpN2IttX00klA9HAX">
+    <button class="btn primary" id="scanBtn" onclick="scanRepo()" data-page-node-id="4ORMoFCqzq8xZV4gIzyymm">🔍 仓库检索</button>
   </div>
-  <div class="scan-status" id="scanStatus" data-page-node-id="GfyFtGrlGkbrAOhjdBa1aW"></div>
+  <div class="scan-status" id="scanStatus" data-page-node-id="PXaT5G2WmyzadcNFeAP1l0"></div>
 </header>
 
-<div class="hint" data-page-node-id="elPzo4XQ2XdEEXWk54gi9c">💡 提示：按住卡片拖动到目标板块即可归类；分类会自动保存在本浏览器，刷新不丢失。</div>
+<!-- 便签区（标题下方） -->
+<section class="notes-sec" id="notesSec" data-page-node-id="1K2u3BJ0HKuDVfovElm789">
+  <div class="notes-head" data-page-node-id="TUwuaMCx8tdf2H7ukBod8S">
+    <h2 data-page-node-id="nkM8Rmzi7m3RpdHfM3LpHO">📌 便签</h2>
+    <button class="btn mini" onclick="addNote()" data-page-node-id="U4ujlAr6GULFwW5ud8ZPPn">＋ 新增便签</button>
+  </div>
+  <div class="notes-grid" id="notesGrid" data-page-node-id="AvzuAh5h9I0XJbbYsbjQM3"></div>
+</section>
 
-<main class="wrap" id="main" data-page-node-id="VHgDaYVy80ISHEIknPIXVw">
+<div class="hint" data-page-node-id="yjnbFGN4d93XkTDcV0oAxJ">💡 提示：按住卡片拖动到目标板块即可归类；「常用网址」在待分类区点 <b data-page-node-id="wADnLKg4WBMftG8KYzaFI1">＋ 添加网址</b> 录入。所有内容自动保存在本浏览器，刷新不丢失。</div>
+
+<main class="wrap" id="main" data-page-node-id="6z4FD0nxpqheCcXHrXAGr0">
   <!-- 板块与卡片由 JS 渲染 -->
 </main>
 
-<footer data-page-node-id="ExNjvSVwPTJ8bhf3rchzvO">
-  知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 · 手机浏览器直接访问
+<footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
+  知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
 </footer>
 
+<!-- 添加/编辑网址弹窗 -->
+<div class="modal-mask" id="linkModal" data-page-node-id="n6jw6bGLF5AhVEzXcPk8vg">
+  <div class="modal" data-page-node-id="8WFqLzDsIE3g5cWg7ajxYE">
+    <h3 id="linkModalTitle" data-page-node-id="mt06UBl4xiIsqyFlrpEm1d">添加常用网址</h3>
+    <label for="linkUrlInput" data-page-node-id="twAsmgGYAfbBiPfA49NLpC">网址 URL</label>
+    <input type="text" id="linkUrlInput" placeholder="https://example.com" autocomplete="off" data-page-node-id="CLtHJ7teiKlylNhHKHJ3wF">
+    <div class="modal-btns" data-page-node-id="oJheUa7hkI9KNYpgmWRGuJ">
+      <button class="btn" onclick="closeLinkModal()" data-page-node-id="D0qpLYNoNAj5hQtNPm4saO">取消</button>
+      <button class="btn primary" id="linkSubmitBtn" onclick="submitLink()" data-page-node-id="7F0txHhA3nKIb9TinaW7OD">添加</button>
+    </div>
+    <div class="modal-status" id="linkModalStatus" data-page-node-id="WKMkAGEJDpQ1VGBkunicVO"></div>
+  </div>
+</div>
+
+<script src="site-config.js"></script>
 <script>
-// ===== 配置：改成你自己的 GitHub 信息 =====
+// 兜底：若 site-config.js 未加载成功，用默认配置，避免进不去
+if(!window.SITE_CONFIG){ window.SITE_CONFIG = { password:"2026", rememberDays:7 }; }
+
+// ===== 配置 =====
 var GH_USER = 'lhalex1902';
 var GH_REPO  = 'knowledge-site';
-var LS_KEY   = 'zhishi-pulse-layout-v1';  // localStorage 键
+var LS_LAYOUT = 'zhishi-pulse-layout-v1';
+var LS_LINKS  = 'zhishi-pulse-links-v1';
+var LS_NOTES  = 'zhishi-pulse-notes-v1';
 
-// 四个固定板块（顺序即显示顺序）
 var SECTIONS = [
   {id:'basic', icon:'🧱', name:'基础知识'},
   {id:'dev',   icon:'💻', name:'开发'},
@@ -183,7 +356,6 @@ var SECTIONS = [
 ];
 var SEC_IDS = SECTIONS.map(function(s){return s.id;});
 
-// 已知文件 → 初始板块映射
 var NAME2SEC = {
   '移动端抓包与日志分析实战教程.html':'test',
   'Fiddler抓包工具实操教程.html':'test',
@@ -191,7 +363,6 @@ var NAME2SEC = {
   '移动端测试脚本代码交互手册.html':'dev'
 };
 
-// 内置元信息库（原 files.json 内容，直接写进代码，无需外部文件）
 var META = {
   '移动端测试脚本代码交互手册.html':{
     emoji:'🧰', title:'测试脚本代码交互手册',
@@ -215,20 +386,28 @@ var META = {
   }
 };
 
-// 全局状态
-var LAYOUT = {};      // {basic:[file,...], dev:[...], test:[...], memo:[...], inbox:[...]}
+var NOTE_COLORS = ['#f5d76e','#f6a5c0','#a5c8f6','#a8e6a3','#c9b6f0','#ffb27f','#7fe0d0'];
 
-// ===== 转义 =====
+// 全局状态
+var LAYOUT = {};   // 各板块 + inbox：存放 item token（文件名 或 'link:<id>'）
+var LINKS  = [];   // {id,url,title,desc,icon}
+var NOTES  = [];   // {id,text,color}
+
+// ===== 工具 =====
 function esc(s){
   return String(s).replace(/[&<>"']/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function hostOf(url){
+  try{ return new URL(url).hostname; }catch(e){ return url; }
+}
 
-// ===== 初始化 layout：优先读 localStorage，否则按 NAME2SEC 迁移 =====
+// ===== LAYOUT =====
 function initLayout(){
   var saved = null;
-  try{ saved = JSON.parse(localStorage.getItem(LS_KEY)); }catch(e){}
+  try{ saved = JSON.parse(localStorage.getItem(LS_LAYOUT)); }catch(e){}
   if(saved && typeof saved === 'object'){
     var base = {basic:[],dev:[],test:[],memo:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(saved[id]) ? saved[id] : []; });
@@ -242,56 +421,137 @@ function initLayout(){
   });
   return layout;
 }
-function saveLayout(){
-  try{ localStorage.setItem(LS_KEY, JSON.stringify(LAYOUT)); }catch(e){}
+function saveLayout(){ try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){} }
+
+// ===== LINKS =====
+function loadLinks(){
+  try{ var s = JSON.parse(localStorage.getItem(LS_LINKS)); return Array.isArray(s) ? s : []; }catch(e){ return []; }
+}
+function saveLinks(){ try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){} }
+
+// ===== NOTES =====
+function loadNotes(){
+  try{ var s = JSON.parse(localStorage.getItem(LS_NOTES)); return Array.isArray(s) ? s : null; }catch(e){ return null; }
+}
+function saveNotes(){ try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){} }
+function initNotes(){
+  var saved = loadNotes();
+  if(saved){ return saved; }
+  // 默认 5 张空便签
+  var arr = [];
+  for(var i=0;i<5;i++){ arr.push({id:uid(), text:'', color:NOTE_COLORS[i % NOTE_COLORS.length]}); }
+  return arr;
 }
 
-// ===== 统计总数 =====
+// ===== 渲染：便签 =====
+function renderNotes(){
+  var grid = document.getElementById('notesGrid');
+  if(NOTES.length === 0){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><span class="plus">＋</span>点右上角「新增便签」记录灵感</div>';
+    return;
+  }
+  var html = '';
+  NOTES.forEach(function(n){
+    html += '<div class="note" style="background:'+esc(n.color)+'">'+
+      '<button class="note-del" title="删除" onclick="delNote(\''+n.id+'\')">×</button>'+
+      '<div class="note-body" contenteditable="true" data-ph="点击编辑…" '+
+        'data-id="'+n.id+'" '+
+        'onblur="saveNoteText(this)" '+
+        'onkeydown="noteKeydown(event,this)">'+esc(n.text)+'</div>'+
+    '</div>';
+  });
+  grid.innerHTML = html;
+}
+function noteKeydown(e, el){
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); el.blur(); }
+}
+function saveNoteText(el){
+  var id = el.getAttribute('data-id');
+  var note = NOTES.filter(function(n){return n.id===id;})[0];
+  if(note){ note.text = el.textContent.trim(); saveNotes(); }
+}
+function addNote(){
+  var color = NOTE_COLORS[NOTES.length % NOTE_COLORS.length];
+  var n = {id:uid(), text:'', color:color};
+  NOTES.push(n); saveNotes(); renderNotes();
+  // 聚焦新便签
+  var el = document.querySelector('.note-body[data-id="'+n.id+'"]');
+  if(el) el.focus();
+}
+function delNote(id){
+  NOTES = NOTES.filter(function(n){return n.id!==id;});
+  saveNotes(); renderNotes();
+}
+
+// ===== 统计 =====
 function totalCount(){
   var n = 0;
   SEC_IDS.forEach(function(id){ n += LAYOUT[id].length; });
   return n;
 }
 
-// ===== 渲染单个卡片（App 图标式） =====
-function cardHtml(file){
-  var m = META[file] || {};
-  var title = m.title || file.replace(/\.html?$/i,'');
+// ===== 渲染：单个文件卡片 =====
+function cardHtml(token){
+  var m = META[token] || {};
+  var title = m.title || token.replace(/\.html?$/i,'');
   var emoji = m.emoji || '📄';
   var tags = (m.tags || []).map(function(t){
     var cls = t.cls ? (' class="'+esc(t.cls)+'"') : '';
     return '<span class="tag'+cls+'">'+esc(t.text)+'</span>';
   }).join('');
-  return '<a class="card" draggable="true" data-file="'+esc(file)+'" href="'+esc(file)+'" title="'+esc(title)+'">'+
+  return '<a class="card" draggable="true" data-item="'+esc(token)+'" href="'+esc(token)+'" title="'+esc(title)+'">'+
       '<span class="grip">⠿</span>'+
-      '<div class="c-emoji">'+esc(emoji)+'</div>'+
+      '<div class="c-emoji"><span class="fi-bg">'+esc(emoji)+'</span></div>'+
       '<div class="c-name">'+esc(title)+'</div>'+
       '<div class="c-tags">'+tags+'</div>'+
     '</a>';
 }
 
-// ===== 渲染整个页面 =====
+// ===== 渲染：单个网址卡片 =====
+function linkCardHtml(id){
+  var lk = LINKS.filter(function(x){return x.id===id;})[0];
+  if(!lk) return '';
+  var host = hostOf(lk.url);
+  var iconSrc = lk.icon || ('https://www.google.com/s2/favicons?domain='+encodeURIComponent(host)+'&sz=64');
+  var tags = '<span class="tag link">网址</span>';
+  return '<a class="card is-link" draggable="true" data-item="link:'+esc(id)+'" href="'+esc(lk.url)+'" target="_blank" rel="noopener" title="'+esc(lk.title||host)+'">'+
+      '<span class="grip">⠿</span>'+
+      '<button class="card-edit" title="编辑" onclick="editLink(event,\''+id+'\')">✎</button>'+
+      '<div class="c-emoji"><span class="fi-bg">🌐</span><img class="fi-img" src="'+esc(iconSrc)+'" loading="lazy" onerror="this.style.display=\'none\'"></div>'+
+      '<div class="c-name">'+esc(lk.title || host)+'</div>'+
+      '<div class="c-tags">'+tags+'</div>'+
+    '</a>';
+}
+
+// ===== item token → HTML =====
+function itemHtml(token){
+  if(typeof token === 'string' && token.indexOf('link:')===0){
+    return linkCardHtml(token.slice(5));
+  }
+  return cardHtml(token);
+}
+
+// ===== 渲染：主区域板块 =====
 function render(){
   var main = document.getElementById('main');
   var nav = document.getElementById('navLinks');
   var html = '';
   var navHtml = '';
 
-  // 四个固定板块
   SECTIONS.forEach(function(sec){
-    var files = LAYOUT[sec.id] || [];
+    var items = LAYOUT[sec.id] || [];
     navHtml += '<a href="#sec-'+sec.id+'">'+esc(sec.name)+'</a>';
     html += '<section class="category" id="sec-'+sec.id+'" data-sec="'+sec.id+'">';
     html += '<div class="cat-head">';
     html += '<span class="icon">'+sec.icon+'</span>';
     html += '<h2>'+esc(sec.name)+'</h2>';
-    html += '<span class="count">'+files.length+' 份</span>';
+    html += '<span class="count">'+items.length+' 份</span>';
     html += '</div>';
     html += '<div class="grid" data-sec="'+sec.id+'">';
-    if(files.length === 0){
+    if(items.length === 0){
       html += '<div class="empty"><span class="plus">＋</span>把卡片拖到这里，或点「仓库检索」拉取新教程</div>';
     } else {
-      files.forEach(function(f){ html += cardHtml(f); });
+      items.forEach(function(tk){ html += itemHtml(tk); });
     }
     html += '<div class="drop-placeholder">松开鼠标，放到「'+esc(sec.name)+'」</div>';
     html += '</div></section>';
@@ -304,13 +564,14 @@ function render(){
   html += '<div class="cat-head">';
   html += '<span class="icon">📥</span>';
   html += '<h2>待分类</h2>';
-  html += '<span class="count">'+inbox.length+' 个</span>';
+  html += '<button class="btn mini" onclick="openLinkModal()" style="margin-left:8px">＋ 添加网址</button>';
+  html += '<span class="count" style="margin-left:auto">'+inbox.length+' 个</span>';
   html += '</div>';
   html += '<div class="grid" data-sec="inbox">';
   if(inbox.length === 0){
-    html += '<div class="empty"><span class="plus">∅</span>点「仓库检索」拉取仓库里的新教程，会出现在这里等你归类</div>';
+    html += '<div class="empty"><span class="plus">∅</span>点「仓库检索」拉取仓库教程，或点上方「＋ 添加网址」录入常用网站，会出现在这里等你归类</div>';
   } else {
-    inbox.forEach(function(f){ html += cardHtml(f); });
+    inbox.forEach(function(tk){ html += itemHtml(tk); });
   }
   html += '<div class="drop-placeholder">松开鼠标，放回待分类</div>';
   html += '</div></section>';
@@ -323,21 +584,21 @@ function render(){
 }
 
 // ===== 拖拽逻辑 =====
-var DRAG_FILE = null;
+var DRAG_ITEM = null;
 function bindDnD(){
   var cards = document.querySelectorAll('.card');
   var grids = document.querySelectorAll('.grid');
 
   cards.forEach(function(c){
     c.addEventListener('dragstart', function(e){
-      DRAG_FILE = c.getAttribute('data-file');
+      DRAG_ITEM = c.getAttribute('data-item');
       c.classList.add('dragging');
-      try{ e.dataTransfer.setData('text/plain', DRAG_FILE); }catch(err){}
+      try{ e.dataTransfer.setData('text/plain', DRAG_ITEM); }catch(err){}
       e.dataTransfer.effectAllowed = 'move';
     });
     c.addEventListener('dragend', function(){
       c.classList.remove('dragging');
-      DRAG_FILE = null;
+      DRAG_ITEM = null;
     });
   });
 
@@ -353,27 +614,26 @@ function bindDnD(){
     g.addEventListener('drop', function(e){
       e.preventDefault();
       g.classList.remove('drop-active');
-      var file = DRAG_FILE;
-      try{ file = e.dataTransfer.getData('text/plain') || file; }catch(err){}
-      if(!file) return;
-      moveTo(e.currentTarget.getAttribute('data-sec'), file);
+      var item = DRAG_ITEM;
+      try{ item = e.dataTransfer.getData('text/plain') || item; }catch(err){}
+      if(!item) return;
+      moveTo(e.currentTarget.getAttribute('data-sec'), item);
     });
   });
 }
 
-// 把 file 移到目标板块（toSec）
-function moveTo(toSec, file){
+function moveTo(toSec, item){
   SEC_IDS.forEach(function(id){
-    var i = LAYOUT[id].indexOf(file);
+    var i = LAYOUT[id].indexOf(item);
     if(i !== -1){ LAYOUT[id].splice(i,1); }
   });
-  var ii = LAYOUT.inbox.indexOf(file);
+  var ii = LAYOUT.inbox.indexOf(item);
   if(ii !== -1){ LAYOUT.inbox.splice(ii,1); }
 
   if(SEC_IDS.indexOf(toSec) !== -1){
-    LAYOUT[toSec].push(file);
+    if(LAYOUT[toSec].indexOf(item) === -1) LAYOUT[toSec].push(item);
   } else if(toSec === 'inbox'){
-    if(LAYOUT.inbox.indexOf(file) === -1) LAYOUT.inbox.push(file);
+    if(LAYOUT.inbox.indexOf(item) === -1) LAYOUT.inbox.push(item);
   }
   saveLayout();
   render();
@@ -394,7 +654,7 @@ function bindScrollSpy(){
   });
 }
 
-// ===== 仓库检索：拉取仓库里的 HTML，未归类的放进待分类区 =====
+// ===== 仓库检索 =====
 function scanRepo(){
   var btn = document.getElementById('scanBtn');
   var status = document.getElementById('scanStatus');
@@ -409,7 +669,6 @@ function scanRepo(){
       files.forEach(function(f){
         if(f.type === 'file' && /\.html?$/i.test(f.name)){
           var name = decodeURIComponent(f.name);
-          // 登记元信息（若内置 META 没有，用文件名兜底）
           if(!META[name]){
             META[name] = {
               emoji:'📄',
@@ -418,7 +677,6 @@ function scanRepo(){
               tags:[{cls:'',text:'仓库文件'}]
             };
           }
-          // 若尚未归入任何板块，放进待分类区
           var placed = false;
           SEC_IDS.forEach(function(id){ if(LAYOUT[id].indexOf(name)!==-1) placed=true; });
           if(!placed && LAYOUT.inbox.indexOf(name) === -1){
@@ -441,9 +699,234 @@ function scanRepo(){
     .then(function(){ btn.disabled = false; });
 }
 
+// ===== 常用网址：弹窗 =====
+var EDIT_LINK_ID = null;
+function openLinkModal(id){
+  EDIT_LINK_ID = id || null;
+  var input = document.getElementById('linkUrlInput');
+  var titleEl = document.getElementById('linkModalTitle');
+  var btnEl = document.getElementById('linkSubmitBtn');
+  var status = document.getElementById('linkModalStatus');
+  status.textContent = '';
+  if(EDIT_LINK_ID){
+    var lk = LINKS.filter(function(x){return x.id===EDIT_LINK_ID;})[0];
+    titleEl.textContent = '编辑网址';
+    btnEl.textContent = '保存';
+    input.value = lk ? lk.url : '';
+  } else {
+    titleEl.textContent = '添加常用网址';
+    btnEl.textContent = '添加';
+    input.value = '';
+  }
+  document.getElementById('linkModal').classList.add('show');
+  setTimeout(function(){ input.focus(); }, 30);
+}
+function closeLinkModal(){
+  document.getElementById('linkModal').classList.remove('show');
+  EDIT_LINK_ID = null;
+}
+function normalizeUrl(v){
+  v = (v||'').trim();
+  if(!v) return '';
+  if(!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  return v;
+}
+function submitLink(){
+  var input = document.getElementById('linkUrlInput');
+  var url = normalizeUrl(input.value);
+  var status = document.getElementById('linkModalStatus');
+  if(!url){ status.textContent = '⚠️ 请输入网址。'; return; }
+
+  if(EDIT_LINK_ID){
+    var lk = LINKS.filter(function(x){return x.id===EDIT_LINK_ID;})[0];
+    if(lk){ lk.url = url; lk.title = '读取中…'; lk.desc=''; lk.icon=''; }
+  } else {
+    var id = uid();
+    LINKS.push({id:id, url:url, title:'读取中…', desc:'', icon:''});
+    // 放进待分类区
+    if(LAYOUT.inbox.indexOf('link:'+id) === -1) LAYOUT.inbox.push('link:'+id);
+  }
+  saveLinks(); saveLayout();
+  closeLinkModal();
+  render();
+
+  // 异步抓取网页信息
+  var targetId = EDIT_LINK_ID || id;
+  fetchLinkMeta(url, targetId);
+}
+
+// 编辑网址卡片（点 ✎）
+function editLink(e, id){
+  e.preventDefault();
+  e.stopPropagation();
+  openLinkModal(id);
+}
+
+// 通过 CORS 代理抓取网页 title / description / favicon
+function fetchLinkMeta(url, id){
+  var proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+  fetch(proxy)
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(function(html){
+      var info = parseHtmlMeta(html, url);
+      var lk = LINKS.filter(function(x){return x.id===id;})[0];
+      if(lk){
+        if(info.title) lk.title = info.title;
+        if(info.desc) lk.desc = info.desc;
+        if(info.icon) lk.icon = info.icon;
+        if(!lk.title || lk.title==='读取中…') lk.title = hostOf(url);
+      }
+      saveLinks(); render();
+    })
+    .catch(function(){
+      // 抓取失败：用域名兜底
+      var lk = LINKS.filter(function(x){return x.id===id;})[0];
+      if(lk && (!lk.title || lk.title==='读取中…')) lk.title = hostOf(url);
+      saveLinks(); render();
+    });
+}
+function parseHtmlMeta(html, url){
+  var out = {title:'', desc:'', icon:''};
+  // title
+  var ogTitle = html.match(/property=["']og:title["'][^>]*content=["']([^"']*)["']/i);
+  var ttl = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  var title = (ogTitle && ogTitle[1]) || (ttl && ttl[1]) || '';
+  out.title = title.replace(/\s+/g,' ').trim();
+  // description
+  var ogDesc = html.match(/property=["']og:description["'][^>]*content=["']([^"']*)["']/i);
+  var metaDesc = html.match(/name=["']description["'][^>]*content=["']([^"']*)["']/i);
+  var desc = (ogDesc && ogDesc[1]) || (metaDesc && metaDesc[1]) || '';
+  out.desc = desc.replace(/\s+/g,' ').trim();
+  // favicon
+  var ico = html.match(/<link[^>]+rel=["'](?:shortcut )?icon["'][^>]*href=["']([^"']*)["']/i)
+         || html.match(/<link[^>]+href=["']([^"']*)["'][^>]+rel=["'](?:shortcut )?icon["']/i)
+         || html.match(/<link[^>]+rel=["']apple-touch-icon["'][^>]*href=["']([^"']*)["']/i);
+  if(ico && ico[1]){
+    try{ out.icon = new URL(ico[1], url).href; }catch(e){ out.icon = ico[1]; }
+  }
+  return out;
+}
+
 // ===== 启动 =====
-LAYOUT = initLayout();
-render();
+var LS_GATE = 'zhishi-pulse-gate-v1';
+
+function boot(){
+  LINKS = loadLinks();
+  NOTES = initNotes();
+  saveNotes();
+  LAYOUT = initLayout();
+  renderNotes();
+  render();
+}
+
+// ---------- 诗词背景 ----------
+// 每个元素为一联（两句），单元内两句整齐工整，单元之间在整页散乱排布
+var POEMS = [
+  ['已是悬崖百丈冰', '犹有花枝俏'],
+  ['钟山风雨起苍黄', '百万雄师过大江'],
+  ['雄关漫道真如铁', '而今迈步从头越'],
+  ['金沙水拍云崖暖', '大渡桥横铁索寒'],
+  ['天若有情天亦老', '人间正道是沧桑'],
+  ['萧瑟秋风今又是', '换了人间'],
+  ['已是悬崖百丈冰', '犹有花枝俏'],
+  ['为有牺牲多壮志', '敢教日月换新天']
+];
+function renderPoems(){
+  var box = document.getElementById('poemBg');
+  if(!box) return;
+  // 阵列式均匀排布：网格布局，单元落在每个格子中心，仅加极轻微抖动
+  // 窄屏(手机)用 2列×4行，宽屏用 4列×2行，保证均匀不重叠
+  var narrow = window.innerWidth < 640;
+  var cols = narrow ? 2 : 4;
+  var rows = narrow ? 4 : 2;
+  var html = '';
+  for(var k=0;k<POEMS.length;k++){
+    var pair = POEMS[k];
+    var c = k % cols;              // 列
+    var r = Math.floor(k/cols);    // 行
+    // 格子中心坐标（均匀分布）
+    var left = ((c + 0.5) / cols * 100).toFixed(2);
+    var top  = ((r + 0.5) / rows * 100).toFixed(2);
+    var jitterX = (Math.random()*4 - 2).toFixed(2);   // ±2% 轻微错位
+    var jitterY = (Math.random()*4 - 2).toFixed(2);
+    var rot = (Math.random()*4 - 2).toFixed(2);       // 轻微旋转
+    var opacity = (0.5 + Math.random()*0.25).toFixed(3); // 0.5~0.75
+    html += '<div class="poem-unit" style="left:'+left+'%;top:'+top+'%;'+
+            'transform:translate(calc(-50% + '+jitterX+'%), calc(-50% + '+jitterY+'%)) rotate('+rot+'deg);opacity:'+opacity+'">'+
+              '<span class="poem-line">'+esc(pair[0])+'</span>'+
+              '<span class="poem-line">'+esc(pair[1])+'</span>'+
+            '</div>';
+  }
+  box.innerHTML = html;
+}
+
+// ---------- 密码门禁 ----------
+function gateInit(){
+  var cfg = window.SITE_CONFIG || {password:"2026", rememberDays:7};
+  var days = (typeof cfg.rememberDays === 'number') ? cfg.rememberDays : 7;
+
+  // 若开启了记住设备，且本地有未过期的通过记录 → 直接放行
+  if(days > 0){
+    try{
+      var ts = parseInt(localStorage.getItem(LS_GATE) || '0', 10);
+      if(ts && (Date.now() - ts) < days * 24 * 3600 * 1000){
+        gateOpen();
+        return;
+      }
+    }catch(e){}
+  }
+  // 否则显示门禁
+  gateBind(cfg);
+}
+
+function gateBind(cfg){
+  var gate = document.getElementById('gate');
+  var input = document.getElementById('gateInput');
+  var dots = document.getElementById('gateDots').children;
+  var tip = document.getElementById('gateTip');
+
+  input.addEventListener('input', function(){
+    var v = input.value.replace(/\D/g,'').slice(0,4);
+    input.value = v;
+    for(var i=0;i<dots.length;i++){ dots[i].classList.toggle('on', i < v.length); }
+    if(v.length === 4){
+      if(v === cfg.password){
+        gatePass(cfg);
+      } else {
+        input.classList.add('err');
+        tip.textContent = '密码错误，请重试';
+        tip.classList.add('err');
+        setTimeout(function(){
+          input.value=''; input.classList.remove('err');
+          tip.textContent=''; tip.classList.remove('err');
+          for(var j=0;j<dots.length;j++){ dots[j].classList.remove('on'); }
+          input.focus();
+        }, 700);
+      }
+    }
+  });
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ input.blur(); }
+  });
+  setTimeout(function(){ input.focus(); }, 60);
+}
+
+function gatePass(cfg){
+  var days = (typeof cfg.rememberDays === 'number') ? cfg.rememberDays : 7;
+  if(days > 0){
+    try{ localStorage.setItem(LS_GATE, String(Date.now())); }catch(e){}
+  }
+  gateOpen();
+}
+
+function gateOpen(){
+  var gate = document.getElementById('gate');
+  if(gate){ gate.classList.add('hide'); }
+  boot();
+}
+
+renderPoems();
+gateInit();
 </script>
 
 </body>
