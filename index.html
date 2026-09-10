@@ -324,6 +324,8 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
+  <span id="buildTag" style="opacity:.8"> · v2026-09-10.4</span>
+  <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
 <!-- 添加/编辑网址弹窗 -->
@@ -1086,22 +1088,41 @@ function fetchCloudData(cb){
   }
   function tsof(d){ return (d && d.updatedAt) ? (Date.parse(d.updatedAt) || 0) : 0; }
 
-  var first = tk ? apiSrc() : Promise.resolve(null);
-  first.catch(function(){ return null; }).then(function(dApi){
-    if(dApi){ cb(dApi, 'ok'); return; }
-    // 无令牌：同源与 raw 并行取，选 updatedAt 更新的一份（两个缓存互相独立，降低滞后概率）
-    Promise.allSettled([sameSrc(), rawSrc()]).then(function(rs){
-      var cands = [];
-      rs.forEach(function(x){ if(x.status === 'fulfilled' && x.value) cands.push(x.value); });
-      if(cands.length){
-        cands.sort(function(a, b){ return tsof(b) - tsof(a); });
-        cb(cands[0], 'ok');
-        return;
-      }
-      jsdSrc().then(function(j){ if(j) cb(j, 'ok'); else cb(null, 'notfound'); })
-              .catch(function(e){ cb(null, e.message); });
+  // 兼容封装：把 promise 转成"永不 reject"的结果对象。
+  // 不用 ES2020 的 Promise.allSettled —— 旧内核浏览器(IE/老版Chromium/国产浏览器兼容模式)没有它，
+  // 会让读取函数直接抛错、回调永不触发，页面就停在默认初始界面。
+  function settle(p){ return p.then(function(v){ return {ok:true, value:v}; }, function(e){ return {ok:false, err:e}; }); }
+  function safe(fn){ try{ return settle(fn()); }catch(e){ return Promise.resolve({ok:false, err:e}); } }
+
+  var done = false;
+  var watchdog = setTimeout(function(){ finish(null, 'timeout'); }, 10000);  // 看门狗：10s 无结果就放弃
+  function finish(data, why){
+    if(done) return;                 // 保证回调恰好触发一次
+    done = true;
+    clearTimeout(watchdog);
+    cb(data, why);
+  }
+
+  try{
+    safe(function(){ return tk ? apiSrc() : Promise.resolve(null); }).then(function(r){
+      var dApi = (r.ok && r.value) ? r.value : null;
+      if(dApi){ finish(dApi, 'ok'); return; }
+      // 无令牌：同源与 raw 并行取，选 updatedAt 更新的一份（两个缓存互相独立，降低滞后概率）
+      Promise.all([safe(sameSrc), safe(rawSrc)]).then(function(rs){
+        var cands = [];
+        rs.forEach(function(x){ if(x.ok && x.value) cands.push(x.value); });
+        if(cands.length){
+          cands.sort(function(a, b){ return tsof(b) - tsof(a); });
+          finish(cands[0], 'ok');
+          return;
+        }
+        safe(jsdSrc).then(function(r2){
+          if(r2.ok && r2.value) finish(r2.value, 'ok');
+          else finish(null, 'notfound');
+        });
+      });
     });
-  });
+  }catch(e){ finish(null, e.message); }
 }
 
 // 把数据写回仓库（需要 PAT）。带 409 冲突自动重试：
@@ -1152,6 +1173,12 @@ function pushCloudData(token, cb){
     .catch(function(err){ cb(false, {message: err.message}); });
 }
 
+// 页脚诊断行：显示"云端数据是否读取成功"，便于快速定位（无令牌设备尤其有用）
+function diag(msg){
+  var el = document.getElementById('diagLine');
+  if(el) el.textContent = msg ? ('· ' + msg) : '';
+}
+
 // 从云端拉取并覆盖本地（silent=true 时不弹提示，仅静默失败；done 在拉取流程结束后调用）
 function syncPull(silent, done){
   var st = document.getElementById('syncStatus');
@@ -1160,11 +1187,17 @@ function syncPull(silent, done){
       applyData(data);
       renderNotes();
       render();
+      diag('已加载云端数据（更新于 ' + (data.updatedAt||'未知') + '）');
       if(!silent && st) st.textContent = '✅ 已从云端同步最新数据（更新于 ' + (data.updatedAt||'未知') + '）';
     } else {
+      diag(why === 'notfound' ? '云端暂无同步数据，显示本机内容' : ('云端读取失败：' + why + '，显示本机内容'));
       if(!silent){
         if(why === 'notfound') st.textContent = 'ℹ️ 云端还没有同步数据。点「保存并同步」把本机数据上传一次即可。';
         else st.textContent = '⚠️ 拉取失败：' + why;
+      } else if(st){
+        // 静默模式失败也要给个线索，避免"页面正常但数据没同步"却毫无提示
+        if(why === 'notfound') st.textContent = 'ℹ️ 云端暂无同步数据，当前显示本机内容。';
+        else st.textContent = '⚠️ 云端数据读取失败（' + why + '），当前显示本机内容。';
       }
     }
     if(done){ try{ done(); }catch(e){} }
