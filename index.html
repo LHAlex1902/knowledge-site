@@ -1020,26 +1020,43 @@ function fetchCloudData(cb){
     .catch(function(err){ cb(null, err.message); });
 }
 
-// 把数据写回仓库（需要 PAT）
+// 把数据写回仓库（需要 PAT）。带 409 冲突自动重试：
+// 若写入期间仓库又被改动（自动同步/多标签/连点导致 SHA 失配），
+// 自动重新拉取最新 SHA 再重试，最多 4 次，避免"移动靶"报错。
 function pushCloudData(token, cb){
   var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/' + DATA_FILE;
-  var payload = {
-    message: 'sync: 更新知识脉络数据 ' + new Date().toLocaleString('zh-CN'),
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(collectData())))),
-    branch: SYNC_BRANCH
-  };
-  // 写入需要先拿到文件当前 sha（若已存在）
-  fetch(url + '?ref=' + SYNC_BRANCH, {headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token}})
-    .then(function(r){ return r.status === 404 ? {sha:null} : r.json(); })
-    .then(function(existing){
-      if(existing.sha) payload.sha = existing.sha;
-      return fetch(url, {
-        method:'PUT',
-        headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},
-        body: JSON.stringify(payload)
+  var MAX_TRY = 4;
+
+  function putOnce(tryLeft){
+    // 1) 先拿文件当前 sha（若已存在）
+    return fetch(url + '?ref=' + SYNC_BRANCH, {headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token}})
+      .then(function(r){ return r.status === 404 ? {sha:null} : r.json(); })
+      .then(function(existing){
+        var payload = {
+          message: 'sync: 更新知识脉络数据 ' + new Date().toLocaleString('zh-CN'),
+          content: btoa(unescape(encodeURIComponent(JSON.stringify(collectData())))),
+          branch: SYNC_BRANCH
+        };
+        if(existing.sha) payload.sha = existing.sha;
+        return fetch(url, {
+          method:'PUT',
+          headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},
+          body: JSON.stringify(payload)
+        });
+      })
+      .then(function(r){
+        return r.json().then(function(j){ return {ok:r.ok, status:r.status, json:j}; })
+          .then(function(res){
+            // 409 冲突：SHA 失配（仓库在 GET 与 PUT 之间被改动）→ 稍等后重试
+            if(!res.ok && res.status === 409 && tryLeft > 0){
+              return new Promise(function(resolve){ setTimeout(function(){ resolve(putOnce(tryLeft-1)); }, 400 + Math.random()*400); });
+            }
+            return res;
+          });
       });
-    })
-    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, json:j}; }); })
+  }
+
+  putOnce(MAX_TRY)
     .then(function(res){ cb(res.ok, res.json); })
     .catch(function(err){ cb(false, {message: err.message}); });
 }
@@ -1064,6 +1081,8 @@ function syncPull(silent, done){
 }
 
 // 保存到仓库（需要 PAT）
+var _pushing = false;   // 并发锁：true 表示有一次推送正在进行
+var _needRepull = false; // 推送期间若有新改动，标记为待补推
 function syncPush(cb){
   var token = getToken();
   var st = document.getElementById('syncStatus');
@@ -1072,8 +1091,12 @@ function syncPush(cb){
     else { st.textContent = '⚠️ 未设置令牌，无法写入。点「☁️ 云同步」粘贴 GitHub PAT。'; }
     return;
   }
+  // 已有推送在进行 → 标记待补推，等当前完成后自动再推一次最新数据（避免两个 PUT 抢同一 SHA）
+  if(_pushing){ _needRepull = true; if(cb) cb(true, 'queued'); return; }
+  _pushing = true;
   if(st) st.textContent = '🔼 正在同步到云端...';
   pushCloudData(token, function(ok, res){
+    _pushing = false;
     if(ok){
       if(st) st.textContent = '✅ 已同步到云端（' + collectData().updatedAt + '），其他设备刷新即可看到。';
       if(cb) cb(true);
@@ -1082,6 +1105,8 @@ function syncPush(cb){
       if(st) st.textContent = '⚠️ 同步失败：' + msg + (msg.indexOf('401')!==-1||msg.indexOf('Bad credentials')!==-1 ? '（令牌无效或已过期，请重新粘贴）' : '');
       if(cb) cb(false, msg);
     }
+    // 推送期间累积了新改动 → 补推一次（用最新数据 + 最新 SHA）
+    if(_needRepull){ _needRepull = false; setTimeout(function(){ syncPush(); }, 300); }
   });
 }
 
