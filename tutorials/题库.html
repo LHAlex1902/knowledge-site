@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>骆华 · 游戏测试面试题库 — 基于简历深度定制</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --bg-card: #161b22;
+  --bg-code: #0d1117;
+  --border: #30363d;
+  --text: #c9d1d9;
+  --text-muted: #8b949e;
+  --text-heading: #f0f6fc;
+  --accent: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-orange: #d29922;
+  --accent-red: #f85149;
+  --accent-purple: #a371f7;
+  --accent-cyan: #39d2c0;
+  --radius: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+  font-size: 15px;
+}
+/* TopNav */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(13,17,23,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex; align-items: center; gap: 16px;
+  overflow-x: auto;
+}
+.topnav .brand {
+  font-weight: 700; color: var(--accent);
+  white-space: nowrap; font-size: 14px;
+}
+.topnav a {
+  color: var(--text-muted); text-decoration: none;
+  font-size: 13px; white-space: nowrap;
+  padding: 4px 8px; border-radius: 4px;
+  transition: all 0.2s;
+}
+.topnav a:hover, .topnav a.active {
+  color: var(--accent); background: rgba(88,166,255,0.1);
+}
+/* Hero */
+.hero {
+  text-align: center; padding: 48px 24px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.hero .emoji { font-size: 48px; display: block; margin-bottom: 12px; }
+.hero h1 { font-size: 28px; color: var(--text-heading); margin-bottom: 8px; }
+.hero .subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 16px; }
+.badges { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.badge {
+  display: inline-block; padding: 4px 12px;
+  border-radius: 20px; font-size: 12px; font-weight: 600;
+  background: rgba(88,166,255,0.15); color: var(--accent);
+}
+.badge.green { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+.badge.orange { background: rgba(210,153,34,0.15); color: var(--accent-orange); }
+.badge.purple { background: rgba(163,113,247,0.15); color: var(--accent-purple); }
+.badge.red { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+/* Container */
+.container { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+/* Section */
+section { margin-bottom: 40px; }
+section h2 {
+  font-size: 20px; color: var(--text-heading);
+  padding-bottom: 8px; margin-bottom: 20px;
+  border-bottom: 2px solid var(--accent);
+  display: flex; align-items: center; gap: 8px;
+}
+section h2 .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 13px; font-weight: 700;
+}
+/* Question Card */
+.q-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.q-header {
+  padding: 14px 18px;
+  cursor: pointer;
+  display: flex; align-items: flex-start; gap: 12px;
+  transition: background 0.2s;
+}
+.q-header:hover { background: rgba(88,166,255,0.04); }
+.q-num {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(88,166,255,0.15);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  margin-top: 2px;
+}
+.q-title {
+  flex: 1;
+  font-weight: 600; color: var(--text-heading);
+  font-size: 14.5px;
+}
+.q-toggle {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 18px;
+  transition: transform 0.3s;
+}
+.q-card.open .q-toggle { transform: rotate(180deg); }
+.q-body {
+  display: none;
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--border);
+}
+.q-card.open .q-body { display: block; }
+.q-section {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.q-section h4 {
+  font-size: 13px; font-weight: 700;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.q-section.thinking {
+  background: rgba(88,166,255,0.06);
+  border-left: 3px solid var(--accent);
+}
+.q-section.thinking h4 { color: var(--accent); }
+.q-section.answer {
+  background: rgba(63,185,80,0.06);
+  border-left: 3px solid var(--accent-green);
+}
+.q-section.answer h4 { color: var(--accent-green); }
+.q-section.redline {
+  background: rgba(248,81,73,0.06);
+  border-left: 3px solid var(--accent-red);
+}
+.q-section.redline h4 { color: var(--accent-red); }
+.q-section ul { padding-left: 18px; }
+.q-section li { margin-bottom: 4px; }
+/* Tags */
+.tag {
+  display: inline-block; padding: 2px 8px;
+  border-radius: 4px; font-size: 11px; font-weight: 600;
+  margin-right: 4px; margin-bottom: 4px;
+}
+.tag-easy { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+.tag-medium { background: rgba(210,153,34,0.15); color: var(--accent-orange); }
+.tag-hard { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+.tag-management { background: rgba(163,113,247,0.15); color: var(--accent-purple); }
+/* Stats bar */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+}
+.stat-card .num { font-size: 28px; font-weight: 700; color: var(--accent); }
+.stat-card .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+/* Responsive */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 22px; }
+  .container { padding: 20px 14px; }
+  .topnav { padding: 8px 12px; gap: 10px; }
+  .q-header { padding: 12px 14px; }
+  .q-body { padding: 0 14px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<nav class="topnav">
+  <span class="brand">🎯 面试题库</span>
+  <a href="#stats">概览</a>
+  <a href="#basic">测试基础</a>
+  <a href="#game">游戏测试</a>
+  <a href="#project">项目管理</a>
+  <a href="#automation">自动化与AI</a>
+  <a href="#cross-server">跨服对战</a>
+  <a href="#performance">性能测试</a>
+  <a href="#defect">缺陷管理</a>
+  <a href="#linux">Linux与数据库</a>
+  <a href="#soft">软技能</a>
+  <a href="#career">职业规划</a>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <span class="emoji">🎯</span>
+  <h1>骆华 · 游戏测试面试题库</h1>
+  <p class="subtitle">基于简历深度定制 · 覆盖 10 大模块 · 每题含回答思路 + 参考答案 + 红线提醒</p>
+  <div class="badges">
+    <span class="badge">📝 共 50+ 题</span>
+    <span class="badge green">🎮 游戏测试专项</span>
+    <span class="badge orange">👥 管理岗必备</span>
+    <span class="badge purple">🤖 AI 测试前沿</span>
+    <span class="badge red">⚡ 高压实战</span>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- 概览统计 -->
+<section id="stats">
+  <div class="stats-bar">
+    <div class="stat-card"><div class="num">50+</div><div class="label">面试题目</div></div>
+    <div class="stat-card"><div class="num">10</div><div class="label">知识模块</div></div>
+    <div class="stat-card"><div class="num">3</div><div class="label">难度等级</div></div>
+    <div class="stat-card"><div class="num">∞</div><div class="label">上岸信心</div></div>
+  </div>
+</section>
+
+<!-- ==================== 模块一：测试基础理论 ==================== -->
+<section id="basic">
+  <h2><span class="num">1</span> 测试基础理论</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">1</span>
+      <span class="q-title">请简述黑盒测试的几种主要方法，以及在游戏测试中如何应用？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>先列举方法名称，再结合游戏场景举例说明每种方法的具体应用。重点突出你在《天龙八部》中的实战经验。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>等价类划分</strong>：将输入数据分为有效/无效等价类，如角色等级 1-100，测试时取 1、50、100 代表有效类，0、101 代表无效类</li>
+          <li><strong>边界值分析</strong>：在等价类边界附近取值，如等级上限 100 时测试 99、100、101 三个值</li>
+          <li><strong>场景法</strong>：模拟玩家真实操作路径，如"创建角色→接任务→进入副本→战斗→掉落装备→强化装备"完整链路</li>
+          <li><strong>流程分析法</strong>：梳理业务流程图，覆盖所有分支路径，如副本匹配流程（单人/组队/跨服）</li>
+          <li><strong>错误推测法</strong>：基于经验预判易错点，如网络切换时战斗结算是否异常</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只背书不举例——面试官要的是"你用这些方法做了什么"</li>
+          <li>❌ 把白盒测试方法（语句覆盖、路径覆盖）混进来——你简历写的是黑盒</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">2</span>
+      <span class="q-title">什么是回归测试？在游戏版本迭代中如何制定回归策略？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>先定义回归测试，再结合你简历中"回归测试效率提升"的经验，说明如何分层做回归。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>定义</strong>：修改代码后重新测试已有功能，确保新改动没有引入副作用</li>
+          <li><strong>分层策略</strong>：核心链路（登录、充值、战斗结算）每次必回归 → 高频功能（副本、活动）每版本回归 → 低频功能（赛季结算）大版本回归</li>
+          <li><strong>优先级排序</strong>：按 Bug 密度和用户触达频率排优先级，P0 功能优先</li>
+          <li><strong>自动化辅助</strong>：核心模块用自动化脚本覆盖，减少人工重复劳动</li>
+          <li><strong>实战</strong>：在《天龙》项目中，我将回归用例分为三级，配合版本节奏选择性执行，效率提升显著</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"全部回归"——不现实，面试官会觉得你没有优先级意识</li>
+          <li>❌ 忽略自动化回归——你简历写了自动化脚本，面试时必须提</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">3</span>
+      <span class="q-title">测试用例的要素有哪些？你写一条测试用例的完整流程是什么？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>先列要素，再描述流程（需求分析→设计→评审→执行→维护），结合 AI 辅助写用例的经验。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>要素</strong>：用例编号、模块、前置条件、操作步骤、预期结果、实际结果、优先级、执行状态</li>
+          <li><strong>流程</strong>：① 分析需求文档，提取测试点 → ② 用等价类/边界值/场景法设计用例 → ③ 组内评审补充遗漏 → ④ 执行并记录结果 → ⑤ 版本迭代后维护更新</li>
+          <li><strong>AI 辅助</strong>：我会先用 AI 工具输入需求描述，快速生成初版用例框架，再人工补充边界场景和异常流，最后评审确认，效率提升约 75%</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"AI 写的用例直接用"——必须强调人工评审环节，否则显得不严谨</li>
+          <li>❌ 遗漏"评审"环节——这是团队协作的关键步骤</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">4</span>
+      <span class="q-title">什么是冒烟测试？它和全量测试的区别是什么？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>简明定义 + 对比表 + 在游戏项目中的实际应用场景。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>冒烟测试</strong>：版本提测后先跑一遍核心功能，确认"基本能跑通"，决定是否进入正式测试</li>
+          <li><strong>区别</strong>：冒烟测试覆盖核心链路（约 10-20% 用例），耗时短（几小时）；全量测试覆盖所有功能点，耗时长（数天）</li>
+          <li><strong>应用场景</strong>：每个版本提测后先做冒烟，不通过则打回；每日构建后也做冒烟验证</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 混淆"冒烟测试"和"验收测试"——冒烟是开发提测后的第一关，验收是上线前最后一关</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">5</span>
+      <span class="q-title">测试生命周期（STLC）包含哪些阶段？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>按阶段顺序回答，每个阶段一句话说明你在《天龙》项目中具体做了什么。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>需求分析</strong>：评审策划文档，识别测试范围和风险点</li>
+          <li>② <strong>测试计划</strong>：制定排期、分配人员、确定优先级</li>
+          <li>③ <strong>用例设计</strong>：基于需求编写测试用例并组织评审</li>
+          <li>④ <strong>环境搭建</strong>：部署测试服、配置数据（我开发了自动化工具）</li>
+          <li>⑤ <strong>执行测试</strong>：按用例执行、提交 Bug、回归验证</li>
+          <li>⑥ <strong>缺陷跟踪</strong>：通过 TAPD 管理 Bug 全生命周期</li>
+          <li>⑦ <strong>测试报告</strong>：版本质量评估、遗留风险说明</li>
+          <li>⑧ <strong>总结复盘</strong>：Bug 复盘会、流程优化</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只背理论不结合项目——面试官更想听你实际怎么做的</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块二：游戏测试专项 ==================== -->
+<section id="game">
+  <h2><span class="num">2</span> 游戏测试专项</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">6</span>
+      <span class="q-title">游戏测试和传统软件测试有什么区别？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>从实时性、交互性、性能要求、兼容性、体验感等维度对比，体现你对游戏测试的深度理解。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>实时交互</strong>：游戏要求帧率稳定、操作响应即时，不像 Web 应用可以接受加载等待</li>
+          <li><strong>性能敏感</strong>：内存泄漏、帧率下降直接影响玩家体验，需要 PerfDog 等工具持续监控</li>
+          <li><strong>网络依赖</strong>：需要弱网测试（Qnet）、断线重连、跨服同步等特殊场景</li>
+          <li><strong>兼容性复杂</strong>：安卓机型碎片化严重，需覆盖不同分辨率、GPU、系统版本</li>
+          <li><strong>体验感</strong>：除了功能正确，还要测试"好不好玩"——打击感、画面流畅度、音效同步</li>
+          <li><strong>版本节奏快</strong>：游戏通常 2-4 周一个版本，测试周期短、压力大</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只说"游戏更复杂"——要具体到帧率、弱网、兼容性等维度</li>
+          <li>❌ 忽略"体验感"——这是游戏测试区别于其他测试的核心</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">7</span>
+      <span class="q-title">如何测试一个 MMORPG 的副本系统？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>从进入条件、战斗流程、结算逻辑、异常处理四个维度展开，结合《天龙》副本测试经验。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>进入条件</strong>：等级限制、次数限制、道具消耗、组队人数验证</li>
+          <li><strong>战斗流程</strong>：怪物 AI 行为、技能释放、伤害计算、Buff/Debuff 叠加、阶段切换</li>
+          <li><strong>结算逻辑</strong>：通关时间统计、掉落分配、经验/金币结算、首通奖励</li>
+          <li><strong>异常处理</strong>：中途断线重连、全员退出、超时处理、服务器宕机恢复</li>
+          <li><strong>并发场景</strong>：多队同时进入同一副本、跨服副本匹配</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只测"能不能通关"——要覆盖异常流和边界条件</li>
+          <li>❌ 忽略并发场景——MMORPG 多人同时在线是常态</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">8</span>
+      <span class="q-title">H5 活动测试和客户端测试有什么区别？你做过哪些 H5 活动？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>先说区别（技术栈、性能、兼容性），再说你实际做过的活动类型。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>技术栈不同</strong>：H5 活动基于 WebView/浏览器渲染，客户端是原生引擎</li>
+          <li><strong>性能差异</strong>：H5 受限于浏览器性能，需关注加载速度、内存占用、JS 执行效率</li>
+          <li><strong>兼容性</strong>：H5 需覆盖不同浏览器内核、不同系统 WebView 版本</li>
+          <li><strong>交互限制</strong>：H5 无法直接调用原生硬件（如陀螺仪），需通过 JSBridge</li>
+          <li><strong>实战</strong>：在《天龙》中负责过节日活动、签到活动、限时抽奖等 H5 活动的测试，重点关注奖励发放准确性和页面兼容性</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说不出 H5 活动的具体类型——面试官会质疑你的经验真实性</li>
+          <li>❌ 忽略奖励发放的准确性验证——这是 H5 活动的核心风险点</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">9</span>
+      <span class="q-title">如何测试一个游戏的充值/支付系统？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>充值是游戏核心营收链路，从正常流程、异常流程、安全性三个维度回答。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>正常流程</strong>：选择档位→调起支付→扣款成功→到账验证→邮件/弹窗通知</li>
+          <li><strong>异常流程</strong>：支付中断网、支付取消、重复支付、余额不足、支付超时但实际扣款</li>
+          <li><strong>安全性</strong>：验证回调签名防伪造、金额篡改检测、频率限制防刷</li>
+          <li><strong>对账</strong>：每日充值流水与渠道对账单核对</li>
+          <li><strong>兼容性</strong>：iOS 内购 vs 安卓支付通道差异、不同支付方式（微信/支付宝/Apple Pay）</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只测"能付款"——异常流和安全验证才是面试官想听的</li>
+          <li>❌ 忽略"到账延迟"场景——这是玩家投诉高发区</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">10</span>
+      <span class="q-title">弱网测试的目的是什么？你如何使用 Qnet 进行弱网测试？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>先说目的，再说 Qnet 的具体使用方式和你测过的场景。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>目的</strong>：模拟真实网络波动（地铁、电梯、WiFi 切换），验证游戏在网络异常时的表现</li>
+          <li><strong>Qnet 使用</strong>：设置延迟（100ms/500ms/1000ms）、丢包率（5%/20%/50%）、抖动、带宽限制</li>
+          <li><strong>测试场景</strong>：战斗中突然断网→重连后状态是否一致；副本结算时断网→奖励是否正确发放；切换网络（WiFi→4G）→是否掉线</li>
+          <li><strong>关键指标</strong>：重连成功率、重连耗时、数据一致性、用户感知卡顿时长</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只设一个延迟值——要覆盖梯度场景</li>
+          <li>❌ 忽略"网络恢复后的数据一致性"——这是弱网测试的核心价值</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">11</span>
+      <span class="q-title">游戏兼容性测试需要覆盖哪些维度？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>从硬件、系统、分辨率、运营商等维度展开。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>机型覆盖</strong>：高中低端机型（按市场占有率选 Top 20 机型）</li>
+          <li><strong>系统版本</strong>：Android 8-14、iOS 13-18</li>
+          <li><strong>分辨率</strong>：720p/1080p/2K、刘海屏/挖孔屏/折叠屏适配</li>
+          <li><strong>GPU</strong>：高通 Adreno、ARM Mali、苹果 GPU</li>
+          <li><strong>运营商</strong>：移动/联通/电信网络差异</li>
+          <li><strong>特殊设备</strong>：平板、模拟器、云手机</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只说"多测几个手机"——要有系统性的覆盖策略</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块三：项目管理与团队管理 ==================== -->
+<section id="project">
+  <h2><span class="num">3</span> 项目管理与团队管理</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">12</span>
+      <span class="q-title">作为测试组长，你如何制定一个版本的测试排期？<span class="tag tag-management">管理</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的排期方法论：从需求评审→工作量评估→人员分配→风险预留，结合 23 个版本管理经验。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>需求评审</strong>：与策划、开发对齐版本范围，明确新增功能和改动模块</li>
+          <li>② <strong>工作量评估</strong>：按模块拆分测试点，估算每个模块所需人天</li>
+          <li>③ <strong>优先级排序</strong>：核心营收功能 > 用户高频功能 > 一般功能</li>
+          <li>④ <strong>人员分配</strong>：根据组员擅长领域分配模块，新人配老带</li>
+          <li>⑤ <strong>风险预留</strong>：预留 20% 缓冲时间应对突发需求变更或疑难 Bug</li>
+          <li>⑥ <strong>里程碑</strong>：设定冒烟通过日、用例评审日、回归截止日、上线验收日</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"按经验估"——要有具体方法论支撑</li>
+          <li>❌ 不留缓冲时间——面试官会觉得你不懂风险管理</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">13</span>
+      <span class="q-title">你提到将 Bug 月产出从 30 个提升到 40 个，具体是怎么做到的？<span class="tag tag-management">管理</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>这是简历亮点，必须讲清楚"做了什么→为什么有效"。从流程优化、工具辅助、激励机制三方面回答。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>流程优化</strong>：统一 Bug 模板和提交规范，减少无效沟通，让组员把时间花在找 Bug 而非写格式上</li>
+          <li><strong>AI 辅助</strong>：引入 AI 工具帮助生成测试点和边界场景，扩大测试覆盖面</li>
+          <li><strong>用例质量提升</strong>：用例评审机制，互相补充遗漏场景，执行时覆盖更全</li>
+          <li><strong>激励机制</strong>：每周 Bug 质量排行（不只看数量，还看严重程度和有效率），正向激励</li>
+          <li><strong>结果</strong>：月均从 30 个提升至 40 个左右，且有效 Bug 占比同步提升</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"让大家加班"——面试官要的是方法论，不是压榨</li>
+          <li>❌ 只提数量不提质量——要强调有效 Bug 占比</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">14</span>
+      <span class="q-title">文档改革将每日汇报从 30-60 分钟压缩到 5 分钟，具体做了什么？<span class="tag tag-management">管理</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>这是你简历中最亮眼的提效案例之一，要说清楚"之前为什么慢→做了什么→之后多快"。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>痛点</strong>：之前每人轮流口头汇报当日进度、Bug 情况、风险点，全组 5 人轮流说完需 30-60 分钟</li>
+          <li><strong>方案</strong>：设计标准化日报模板（Excel/在线文档），包含：今日完成、明日计划、当前 Bug 数、风险项</li>
+          <li><strong>执行</strong>：组员每日下班前填写模板，组长次日花 5 分钟浏览汇总即可掌握全组状态</li>
+          <li><strong>附加价值</strong>：文档可追溯，版本复盘时有据可查；新人入职也能快速了解项目进度</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"取消了汇报"——不是取消，是用更高效的方式替代</li>
+          <li>❌ 忽略"可追溯"价值——这是文档化的核心意义</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">15</span>
+      <span class="q-title">如何处理版本上线前的紧急 Bug？<span class="tag tag-management">管理</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的风险管控能力和跨部门协调能力。按"评估→决策→执行→复盘"流程回答。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>快速评估</strong>：判断 Bug 严重程度（P0/P1）、影响范围、是否有 workaround</li>
+          <li>② <strong>决策</strong>：P0 必须修复后上线；P1 有 workaround 可带病上线+热更；P2 可延后</li>
+          <li>③ <strong>协调</strong>：与开发确认修复时间、与策划确认是否接受、与运维确认发布窗口</li>
+          <li>④ <strong>验证</strong>：修复后快速回归验证，确认不影响其他功能</li>
+          <li>⑤ <strong>复盘</strong>：上线后分析 Bug 引入原因，优化流程避免同类问题</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"让开发赶紧修"——要体现你的决策能力和风险判断</li>
+          <li>❌ 忽略复盘环节——这是组长和工程师的区别</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">16</span>
+      <span class="q-title">你如何管理和激励测试团队成员？<span class="tag tag-management">管理</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>从任务分配、成长路径、激励机制、团队氛围四个维度回答。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>任务分配</strong>：根据每人擅长领域和成长意愿分配模块，让组员有成就感</li>
+          <li><strong>成长路径</strong>：鼓励组员学习自动化工具和 AI 辅助测试，提升个人能力</li>
+          <li><strong>激励机制</strong>：Bug 质量排行、版本优秀贡献者、绩效报告客观公正</li>
+          <li><strong>团队氛围</strong>：Bug 复盘会对事不对人，鼓励发现问题而非追责</li>
+          <li><strong>1v1 沟通</strong>：定期一对一了解组员状态和诉求，及时调整分工</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只说"严格管理"——现代团队管理强调赋能和激励</li>
+          <li>❌ 忽略 1v1 沟通——这是面试官判断你管理成熟度的关键</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">17</span>
+      <span class="q-title">如果组员不服从安排或消极怠工，你怎么处理？<span class="tag tag-management">管理</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的沟通能力和冲突处理能力。先了解原因，再对症下药。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>私下沟通</strong>：1v1 了解原因——是任务太难？个人问题？还是对安排有意见？</li>
+          <li>② <strong>对症下药</strong>：能力不足→安排培训/老带新；任务不合理→调整分工；个人问题→适当关怀</li>
+          <li>③ <strong>明确底线</strong>：沟通无效且影响团队时，按绩效制度处理，不姑息</li>
+          <li>④ <strong>团队影响</strong>：及时处理避免负面情绪蔓延，同时向团队传达"公平公正"的信号</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"直接上报领导"——显得没有管理能力</li>
+          <li>❌ 说"忍一忍算了"——显得没有原则</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">18</span>
+      <span class="q-title">你如何与策划、开发、运维等其他部门协作？<span class="tag tag-management">管理</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示跨部门协调能力，按部门分别说明协作方式和冲突处理。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>与策划</strong>：需求评审阶段提前介入，对模糊需求提出澄清；发现设计缺陷时以数据说话</li>
+          <li><strong>与开发</strong>：Bug 描述清晰（复现步骤+日志+截图），严重 Bug 当面沟通；定期同步 Bug 趋势</li>
+          <li><strong>与运维</strong>：提前对齐发布窗口，确认环境配置，上线时联合值守</li>
+          <li><strong>冲突处理</strong>：以项目利益为先，用数据和风险说话，必要时升级决策</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"他们不配合"——面试官会认为你沟通能力差</li>
+          <li>❌ 只抱怨不解决——要展示你主动协调的能力</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块四：自动化与AI ==================== -->
+<section id="automation">
+  <h2><span class="num">4</span> 自动化测试与 AI 辅助</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">19</span>
+      <span class="q-title">你开发的"测试环境一键搭建工具"是什么？怎么实现的？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>这是你简历中的亮点工具，要说清楚"解决什么问题→怎么实现→效果如何"。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>痛点</strong>：新人搭建测试环境需要手动执行多步 Linux 命令、配置数据库、部署服务，耗时长且容易出错</li>
+          <li><strong>实现</strong>：用 Python 脚本封装环境搭建全流程——拉取代码→安装依赖→初始化数据库→启动服务→验证健康状态</li>
+          <li><strong>使用方式</strong>：一键执行脚本，自动完成所有步骤，输出搭建日志</li>
+          <li><strong>效果</strong>：新人环境准备时间从数小时缩短至几分钟，且避免了手动操作失误</li>
+          <li><strong>沉淀</strong>：配套编写了操作教程文档，方便组员自学</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说不清楚技术实现——面试官会追问 Python 脚本细节</li>
+          <li>❌ 夸大效果——说"几秒完成"不如"几分钟完成"可信</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">20</span>
+      <span class="q-title">你如何使用 AI 辅助测试用例生成？具体流程是什么？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>这是你简历的核心亮点，必须说清楚"用什么工具→怎么交互→人工怎么把关→效果如何"。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>工具</strong>：使用 AI 大模型（如 ChatGPT/文心一言/内部 AI 工具）辅助生成测试用例</li>
+          <li><strong>流程</strong>：① 将需求文档/功能描述输入 AI → ② AI 生成初版用例框架（覆盖正常流+异常流） → ③ 人工评审补充游戏特有场景（如跨服、弱网） → ④ 组内评审确认 → ⑤ 录入 TAPD</li>
+          <li><strong>人工把关</strong>：AI 生成的用例需要人工验证逻辑正确性、补充边界值和游戏特有异常场景</li>
+          <li><strong>效果</strong>：用例编写时间从 2 天缩短至半天，效率提升约 75%</li>
+          <li><strong>推广</strong>：在组内培训 AI 工具使用方法，推动全组落地</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"AI 写的用例直接用"——必须强调人工评审，否则显得不专业</li>
+          <li>❌ 说不出具体工具名——面试官会追问细节</li>
+          <li>❌ 夸大 AI 能力——AI 是辅助，不是替代</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">21</span>
+      <span class="q-title">你搭建的自动化回归脚本覆盖了哪些模块？用什么框架？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>说明覆盖范围、技术选型、维护方式。如果用的是 Python 标准库，如实说。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>覆盖模块</strong>：核心模块如登录流程、角色创建、基础战斗、副本进入/退出、道具使用等高频回归场景</li>
+          <li><strong>技术选型</strong>：基于 Python 标准库（如 unittest/requests）编写接口级自动化脚本</li>
+          <li><strong>维护方式</strong>：版本迭代后更新用例数据，保持与需求同步</li>
+          <li><strong>局限</strong>：游戏 UI 自动化（如 Airtest/Appium）目前覆盖较少，主要在接口层面</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 夸大覆盖范围——说"全覆盖"不可信</li>
+          <li>❌ 编造框架——如果用的是标准库就说标准库，别说用了 Selenium</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">22</span>
+      <span class="q-title">AI 在测试领域还有哪些应用场景？你怎么看 AI 对测试行业的影响？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你对行业趋势的关注。从用例生成、缺陷预测、自动化、视觉测试等维度展开。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>用例生成</strong>：AI 根据需求自动生成测试用例，覆盖边界场景（我已在用）</li>
+          <li><strong>缺陷预测</strong>：基于代码变更和历史 Bug 数据，预测高风险模块</li>
+          <li><strong>自动化维护</strong>：AI 自动修复因 UI 变更导致的脚本失效</li>
+          <li><strong>视觉测试</strong>：AI 对比截图检测 UI 异常（如文字溢出、图片错位）</li>
+          <li><strong>影响</strong>：AI 不会取代测试工程师，但会淘汰"只会手工执行"的测试人员。未来测试工程师的核心价值在于"设计测试策略"和"判断 AI 输出的质量"</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"AI 会取代测试"——显得你对自身价值没有认知</li>
+          <li>❌ 说不出具体应用场景——会显得你只是跟风</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">23</span>
+      <span class="q-title">Python 在游戏测试中你用来做过什么？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>如实回答你的 Python 使用场景，不要夸大。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>自动化脚本</strong>：编写接口测试脚本，验证服务端逻辑</li>
+          <li><strong>环境工具</strong>：开发测试环境一键搭建工具</li>
+          <li><strong>数据处理</strong>：解析日志文件、统计 Bug 数据、生成测试报告</li>
+          <li><strong>常用库</strong>：requests（接口调用）、unittest（测试框架）、os/subprocess（环境操作）</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"精通 Python"——你简历写的是"基础"，面试时保持一致</li>
+          <li>❌ 编造不熟悉的库——面试官可能会追问源码级问题</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块五：跨服对战 ==================== -->
+<section id="cross-server">
+  <h2><span class="num">5</span> 跨服对战测试</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">24</span>
+      <span class="q-title">跨服对战的测试环境怎么搭建？和单服测试有什么区别？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>这是你简历的核心技术亮点，必须说清楚跨服环境搭建的复杂性和你的解决方案。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>区别</strong>：单服只需一套服务端；跨服需要多套服务端互联，涉及服务器间通信、数据同步、匹配逻辑</li>
+          <li><strong>环境搭建</strong>：① 部署多组游戏服（模拟不同大区） → ② 配置跨服中间件/网关 → ③ 确保服务器间网络互通 → ④ 初始化各服数据（不同进度/等级）</li>
+          <li><strong>验证点</strong>：跨服匹配是否成功、数据同步是否一致、战斗结算是否正确、断线重连后状态恢复</li>
+          <li><strong>难点</strong>：多服时间同步、数据冲突处理、网络延迟模拟</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说不清楚跨服和单服的区别——这是你简历的核心卖点</li>
+          <li>❌ 忽略数据同步问题——跨服测试的核心难点</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">25</span>
+      <span class="q-title">跨服匹配的数据同步如何验证？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>从数据一致性、时序、异常处理三个维度回答。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>数据一致性</strong>：匹配成功后，验证双方玩家数据（等级、装备、属性）是否与源服一致</li>
+          <li><strong>时序验证</strong>：匹配→进入战斗→结算→返回源服，每个环节数据是否正确传递</li>
+          <li><strong>异常处理</strong>：匹配过程中断线、战斗中途掉线、结算时服务器重启</li>
+          <li><strong>并发场景</strong>：大量玩家同时匹配时，数据是否串号、是否出现脏数据</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只验证"能匹配上"——数据一致性才是核心</li>
+          <li>❌ 忽略并发场景——高并发下的数据串号是严重事故</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">26</span>
+      <span class="q-title">千人同屏帮派战的测试策略是什么？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>从性能、逻辑、网络三个维度回答，结合 PerfDog 使用经验。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>性能测试</strong>：用 PerfDog 监控千人同屏时的帧率、内存、CPU、GPU 占用，确保不卡顿</li>
+          <li><strong>逻辑测试</strong>：帮派战计分规则、占领判定、奖励分配是否正确</li>
+          <li><strong>网络测试</strong>：高并发下服务器承载能力、消息延迟、丢包处理</li>
+          <li><strong>客户端优化</strong>：LOD（距离渲染）、同屏人数上限、特效降级策略</li>
+          <li><strong>压测</strong>：模拟千人同时在线，验证服务器不崩溃</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只关注功能正确——千人同屏的核心挑战是性能</li>
+          <li>❌ 忽略客户端优化——帧率下降是玩家最直接的感受</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块六：性能测试 ==================== -->
+<section id="performance">
+  <h2><span class="num">6</span> 性能测试</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">27</span>
+      <span class="q-title">PerfDog 的使用经验？你关注哪些性能指标？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>说明 PerfDog 的使用方式和你在《天龙》项目中监控的指标。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>工具定位</strong>：PerfDog 是腾讯出品的移动端性能测试工具，无需 root 即可采集数据</li>
+          <li><strong>关注指标</strong>：FPS（帧率）、Jank（卡顿次数）、CPU 占用、内存占用（PSS/USS）、GPU 占用、温度、电池消耗</li>
+          <li><strong>使用场景</strong>：版本迭代后对核心场景（副本战斗、帮派战、主城密集区）进行性能回归</li>
+          <li><strong>数据对比</strong>：与上一版本数据对比，发现性能劣化趋势</li>
+          <li><strong>实战案例</strong>：发现某版本内存泄漏导致长时间游戏后闪退，推动开发修复</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只说"看帧率"——要列出多个维度指标</li>
+          <li>❌ 说不出具体案例——面试官会追问你发现过什么性能问题</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">28</span>
+      <span class="q-title">如何判断一个性能问题是否需要阻塞版本上线？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的风险判断能力，从严重程度、影响范围、修复成本三个维度决策。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>阻塞上线</strong>：内存泄漏导致闪退、帧率低于 15fps 影响核心战斗体验、发热严重导致玩家投诉</li>
+          <li><strong>可带病上线</strong>：非核心场景帧率略低（如主城 25fps）、内存略高但有 workaround</li>
+          <li><strong>决策依据</strong>：① 是否影响核心玩法 → ② 是否有热更修复可能 → ③ 修复风险是否大于上线风险</li>
+          <li><strong>沟通</strong>：与开发、策划、制作人共同决策，测试给出专业建议</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"所有性能问题都阻塞上线"——不现实</li>
+          <li>❌ 独自做决定——性能问题影响面大，需要跨部门决策</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">29</span>
+      <span class="q-title">你发现过哪些典型的性能问题？如何定位的？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>准备 1-2 个真实案例，说清楚"现象→定位过程→解决方案"。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>案例 1：内存泄漏</strong>：长时间游戏后闪退，PerfDog 显示内存持续上涨不回落。定位：反复进出某副本触发泄漏。解决：开发修复资源释放逻辑</li>
+          <li><strong>案例 2：帧率骤降</strong>：帮派战千人同屏时帧率从 40 降至 15。定位：特效叠加过多+Draw Call 过高。解决：优化特效 LOD、合批渲染</li>
+          <li><strong>定位方法</strong>：PerfDog 采集数据→对比正常/异常场景→缩小触发条件→配合开发分析 Profiler</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说不出具体案例——面试官一定会追问</li>
+          <li>❌ 只说"发现"不说"定位"——要展示你的分析能力</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块七：缺陷管理 ==================== -->
+<section id="defect">
+  <h2><span class="num">7</span> 缺陷管理</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">30</span>
+      <span class="q-title">一个高质量的 Bug 报告应该包含哪些要素？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>列出要素 + 举例说明，体现你的规范性。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>标题</strong>：简明扼要描述问题（如"跨服匹配后玩家 A 显示为 B 的角色形象"）</li>
+          <li><strong>严重程度</strong>：P0（崩溃/数据丢失）/ P1（核心功能异常）/ P2（非核心功能）/ P3（体验问题）</li>
+          <li><strong>复现步骤</strong>：1.2.3. 清晰可执行</li>
+          <li><strong>预期结果 vs 实际结果</strong>：对比明确</li>
+          <li><strong>环境信息</strong>：服务器、客户端版本、机型、网络环境</li>
+          <li><strong>附件</strong>：截图/录屏/日志文件</li>
+          <li><strong>复现概率</strong>：必现/偶现（偶现需注明频率）</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 遗漏"复现概率"——偶现 Bug 和必现 Bug 的处理优先级不同</li>
+          <li>❌ 标题写"有 Bug"——太模糊，开发无法快速定位</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">31</span>
+      <span class="q-title">如何处理一个难以复现的偶现 Bug？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>这是你简历中"疑难攻坚"的核心内容，必须准备好完整方法论。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>收集信息</strong>：尽可能记录发生时的所有上下文——时间、操作路径、服务器状态、网络环境</li>
+          <li>② <strong>日志分析</strong>：提取客户端和服务端日志，查找异常堆栈或错误码</li>
+          <li>③ <strong>缩小范围</strong>：通过控制变量法，逐步缩小触发条件（特定机型？特定操作顺序？特定时间点？）</li>
+          <li>④ <strong>构造复现</strong>：尝试在测试环境模拟相同条件，提高复现率</li>
+          <li>⑤ <strong>配合研发</strong>：将收集到的信息同步给开发，协助定位根因</li>
+          <li>⑥ <strong>监控</strong>：即使暂时无法复现，也保持关注，记录后续发生频率</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"复现不了就关闭"——偶现 Bug 可能是严重问题的前兆</li>
+          <li>❌ 不配合研发定位——测试的价值在于协助定位，不只是提交</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">32</span>
+      <span class="q-title">Bug 的生命周期是什么？你在 TAPD 中如何管理？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>列出状态流转 + 你在每个状态下的动作。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>生命周期</strong>：新建 → 已分配 → 开发修复中 → 已修复 → 待验证 → 已验证/关闭 → （如验证失败）重新打开</li>
+          <li><strong>TAPD 管理</strong>：设置 Bug 模板规范字段；按迭代关联版本；设置严重程度和优先级；每日查看待处理 Bug 趋势</li>
+          <li><strong>组长视角</strong>：定期导出 Bug 报表，分析 Bug 分布和趋势，识别高风险模块</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 遗漏"重新打开"状态——验证失败是常见情况</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">33</span>
+      <span class="q-title">如果开发认为你提的 Bug 不是问题，你怎么处理？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的沟通能力和专业判断。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>确认理解</strong>：先确认开发为什么认为不是问题——是设计如此？还是他没理解复现路径？</li>
+          <li>② <strong>补充证据</strong>：如果是设计如此，确认策划是否认可；如果是复现路径不清，补充更详细的步骤</li>
+          <li>③ <strong>拉策划确认</strong>：如果双方无法达成一致，拉策划判断是否符合设计预期</li>
+          <li>④ <strong>保留意见</strong>：如果最终判定不是 Bug，记录原因后关闭，但保留观察</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 直接妥协关闭——如果确实是问题，妥协会导致线上事故</li>
+          <li>❌ 态度强硬吵架——要理性沟通，用事实说话</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块八：Linux与数据库 ==================== -->
+<section id="linux">
+  <h2><span class="num">8</span> Linux 与数据库</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">34</span>
+      <span class="q-title">你常用的 Linux 命令有哪些？在测试中用来做什么？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>列出命令 + 使用场景，体现你的实操能力。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>文件操作</strong>：ls/cd/cp/mv/rm/find/grep/tail/head</li>
+          <li><strong>权限管理</strong>：chmod/chown</li>
+          <li><strong>进程管理</strong>：ps/top/kill/nohup</li>
+          <li><strong>网络</strong>：ping/telnet/netstat/curl/wget</li>
+          <li><strong>日志分析</strong>：tail -f 实时查看日志、grep 搜索关键字、awk/sed 提取字段</li>
+          <li><strong>测试场景</strong>：查看服务端日志定位 Bug、检查服务是否启动、部署测试环境</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只列命令不说用途——面试官要的是"你用这些命令做了什么"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">35</span>
+      <span class="q-title">如何用 Linux 命令查看和分析游戏服务端日志？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>结合你定位疑难 Bug 的经验，说明日志分析流程。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>定位日志文件</strong>：find /data -name "*.log" 或 ls /var/log/game/</li>
+          <li><strong>实时查看</strong>：tail -f /data/game/server.log</li>
+          <li><strong>搜索关键字</strong>：grep "ERROR" server.log 或 grep "player_id=12345" server.log</li>
+          <li><strong>时间范围</strong>：grep "2026-09-10 14:" server.log</li>
+          <li><strong>上下文</strong>：grep -A 5 -B 5 "Exception" server.log（显示前后 5 行）</li>
+          <li><strong>统计</strong>：grep "ERROR" server.log | wc -l（统计错误数）</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"开发会看"——测试组长应该具备基本的日志分析能力</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">36</span>
+      <span class="q-title">SQL 常用指令有哪些？你在测试中怎么使用？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>列出常用 SQL + 测试场景（验证数据、构造测试数据、清理脏数据）。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>查询</strong>：SELECT ... FROM ... WHERE ... ORDER BY ... LIMIT ...</li>
+          <li><strong>增删改</strong>：INSERT / UPDATE / DELETE（测试数据构造和清理）</li>
+          <li><strong>聚合</strong>：COUNT / SUM / AVG / GROUP BY（统计 Bug 数据）</li>
+          <li><strong>连接</strong>：JOIN（多表关联查询玩家数据）</li>
+          <li><strong>测试场景</strong>：验证充值到账是否正确、检查玩家背包数据、清理测试脏数据、统计每日活跃数据</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"我不怎么用 SQL"——游戏测试经常需要查数据库验证数据</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">37</span>
+      <span class="q-title">如何用 SQL 验证充值是否到账？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的数据验证思维。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① 查询订单表：SELECT * FROM orders WHERE order_id = 'xxx'，确认订单状态为"已支付"</li>
+          <li>② 查询玩家余额：SELECT balance FROM players WHERE player_id = 'xxx'，确认余额增加正确</li>
+          <li>③ 查询道具表：SELECT * FROM items WHERE player_id = 'xxx' AND item_id = 'xxx'，确认道具到账</li>
+          <li>④ 关联验证：JOIN 订单表和道具表，确认一笔订单对应正确的道具发放</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只看客户端显示——必须查数据库验证服务端数据</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块九：软技能与情景题 ==================== -->
+<section id="soft">
+  <h2><span class="num">9</span> 软技能与情景题</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">38</span>
+      <span class="q-title">你最大的优点和缺点分别是什么？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>优点贴合岗位需求，缺点真实但不致命，且说明改进措施。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>优点</strong>：责任心强，对细节敏感，善于发现问题；主动学习新技术（AI 辅助测试、自动化工具）</li>
+          <li><strong>缺点</strong>：有时过于追求完美，导致在某些非核心细节上花费过多时间。改进：学会区分优先级，核心功能精益求精，非核心功能"够用就好"</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"我的缺点是太追求完美"——这是面试经典套路，面试官听了会翻白眼</li>
+          <li>❌ 说一个致命缺点（如"我容易发脾气"）——要选可改进的缺点</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">39</span>
+      <span class="q-title">你为什么从上一家公司离职？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>正面回答，不抱怨，聚焦个人成长。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>"我在软通动力驻场腾讯《天龙八部》项目 4.5 年，从一线工程师成长为测试组长，积累了丰富经验。现在希望寻求新的平台和挑战，能在更大规模的团队或更核心的项目中发挥我的管理能力和技术专长。"</li>
+          <li>或者："项目进入稳定运营期，测试工作趋于重复，我希望接触新的游戏项目或品类，持续成长。"</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 抱怨前公司/领导/薪资——面试官会担心你以后也这样说</li>
+          <li>❌ 说"被裁的"——如果是外包转正问题，可以如实说但要有正面表述</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">40</span>
+      <span class="q-title">你的职业规划是什么？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>短期+中期+长期，体现你的上进心和稳定性。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>短期（1-2 年）</strong>：在新平台快速融入，深入了解新项目的业务和技术栈，成为团队核心骨干</li>
+          <li><strong>中期（3-5 年）</strong>：成长为测试负责人/测试经理，管理更大规模团队，推动测试体系建设</li>
+          <li><strong>长期</strong>：成为游戏测试领域的专家，能在行业会议上分享经验，或向质量保障总监方向发展</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"没想那么多"——显得没有上进心</li>
+          <li>❌ 说"想转行做开发"——面试官会担心你不稳定</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">41</span>
+      <span class="q-title">你期望的薪资是多少？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>给出合理区间，不要太低（显得没自信）也不要太高（吓跑 HR）。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>"基于我 4.5 年游戏测试经验和组长管理能力，期望薪资在 XX-XX K（根据目标城市和公司调整）。当然，我也看重平台发展空间和团队氛围，薪资可以进一步沟通。"</li>
+          <li>建议提前调研目标公司和城市的薪资水平，给出合理区间</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"你们看着给"——显得没有自我认知</li>
+          <li>❌ 报一个离谱的高价——会直接被淘汰</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">42</span>
+      <span class="q-title">如果让你从零搭建一个游戏测试团队，你会怎么做？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的体系化思维，从流程、人员、工具、文化四个维度回答。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>流程建设</strong>：建立标准化测试流程（需求评审→用例设计→执行→回归→上线验收→复盘）</li>
+          <li>② <strong>人员配置</strong>：根据项目规模确定人数，按功能/性能/自动化分工</li>
+          <li>③ <strong>工具链</strong>：引入缺陷管理工具（TAPD/Jira）、自动化框架、性能监控工具</li>
+          <li>④ <strong>文档体系</strong>：建立测试用例库、环境搭建文档、测试报告模板</li>
+          <li>⑤ <strong>团队文化</strong>：建立"发现问题是价值"的文化，鼓励技术分享和持续改进</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只说"招人干活"——要体现体系化思维</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">43</span>
+      <span class="q-title">版本上线前一天发现 P1 Bug，但修复需要 2 天，你怎么决策？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的风险决策能力。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>评估影响</strong>：这个 Bug 影响多少用户？是否有 workaround？是否影响核心营收？</li>
+          <li>② <strong>方案对比</strong>：A. 延期上线（损失运营节奏）B. 带病上线+热更（风险可控）C. 屏蔽相关功能上线</li>
+          <li>③ <strong>决策</strong>：如果有 workaround 且影响面小，建议带病上线+次日热更；如果影响核心功能且无 workaround，建议延期</li>
+          <li>④ <strong>沟通</strong>：将分析和建议同步给制作人/项目经理，由决策层最终拍板</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 直接说"延期"或"上线"——要展示决策过程</li>
+          <li>❌ 独自做决定——重大决策需要升级</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">44</span>
+      <span class="q-title">你如何保持对新技术的学习？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>结合你自考本科和引入 AI 工具的经历，展示学习能力和自驱力。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>系统学习</strong>：正在自考武汉理工大学计算机科学与技术本科，系统补充计算机基础</li>
+          <li><strong>实践驱动</strong>：在工作中发现问题→学习解决方案→落地验证（如引入 AI 工具）</li>
+          <li><strong>信息渠道</strong>：关注测试行业公众号/社区、GitHub 开源项目、技术博客</li>
+          <li><strong>团队分享</strong>：学到的新知识在组内分享，教学相长</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"公司安排培训"——要体现自驱力</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 模块十：职业规划与自我评价 ==================== -->
+<section id="career">
+  <h2><span class="num">10</span> 职业规划与综合题</h2>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">45</span>
+      <span class="q-title">你从工程造价转行做游戏测试，为什么做这个选择？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>这是一个"转行故事"，要说得积极、有逻辑。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>"我本身是游戏爱好者，对游戏有热情。毕业后发现游戏行业更有发展空间，于是从工程造价转行进入测试领域。虽然起点比别人高（非科班），但我通过 4.5 年的实战积累和自考本科补充理论，已经在这个领域站稳脚跟。"</li>
+          <li>核心传达：转行是深思熟虑的选择，且已经用结果证明了自己</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"工程造价不好找工作"——不要贬低原专业</li>
+          <li>❌ 表现出"非科班"的自卑——你用 4.5 年经验证明了自己</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">46</span>
+      <span class="q-title">你自考本科的动机是什么？对工作有什么帮助？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示上进心和持续学习的态度。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>"工作后发现专科学历在职业发展中有一定局限，所以选择自考武汉理工大学计算机科学与技术本科。这不仅是学历提升，更是系统补充计算机基础（数据结构、网络、操作系统），让我在测试工作中能更深入地理解技术原理。"</li>
+          <li>预计 2027 年毕业，说明你有明确的目标和执行力</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"就是为了拿个证"——要体现学习动机</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">47</span>
+      <span class="q-title">你觉得测试工程师的核心价值是什么？<span class="tag tag-medium">进阶</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>不要只说"找 Bug"，要提升到质量保障和风险控制的高度。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li><strong>质量守门人</strong>：确保上线版本质量达标，保护用户体验和产品口碑</li>
+          <li><strong>风险预警</strong>：在问题到达用户之前发现并推动解决，降低线上事故概率</li>
+          <li><strong>流程推动者</strong>：通过测试反推开发规范、策划文档质量提升</li>
+          <li><strong>效率引擎</strong>：通过自动化和 AI 工具提升团队产出，缩短版本周期</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 只说"找 Bug 保证质量"——太浅，要体现测试的主动价值</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">48</span>
+      <span class="q-title">如果入职后发现团队测试流程混乱，你会怎么做？<span class="tag tag-hard">高难</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>展示你的"先观察后行动"的成熟度。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>① <strong>先观察</strong>：前 1-2 周先了解现有流程、团队习惯、痛点所在</li>
+          <li>② <strong>找痛点</strong>：与组员沟通，了解最困扰他们的问题是什么</li>
+          <li>③ <strong>小步快跑</strong>：先解决最痛的一个问题（如用例模板不统一），快速见效建立信任</li>
+          <li>④ <strong>逐步推广</strong>：在取得成效后，逐步推广其他改进措施</li>
+          <li>⑤ <strong>尊重现状</strong>：不盲目推翻现有流程，在原有基础上优化</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"立刻按我的方式来"——显得不尊重团队</li>
+          <li>❌ 说"不管闲事"——显得没有主动性</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">49</span>
+      <span class="q-title">你对加班怎么看？能接受高强度版本节奏吗？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>正面回答，体现责任心，但也要有边界。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>"我在《天龙》项目经历了 23 个版本的上线节奏，习惯了版本冲刺期的高强度工作。我认为加班要分情况——版本上线前的关键冲刺期，加班是责任心的体现；但如果是因为流程低效导致的日常加班，我会优先优化流程来减少不必要的加班。"</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"完全不接受加班"——游戏行业版本节奏快，这样回答会直接被淘汰</li>
+          <li>❌ 说"随便加多少都行"——显得没有底线</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-card">
+    <div class="q-header" onclick="toggleCard(this)">
+      <span class="q-num">50</span>
+      <span class="q-title">你有什么想问我的？<span class="tag tag-easy">基础</span></span>
+      <span class="q-toggle">▼</span>
+    </div>
+    <div class="q-body">
+      <div class="q-section thinking">
+        <h4>💡 回答思路</h4>
+        <p>准备 2-3 个高质量问题，体现你对岗位的关注。</p>
+      </div>
+      <div class="q-section answer">
+        <h4>✅ 参考答案</h4>
+        <ul>
+          <li>"这个岗位负责的测试团队规模多大？目前测试流程中最大的痛点是什么？"</li>
+          <li>"团队目前在自动化测试和 AI 辅助测试方面有什么规划？"</li>
+          <li>"贵司的游戏项目处于什么阶段（研发期/上线期/稳定运营期）？"</li>
+          <li>"如果我有幸加入，前三个月的主要目标是什么？"</li>
+        </ul>
+      </div>
+      <div class="q-section redline">
+        <h4>🚫 红线</h4>
+        <ul>
+          <li>❌ 说"没有了"——这是展示你积极性的最后机会</li>
+          <li>❌ 只问薪资福利——可以问，但不要只问这个</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- end container -->
+
+<script>
+// 折叠卡片
+function toggleCard(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+// 导航高亮
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.topnav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.getAttribute('id');
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === `#${current}`) a.classList.add('active');
+  });
+});
+
+// 默认展开第一个卡片
+document.addEventListener('DOMContentLoaded', () => {
+  const firstCard = document.querySelector('.q-card');
+  if (firstCard) firstCard.classList.add('open');
+});
+</script>
+</body>
+</html>
