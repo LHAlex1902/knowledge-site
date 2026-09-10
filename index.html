@@ -391,29 +391,29 @@ var SECTIONS = [
 var SEC_IDS = SECTIONS.map(function(s){return s.id;});
 
 var NAME2SEC = {
-  '移动端抓包与日志分析实战教程.html':'test',
-  'Fiddler抓包工具实操教程.html':'test',
-  'ADB工具使用实操教程.html':'test',
-  '移动端测试脚本代码交互手册.html':'dev'
+  'tutorials/移动端抓包与日志分析实战教程.html':'test',
+  'tutorials/Fiddler抓包工具实操教程.html':'test',
+  'tutorials/ADB工具使用实操教程.html':'test',
+  'tutorials/移动端测试脚本代码交互手册.html':'dev'
 };
 
 var META = {
-  '移动端测试脚本代码交互手册.html':{
+  'tutorials/移动端测试脚本代码交互手册.html':{
     emoji:'🧰', title:'测试脚本代码交互手册',
     desc:'可交互代码库：Shell / ADB / 抓包 / Python / FiddlerScript 分类，语法高亮、一键复制、命令试玩区。',
     tags:[{cls:'inter',text:'交互'},{cls:'',text:'代码'}]
   },
-  '移动端抓包与日志分析实战教程.html':{
+  'tutorials/移动端抓包与日志分析实战教程.html':{
     emoji:'📡', title:'抓包与日志分析实战教程',
     desc:'总纲篇：抓包原理、Charles/Fiddler/mitmproxy、安卓/iOS 抓包、Shell、logcat 日志分析、Python 自动化，共 9 章。',
     tags:[{cls:'doc',text:'教程'},{cls:'',text:'抓包'}]
   },
-  'Fiddler抓包工具实操教程.html':{
+  'tutorials/Fiddler抓包工具实操教程.html':{
     emoji:'🎯', title:'Fiddler 抓包工具实操教程',
     desc:'半天速成：HTTPS 解密、抓包过滤、断点重放、AutoResponder Mock、FiddlerScript、移动端抓包 6 大模块。',
     tags:[{cls:'doc',text:'教程'},{cls:'',text:'抓包'}]
   },
-  'ADB工具使用实操教程.html':{
+  'tutorials/ADB工具使用实操教程.html':{
     emoji:'🤖', title:'ADB 工具使用实操教程',
     desc:'安卓测试核心：设备管理、应用管理、文件传输、logcat 日志抓取与崩溃定位、Shell 调试，7 章 + 速查表。',
     tags:[{cls:'doc',text:'教程'},{cls:'',text:'日志'}]
@@ -426,6 +426,26 @@ var NOTE_COLORS = ['#f5d76e','#f6a5c0','#a5c8f6','#a8e6a3','#c9b6f0','#ffb27f','
 var LAYOUT = {};   // 各板块 + inbox：存放 item token（文件名 或 'link:<id>'）
 var LINKS  = [];   // {id,url,title,desc,icon}
 var NOTES  = [];   // {id,text,color}
+
+// ===== 路径规范化 =====
+// 教程 HTML 统一存放在 tutorials/ 子目录。旧数据里可能是纯文件名（无前缀），
+// 这里统一补全前缀，保证卡片链接、META 查表、云端同步三者一致，避免点开 404。
+var FILE_DIR = 'tutorials/';
+function canonFile(tk){
+  if(typeof tk !== 'string') return tk;
+  if(tk.indexOf('link:') === 0) return tk;         // 网址卡片 token，原样
+  if(tk.indexOf('/') !== -1) return tk;            // 已含子目录路径，原样
+  if(/^index\.html?$/i.test(tk)) return tk;        // 首页自身
+  if(/\.html?$/i.test(tk)) return FILE_DIR + tk;   // 纯文件名 → 补 tutorials/ 前缀
+  return tk;
+}
+// 把整个 layout 的 token 批量规范化
+function canonLayout(layout){
+  var out = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
+  SEC_IDS.forEach(function(id){ out[id] = (layout[id]||[]).map(canonFile); });
+  out.inbox = (layout.inbox||[]).map(canonFile);
+  return out;
+}
 
 // ===== 工具 =====
 function esc(s){
@@ -462,7 +482,7 @@ function initLayout(){
     var base = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(saved[id]) ? saved[id] : []; });
     base.inbox = Array.isArray(saved.inbox) ? saved.inbox : [];
-    return base;
+    return canonLayout(base);
   }
   var layout = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
   Object.keys(META).forEach(function(file){
@@ -756,11 +776,18 @@ function scanAllFiles(){
       return files
         .filter(function(it){ return it.type === 'file' && /\.html?$/i.test(it.name); })
         .map(function(it){
-          var fullPath = it.name;                  // 相对仓库根的完整路径（含子文件夹）
+          var fullPath = canonFile(it.name);       // 规范化：纯文件名补 tutorials/ 前缀
           return { name: fullPath.split('/').pop(), path: fullPath };
         });
     })
-    .catch(function(){ return scanDir(''); });      // jsDelivr 失败 → 退回 Contents API
+    .catch(function(){                                   // jsDelivr 失败 → 退回 Contents API
+      return scanDir('').then(function(items){
+        return items.map(function(it){
+          var fullPath = canonFile(it.path || it.name);
+          return { name: fullPath.split('/').pop(), path: fullPath };
+        });
+      });
+    });
 }
 
 function scanRepo(){
@@ -999,7 +1026,7 @@ function applyData(d){
     var base = {basic:[],dev:[],test:[],memo:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(d.layout[id]) ? d.layout[id] : []; });
     base.inbox = Array.isArray(d.layout.inbox) ? d.layout.inbox : [];
-    LAYOUT = base;
+    LAYOUT = canonLayout(base);
     try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){}
   }
   if(Array.isArray(d.links)){ LINKS = d.links; try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){} }
