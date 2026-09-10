@@ -187,6 +187,14 @@
   }
   .card.is-link:hover .card-edit{opacity:1}
   .card .card-edit:hover{color:var(--accent);background:rgba(88,166,255,.15)}
+  /* 文件卡片右上角删除钮 */
+  .card .card-del{
+    position:absolute;right:8px;top:7px;width:18px;height:18px;line-height:16px;
+    border:none;border-radius:50%;background:rgba(255,255,255,.06);color:var(--text2);
+    font-size:14px;cursor:pointer;text-align:center;padding:0;opacity:0;transition:.2s;z-index:2;
+  }
+  .card:hover .card-del{opacity:1}
+  .card .card-del:hover{color:var(--accent-red);background:rgba(248,81,73,.15)}
 
   /* inbox（待分类）区 */
   #inbox .cat-head .icon{color:var(--orange)}
@@ -329,7 +337,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-10.6</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-10.7</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -599,6 +607,7 @@ function cardHtml(token){
   var href = token.split('/').map(function(seg){ return encodeURIComponent(seg); }).join('/');
   return '<a class="card" draggable="true" data-item="'+esc(token)+'" href="'+esc(href)+'" title="'+esc(title)+'">'+
       '<span class="grip">⠿</span>'+
+      '<button class="card-del" title="从列表移除" onclick="delCard(event,\''+esc(token).replace(/'/g,'\\\'')+'\')">×</button>'+
       '<div class="c-emoji"><span class="fi-bg">'+esc(emoji)+'</span></div>'+
       '<div class="c-name">'+esc(title)+'</div>'+
       '<div class="c-tags">'+tags+'</div>'+
@@ -789,6 +798,20 @@ function moveTo(toSec, item){
   render();
 }
 
+// 手动从列表移除单个卡片（仅从本地布局删除该 token，不删除 GitHub 上的文件）
+function delCard(e, token){
+  if(e){ e.preventDefault(); e.stopPropagation(); }
+  SEC_IDS.forEach(function(id){
+    var i = LAYOUT[id].indexOf(token);
+    if(i !== -1){ LAYOUT[id].splice(i,1); }
+  });
+  var ii = LAYOUT.inbox.indexOf(token);
+  if(ii !== -1){ LAYOUT.inbox.splice(ii,1); }
+  saveLayout();
+  render();
+  scheduleSync();
+}
+
 // ===== 导航滚动高亮 =====
 function bindScrollSpy(){
   var sections = document.querySelectorAll('section[id]');
@@ -827,29 +850,42 @@ function scanDir(path){
       });
     });
 }
-// 优先走 jsDelivr data API：一次性返回仓库全部文件、免 GitHub 未认证限流（60次/时 → 403）
-// 失败时退回递归 Contents API 兜底。jsDelivr 的 name 即相对仓库根的路径（含子文件夹）。
+// 合并去重：把一批 {name,path} 归一化后并入 out（按规范化路径去重）
+function mergeFiles(out, arr){
+  arr.forEach(function(f){
+    var full = canonFile(f.path || f.name);
+    var name = full.split('/').pop();
+    var dup = out.filter(function(o){ return o.path === full; });
+    if(dup.length === 0) out.push({ name: name, path: full });
+  });
+  return out;
+}
+// 双源扫描：jsDelivr data API（全量、免限流，但有数小时缓存滞后）
+//          + GitHub Contents API 递归（实时，能补上 jsDelivr 尚未索引的新文件，未认证可能 403）
+// 取两者并集：新上传的文件即使 jsDelivr 没缓存到，Contents API 也能实时扫到。
 function scanAllFiles(){
-  var url = 'https://data.jsdelivr.com/v1/packages/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '?t=' + Date.now();
-  return fetch(url, {headers:{'Accept':'application/json'}})
+  var jsdUrl = 'https://data.jsdelivr.com/v1/packages/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '?t=' + Date.now();
+  var jsd = fetch(jsdUrl, {headers:{'Accept':'application/json'}})
     .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(function(pkg){
       var files = (pkg && pkg.files) || [];
       return files
         .filter(function(it){ return it.type === 'file' && /\.html?$/i.test(it.name); })
         .map(function(it){
-          var fullPath = canonFile(it.name);       // 规范化：纯文件名补 tutorials/ 前缀
+          var fullPath = canonFile(it.name);
           return { name: fullPath.split('/').pop(), path: fullPath };
         });
     })
-    .catch(function(){                                   // jsDelivr 失败 → 退回 Contents API
-      return scanDir('').then(function(items){
-        return items.map(function(it){
-          var fullPath = canonFile(it.path || it.name);
-          return { name: fullPath.split('/').pop(), path: fullPath };
-        });
-      });
+    .catch(function(){ return []; });   // jsDelivr 失败不致命，交给 Contents 兜底
+  var gh = scanDir('').then(function(items){
+    return items.map(function(it){
+      var fullPath = canonFile(it.path || it.name);
+      return { name: fullPath.split('/').pop(), path: fullPath };
     });
+  }).catch(function(){ return []; });   // Contents API 失败（如 403 限流）不致命，交给 jsDelivr 兜底
+  return Promise.all([jsd, gh]).then(function(res){
+    return mergeFiles([], res[0].concat(res[1]));
+  });
 }
 
 function scanRepo(){
@@ -876,6 +912,31 @@ function scanRepo(){
       });
     });
 
+    // 清理失效卡片：仓库里已不存在的文件（被删除/改名），从所有板块 + 待分类区移除其 token。
+    // 网址卡片(link:)不受影响；只有文件类 token 参与存在性判断。
+    var existPaths = {}, existNames = {};
+    scanned.forEach(function(f){
+      existPaths[f.path] = 1;
+      existNames[decodeURIComponent(f.name)] = 1;
+    });
+    function tokenAlive(tk){
+      if(typeof tk !== 'string' || tk.indexOf('link:') === 0) return true;  // 网址永远保留
+      if(existPaths[tk]) return true;                    // 规范化路径命中
+      var base = tk.split('/').pop();                     // 纯文件名也能命中（兼容旧 token）
+      return !!existNames[base];
+    }
+    var removed = 0;
+    SEC_IDS.forEach(function(id){
+      LAYOUT[id] = (LAYOUT[id] || []).filter(function(tk){
+        if(tokenAlive(tk)) return true;
+        removed++; return false;
+      });
+    });
+    LAYOUT.inbox = (LAYOUT.inbox || []).filter(function(tk){
+      if(tokenAlive(tk)) return true;
+      removed++; return false;
+    });
+
     var added = 0;
     scanned.forEach(function(f){
       var name = decodeURIComponent(f.name);
@@ -897,11 +958,11 @@ function scanRepo(){
     });
     saveLayout();
     render();
-    if(added === 0){
-      status.textContent = '✅ 扫描完成：没有发现新文件（仓库里 ' + scanned.length + ' 个 HTML 均已归类或在待分类区）。';
-    } else {
-      status.textContent = '✅ 发现 ' + added + ' 个新文件，已放入「📥 待分类」区。拖动卡片到上方板块即可归类。';
-    }
+    var msg = '';
+    if(added > 0) msg += '发现 ' + added + ' 个新文件，已放入「📥 待分类」区。';
+    if(removed > 0) msg += '清理 ' + removed + ' 个已失效的卡片（仓库中已删除/改名）。';
+    if(!msg) msg = '没有变化：仓库里 ' + scanned.length + ' 个 HTML 均已归类，无失效卡片。';
+    status.textContent = '✅ ' + msg;
   })
     .catch(function(err){
       status.textContent = '⚠️ 检索失败：' + err.message + '（可能是网络或 API 速率限制，稍后再试）。';
