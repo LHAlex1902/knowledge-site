@@ -423,7 +423,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   个人资料库 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-11.19</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-11.20</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -474,14 +474,14 @@
     </div>
     <div id="upDrop" class="up-drop">
       <div class="up-drop-inner">
-        <div class="up-drop-icon">📄</div>
-        <div class="up-drop-text">把 HTML 文件拖到这里<br><span style="font-size:11.5px;opacity:.75">或点击选择文件</span></div>
+        <div class="up-drop-icon">📎</div>
+        <div class="up-drop-text">把文件拖到这里<br><span style="font-size:11.5px;opacity:.75">或点击选择文件（不限类型）</span></div>
       </div>
-      <input type="file" id="upFileInput" accept=".html,.htm" style="display:none">
+      <input type="file" id="upFileInput" accept="*/*" multiple style="display:none">
     </div>
     <div id="upFileList" class="up-filelist"></div>
     <div style="font-size:11.5px;color:var(--text2);margin-top:10px;line-height:1.6">
-      选择目标目录后，文件会写入仓库对应位置，GitHub Pages 约 1 分钟内重新发布。<b>根目录</b>可更新首页 <b>index.html</b>；选 <b>tutorials/</b> 上传教程后点 <b>🔍 仓库检索</b> 即可搜到并归入板块。<br>
+      支持上传任意类型文件（HTML、图片、PDF、Markdown、压缩包等）。选择目标目录后，文件会写入仓库对应位置，GitHub Pages 约 1 分钟内重新发布。<b>根目录</b>可更新首页 <b>index.html</b>；选 <b>tutorials/</b> 上传后点 <b>🔍 仓库检索</b> 即可搜到并归入板块。<br>
       ⚠️ 需要先在 <b>☁️ 云同步</b> 里填入有 <b>repo</b> 权限的 GitHub PAT（与云同步同一个令牌），目录列表也靠它自动读取。
     </div>
     <div class="modal-btns" style="margin-top:16px">
@@ -1620,17 +1620,17 @@ function upFmtSize(bytes){
 }
 
 function handleUpFiles(fileList){
-  var files = Array.prototype.slice.call(fileList).filter(function(f){
-    return /\.html?$/i.test(f.name);
-  });
+  // 不限制文件类型：任意文件都可上传（html、图片、pdf、zip、md 等）
+  var files = Array.prototype.slice.call(fileList);
   if(!files.length){
-    document.getElementById('upStatus').textContent = '⚠️ 请选择 .html 文件。';
+    document.getElementById('upStatus').textContent = '⚠️ 请选择要上传的文件。';
     return;
   }
   var pending = files.length;
   files.forEach(function(f){
     var reader = new FileReader();
     reader.onload = function(e){
+      // 统一以 base64 存储内容：文本与二进制（图片/pdf/zip 等）都能正确写入仓库
       UP_FILES.push({ name:f.name, size:f.size, content:e.target.result, state:'wait', msg:'' });
       pending--;
       if(pending === 0) renderUpFiles();
@@ -1640,7 +1640,7 @@ function handleUpFiles(fileList){
       pending--;
       if(pending === 0) renderUpFiles();
     };
-    reader.readAsText(f, 'utf-8');
+    reader.readAsDataURL(f);   // 读为 dataURL（含 base64），二进制安全
   });
   renderUpFiles();
 }
@@ -1670,8 +1670,7 @@ function renderUpFiles(){
   btn.disabled = UP_FILES.length === 0;
 }
 
-// base64 编码（兼容中文）
-function upB64(str){ return btoa(unescape(encodeURIComponent(str))); }
+// base64 编码已改由 FileReader.readAsDataURL 直接产出（二进制安全），此处不再需要 upB64
 
 function startUpload(){
   var token = getToken();
@@ -1729,9 +1728,11 @@ function upPutFile(token, f){
       return r.json().then(function(j){ return (j && j.sha) || null; });
     })
     .then(function(sha){
+      // content 为 readAsDataURL 得到的 dataURL，取逗号后的纯 base64
+      var b64 = (f.content || '').split(',')[1] || '';
       var payload = {
-        message: 'upload: ' + (dir === '' ? '更新首页 ' : '上传教程 ') + f.name + ' ' + new Date().toLocaleString('zh-CN'),
-        content: upB64(f.content),
+        message: 'upload: ' + (dir === '' ? '更新首页 ' : '上传文件 ') + f.name + ' ' + new Date().toLocaleString('zh-CN'),
+        content: b64,
         branch: SYNC_BRANCH
       };
       if(sha) payload.sha = sha;   // 已存在 → 更新
