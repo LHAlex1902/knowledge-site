@@ -230,6 +230,29 @@
   .modal-btns{display:flex;gap:10px;justify-content:flex-end}
   .modal-status{font-size:12px;color:var(--text2);margin-top:10px;min-height:16px}
 
+  /* ===== AI 问答弹窗 ===== */
+  .ai-modal{max-width:560px;display:flex;flex-direction:column;max-height:82vh}
+  .ai-messages{
+    flex:1;overflow-y:auto;min-height:240px;max-height:52vh;
+    background:var(--bg);border:1px solid var(--border);border-radius:10px;
+    padding:12px;margin-bottom:10px;display:flex;flex-direction:column;gap:10px;
+  }
+  .ai-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:13.5px;line-height:1.6;
+    white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+  .ai-msg.user{align-self:flex-end;background:var(--accent2);color:#fff;border-bottom-right-radius:4px}
+  .ai-msg.bot{align-self:flex-start;background:var(--card);color:var(--text);border:1px solid var(--border);border-bottom-left-radius:4px}
+  .ai-msg.err{align-self:flex-start;background:rgba(248,81,73,.12);color:#f85149;border:1px solid rgba(248,81,73,.3)}
+  .ai-msg .ai-tip{display:block;font-size:11px;color:var(--text2);margin-top:5px}
+  .ai-input-row{display:flex;gap:8px;align-items:flex-end}
+  .ai-input{
+    flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);
+    background:var(--bg);color:var(--text);font-size:14px;outline:none;resize:none;
+    font-family:inherit;line-height:1.5;max-height:120px;
+  }
+  .ai-input:focus{border-color:var(--accent)}
+  .ai-send{white-space:nowrap;padding:10px 18px}
+  .ai-send:disabled{opacity:.5;cursor:not-allowed}
+
   /* ===== 密码门禁 ===== */
   .gate{
     position:fixed;inset:0;z-index:300;background:var(--bg);
@@ -319,6 +342,7 @@
   <div class="toolbar" data-page-node-id="OqAUvMpN2IttX00klA9HAX">
     <button class="btn primary" id="scanBtn" onclick="scanRepo()" data-page-node-id="4ORMoFCqzq8xZV4gIzyymm">🔍 仓库检索</button>
     <button class="btn" id="syncBtn" onclick="openSyncModal()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemm">☁️ 云同步</button>
+    <button class="btn" id="aiBtn" onclick="openAiChat()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemz">🤖 AI 问答</button>
   </div>
   <div class="scan-status" id="scanStatus" data-page-node-id="PXaT5G2WmyzadcNFeAP1l0"></div>
   <div class="scan-status" id="syncStatus" data-page-node-id="PXaT5G2WmyzadcNFeAP1l1"></div>
@@ -341,7 +365,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-11.6</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-11.7</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -381,6 +405,23 @@
   </div>
 </div>
 
+<!-- AI 问答弹窗 -->
+<div class="modal-mask" id="aiModal">
+  <div class="modal ai-modal">
+    <h3>🤖 AI 问答助手</h3>
+    <div class="ai-messages" id="aiMessages"></div>
+    <div class="ai-input-row">
+      <textarea id="aiInput" class="ai-input" rows="1" placeholder="输入你的问题，回车发送，Shift+回车换行"></textarea>
+      <button class="btn primary ai-send" id="aiSendBtn" onclick="aiSend()">发送</button>
+    </div>
+    <div class="modal-btns" style="margin-top:10px">
+      <button class="btn" onclick="aiClear()">🗑 清空对话</button>
+      <button class="btn" onclick="closeAiChat()">关闭</button>
+    </div>
+    <div class="modal-status" id="aiStatus"></div>
+  </div>
+</div>
+
 <script src="site-config.js"></script>
 <script>
 // 兜底：若 site-config.js 未加载成功，用默认配置，避免进不去
@@ -395,6 +436,14 @@ var LS_NOTES  = 'zhishi-pulse-notes-v1';
 var LS_TOKEN  = 'zhishi-pulse-token-v1';   // 本设备记住的 GitHub PAT
 var DATA_FILE = 'site-data.json';          // 仓库里存放同步数据的文件
 var SYNC_BRANCH = 'main';
+
+// ===== DeepSeek AI 问答配置 =====
+// Worker 代理地址：部署 ai-worker.js 后，把地址填到这里（末尾不要带斜杠）
+var AI_WORKER_URL = 'https://project-9xcgb.vercel.app/api/chat';
+// 客户端密钥：与 Worker 的 CLIENT_KEY 环境变量一致；未设则留空（仅靠地址保密）
+var AI_CLIENT_KEY = '';
+var AI_MODEL = 'deepseek-chat';            // DeepSeek 模型名
+var LS_AI_CHAT = 'zhishi-pulse-ai-chat-v1'; // 对话历史本地存储
 
 var SECTIONS = [
   {id:'dev',     icon:'💻', name:'开发'},
@@ -1167,6 +1216,7 @@ function boot(){
   loadSectionOrder();   // 先套用本机保存的板块顺序，云端数据到达后可能再覆盖
   renderNotes();
   render();
+  aiInitInput();   // 初始化 AI 问答输入框事件（回车发送、自适应高度）
   // 启动后自动尝试从云端拉取最新数据（无需令牌，公开仓库可读）
   // 迁移在数据最终确定后（syncPull 回调）执行，避免被云端覆盖
   syncPull(true, function(){ migrateLinksToSection(); render(); });
@@ -1582,6 +1632,202 @@ function cloudRefresh(){
   } else {
     doRefresh();
   }
+}
+
+// ===== AI 问答（DeepSeek，经 Cloudflare Worker 代理）=====
+var _aiHistory = [];    // 对话历史 [{role,content}]
+var _aiBusy = false;    // 是否正在请求中
+function aiLoad(){
+  try{ var s = JSON.parse(localStorage.getItem(LS_AI_CHAT)); return (s && Array.isArray(s.messages)) ? s.messages : []; }
+  catch(e){ return []; }
+}
+function aiSave(){
+  try{ localStorage.setItem(LS_AI_CHAT, JSON.stringify({messages:_aiHistory})); }catch(e){}
+}
+function openAiChat(){
+  _aiHistory = aiLoad();
+  document.getElementById('aiStatus').textContent = '';
+  document.getElementById('aiModal').classList.add('show');
+  aiRender();
+  setTimeout(function(){ var inp = document.getElementById('aiInput'); if(inp) inp.focus(); }, 50);
+}
+function closeAiChat(){ document.getElementById('aiModal').classList.remove('show'); }
+function aiClear(){
+  _aiHistory = [];
+  aiSave();
+  aiRender();
+  document.getElementById('aiStatus').textContent = '已清空对话。';
+}
+function aiRender(){
+  var box = document.getElementById('aiMessages');
+  if(!box) return;
+  if(_aiHistory.length === 0){
+    box.innerHTML = '<div class="ai-msg bot">你好！我是接入的 AI 助手，可以问我学习、编程、测试等方面的问题。<span class="ai-tip">回答由 DeepSeek 提供，经 Cloudflare Worker 代理转发。</span></div>';
+    return;
+  }
+  var html = '';
+  _aiHistory.forEach(function(m){
+    var cls = (m.role === 'user') ? 'user' : 'bot';
+    html += '<div class="ai-msg '+cls+'">'+esc(m.content)+'</div>';
+  });
+  box.innerHTML = html;
+  box.scrollTop = box.scrollHeight;
+}
+// 追加一条消息到历史并重渲染
+function aiAppend(role, content){
+  _aiHistory.push({role:role, content:content});
+  aiSave();
+  aiRender();
+}
+// 输入框自适应高度 + 回车发送
+function aiInitInput(){
+  var inp = document.getElementById('aiInput');
+  if(!inp) return;
+  inp.addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
+  inp.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      aiSend();
+    }
+  });
+}
+function aiSend(){
+  if(_aiBusy){ return; }
+  var inp = document.getElementById('aiInput');
+  var text = (inp.value || '').trim();
+  if(!text){ return; }
+  if(!AI_WORKER_URL || AI_WORKER_URL.indexOf('你的worker') !== -1){
+    document.getElementById('aiStatus').textContent = '⚠️ 尚未配置 AI 服务地址：请在 index.html 里把 AI_WORKER_URL 改成你部署的 Worker 地址。';
+    return;
+  }
+  aiAppend('user', text);
+  inp.value = '';
+  inp.style.height = 'auto';
+  // 组装发给模型的历史（仅最近 12 条，控制 token）
+  var recent = _aiHistory.slice(-12);
+  var payload = { model: AI_MODEL, messages: recent, stream: true, temperature: 0.7, max_tokens: 1024 };
+  if(AI_CLIENT_KEY) payload.clientKey = AI_CLIENT_KEY;
+  _aiBusy = true;
+  var sendBtn = document.getElementById('aiSendBtn');
+  if(sendBtn){ sendBtn.disabled = true; sendBtn.textContent = '…'; }
+  document.getElementById('aiStatus').textContent = '';
+  // 先放一条空的 bot 消息占位，用于流式逐字填充
+  _aiHistory.push({role:'assistant', content:''});
+  aiRender();
+  aiStream(payload, function(fullText, err){
+    _aiBusy = false;
+    if(sendBtn){ sendBtn.disabled = false; sendBtn.textContent = '发送'; }
+    if(err){
+      // 出错：把占位消息标记为错误
+      _aiHistory[_aiHistory.length-1] = {role:'assistant', content:'⚠️ '+err};
+      aiSave(); aiRender();
+      document.getElementById('aiStatus').textContent = '请求失败：'+err;
+      return;
+    }
+    // 成功：把完整文本写回历史（占位消息已更新）
+    _aiHistory[_aiHistory.length-1] = {role:'assistant', content:fullText};
+    aiSave(); aiRender();
+  });
+}
+// 流式请求 Worker；不支持流式的老内核自动降级为整段返回
+function aiStream(payload, done){
+  var headers = {'Content-Type':'application/json'};
+  if(AI_CLIENT_KEY) headers['X-Client-Key'] = AI_CLIENT_KEY;
+  var fetchP;
+  try{
+    fetchP = fetch(AI_WORKER_URL, { method:'POST', headers:headers, body:JSON.stringify(payload) });
+  }catch(e){
+    done('', '网络请求失败：'+e.message);
+    return;
+  }
+  // 老内核：fetch 不支持 ReadableStream → 走整段返回
+  if(typeof fetchP.then !== 'function' || !fetchP.body){
+    fetchP.then(function(r){ return r.json(); })
+      .then(function(j){
+        var txt = (j && j.choices && j.choices[0] && j.choices[0].message) ? j.choices[0].message.content : '';
+        if(!txt) throw new Error('返回为空');
+        // 逐字模拟打字机（整段也能有打字效果）
+        aiTypewriter(txt, done);
+      })
+      .catch(function(e){ done('', e.message); });
+    return;
+  }
+  // 现代内核：读 SSE 流
+  fetchP.then(function(r){
+    if(!r.ok){
+      return r.json().then(function(j){
+        var m = (j && (j.error || j.message)) || ('HTTP '+r.status);
+        throw new Error(m);
+      }).catch(function(e){ throw new Error('HTTP '+r.status); });
+    }
+    var reader = r.body.getReader();
+    var decoder = (typeof TextDecoder !== 'undefined') ? new TextDecoder('utf-8') : null;
+    var buf = '';
+    var full = '';
+    function pump(){
+      return reader.read().then(function(res){
+        if(res.done){
+          // 流结束：把剩余 buffer 处理完
+          aiParseSSE(buf, function(delta){ full += delta; aiUpdateLast(full); });
+          done(full, null);
+          return;
+        }
+        var chunk = decoder ? decoder.decode(res.value, {stream:true}) : res.value;
+        buf += chunk;
+        // 按行解析 SSE，逐段增量更新
+        var lines = buf.split('\n');
+        buf = lines.pop();   // 最后一段可能不完整，留到下次
+        aiParseSSELines(lines, function(delta){ full += delta; aiUpdateLast(full); });
+        return pump();
+      });
+    }
+    return pump();
+  }).catch(function(e){
+    done('', e.message);
+  });
+}
+// 解析 SSE 行数组，提取 data: 里的增量文本，回调 delta
+function aiParseSSELines(lines, onDelta){
+  for(var i=0;i<lines.length;i++){
+    var line = lines[i];
+    if(line.indexOf('data:') !== 0) continue;
+    var json = line.slice(5).replace(/^\s+/, '');
+    if(json === '[DONE]') continue;
+    try{
+      var j = JSON.parse(json);
+      var delta = (j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content) || '';
+      if(delta) onDelta(delta);
+    }catch(e){ /* 跳过无法解析的行 */ }
+  }
+}
+// 兼容：整段文本一次性解析（非流式返回时）
+function aiParseSSE(buf, onDelta){
+  aiParseSSELines(buf.split('\n'), onDelta);
+}
+// 更新最后一条 bot 消息（流式增量渲染）
+function aiUpdateLast(text){
+  if(_aiHistory.length > 0){
+    _aiHistory[_aiHistory.length-1].content = text;
+  }
+  aiRender();
+}
+// 老内核整段返回时的模拟打字机（每 12ms 显示若干字）
+function aiTypewriter(full, done){
+  var i = 0;
+  var step = 3;
+  function tick(){
+    i += step;
+    aiUpdateLast(full.slice(0, i));
+    if(i < full.length){
+      setTimeout(tick, 12);
+    } else {
+      done(full, null);
+    }
+  }
+  tick();
 }
 
 // ---------- 诗词背景 ----------
