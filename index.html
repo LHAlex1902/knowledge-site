@@ -18,7 +18,20 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
     background:var(--bg); color:var(--text); line-height:1.7;
     -webkit-font-smoothing:antialiased;
+    /* 双径向光晕：左上蓝、右下紫，为纯平深色底注入氛围与纵深 */
+    background-image:
+      radial-gradient(680px 420px at 12% -5%, rgba(31,111,235,.16), transparent 60%),
+      radial-gradient(620px 460px at 92% 8%, rgba(188,140,255,.14), transparent 62%),
+      radial-gradient(720px 520px at 50% 108%, rgba(57,197,207,.08), transparent 60%);
+    background-attachment:fixed;
   }
+  /* 选中文字高亮 */
+  ::selection{background:rgba(88,166,255,.32);color:#fff}
+  /* 滚动条美化（WebKit 内核） */
+  ::-webkit-scrollbar{width:11px;height:11px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:#2b323c;border-radius:8px;border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb:hover{background:#3a434f}
   a{color:inherit;text-decoration:none}
 
   /* ===== 诗词背景层（底层、不可点击、仅显示） ===== */
@@ -36,10 +49,12 @@
   .poem-line{
     writing-mode:vertical-rl;          /* 从上往下竖排 */
     text-orientation:upright;
-    font-family:"Mao Zedong","毛泽东字体","STXingkai","STKaiti","KaiTi","楷体",serif;
+    font-family:"Mao Zedong","毛泽东字体","STXingkai","华文行楷","STKaiti","KaiTi","楷体",serif;
     font-size:clamp(20px,2.6vw,30px);
-    line-height:1.85;letter-spacing:3px;
-    color:rgba(212,175,55,.55);        /* 严肃烫金，清晰可见但不刺眼 */
+    line-height:1.9;letter-spacing:4px;
+    /* 温润墨金：降饱和、微提亮，如宣纸古籍烫金，书卷气更足 */
+    color:rgba(224,190,118,.46);
+    text-shadow:0 0 1px rgba(255,240,200,.35), 0 2px 16px rgba(180,140,60,.22);
     white-space:nowrap;
     padding:0 5px;
   }
@@ -60,6 +75,7 @@
     position:sticky;top:0;z-index:100;
     background:rgba(13,17,23,.72); backdrop-filter:blur(12px);
     border-bottom:1px solid var(--border);
+    box-shadow:0 1px 0 rgba(88,166,255,.08),0 4px 20px rgba(0,0,0,.28);
   }
   .topnav-inner{
     max-width:1180px;margin:0 auto;padding:12px 24px;
@@ -80,7 +96,11 @@
   }
   .hero .emoji{font-size:52px;margin-bottom:14px}
   .hero h1{font-size:36px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px}
-  .hero h1 .grad{background:linear-gradient(90deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .hero h1 .grad{
+    background:linear-gradient(100deg,var(--accent) 0%,#79c0ff 38%,var(--purple) 78%,#d2a8ff 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    filter:drop-shadow(0 2px 18px rgba(88,166,255,.28));
+  }
   .hero p{color:var(--text2);font-size:15.5px;max-width:620px;margin:0 auto 22px}
   .badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   .badge{
@@ -98,8 +118,16 @@
     border:1px solid var(--border);background:var(--card);color:var(--text);transition:.2s;
   }
   .btn:hover{border-color:var(--accent);color:var(--accent)}
-  .btn.primary{background:var(--accent2);border-color:var(--accent2);color:#fff}
-  .btn.primary:hover{background:var(--accent);color:#fff}
+  .btn.primary{
+    background:linear-gradient(135deg,var(--accent2),#388bfd);
+    border-color:transparent;color:#fff;
+    box-shadow:0 2px 10px rgba(31,111,235,.28);
+  }
+  .btn.primary:hover{
+    background:linear-gradient(135deg,var(--accent),#4d9dff);
+    color:#fff;border-color:transparent;
+    box-shadow:0 6px 20px rgba(56,139,253,.42);transform:translateY(-1px);
+  }
   .btn:disabled{opacity:.5;cursor:wait}
   .btn.mini{padding:5px 12px;font-size:13px;border-radius:9px}
   .scan-status{font-size:12px;color:var(--text2);margin-top:10px;min-height:16px}
@@ -161,9 +189,12 @@
     border-radius:var(--radius);padding:14px 8px 12px;transition:.22s;position:relative;cursor:grab;
     min-height:104px;justify-content:flex-start;
   }
-  .card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .card:hover{
+    border-color:var(--accent);transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(0,0,0,.48),0 0 0 1px rgba(88,166,255,.22),0 0 22px rgba(88,166,255,.14);
+  }
   .card::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--accent);opacity:0;transition:.22s}
-  .card:hover::before{opacity:1}
+  .card:hover::before{opacity:1;box-shadow:0 0 10px var(--accent)}
   .card.dragging{opacity:.4;cursor:grabbing}
   .card .grip{position:absolute;right:8px;top:7px;color:var(--text2);font-size:12px;opacity:.35}
   .card .c-emoji{position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;margin-bottom:8px}
@@ -391,7 +422,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-11.9</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-11.14</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -2123,16 +2154,30 @@ var POEMS = [
   ['金沙水拍云崖暖', '大渡桥横铁索寒'],
   ['天若有情天亦老', '人间正道是沧桑'],
   ['萧瑟秋风今又是', '换了人间'],
-  ['为有牺牲多壮志', '敢教日月换新天']
+  ['为有牺牲多壮志', '敢教日月换新天'],
+  ['不管风吹浪打', '胜似闲庭信步'],
+  ['世上无难事', '只要肯登攀'],
+  ['一万年太久', '只争朝夕']
 ];
 function renderPoems(){
   var box = document.getElementById('poemBg');
   if(!box) return;
-  // 阵列式均匀排布：网格布局，单元落在每个格子中心，仅加极轻微抖动
-  // 窄屏(手机)用 2列×4行，宽屏用 4列×2行，保证均匀不重叠
-  var narrow = window.innerWidth < 640;
-  var cols = narrow ? 2 : 4;
-  var rows = narrow ? 4 : 2;
+  // 阵列式均匀排布：按“视口像素宽度”动态算列数，保证每列有足够像素，
+  // 无论窗口多宽多窄，诗句单元之间都留有安全间距，横向永不挤碰。
+  var W = window.innerWidth || document.documentElement.clientWidth || 1000;
+  var H = window.innerHeight || document.documentElement.clientHeight || 800;
+  var n = POEMS.length;
+  // 每个诗句单元（两句竖排）约占 90~100px 宽 → 每列至少 180px
+  var MIN_COL_PX = 180;
+  var cols = Math.max(1, Math.min(n, Math.floor(W / MIN_COL_PX)));
+  var rows = Math.ceil(n / cols);
+  // 高度约束：竖排诗句高度是瓶颈。按可用高度算每行能容纳的最大字号，
+  // 高度不够时等比缩小字号（列数不变，保证横向不碰），纵向永不重叠。
+  // 诗句最长约 7 字，竖排高度 ≈ 字数 × 字号 × 行高(1.9)
+  var availH = H * 0.92;
+  var perRowH = availH / rows;
+  var maxFont = Math.floor(perRowH / (7 * 1.9));
+  var fontPx = Math.max(12, Math.min(30, maxFont));   // 限制在 12~30px
   var html = '';
   for(var k=0;k<POEMS.length;k++){
     var pair = POEMS[k];
@@ -2141,18 +2186,26 @@ function renderPoems(){
     // 格子中心坐标（均匀分布）
     var left = ((c + 0.5) / cols * 100).toFixed(2);
     var top  = ((r + 0.5) / rows * 100).toFixed(2);
-    var jitterX = (Math.random()*4 - 2).toFixed(2);   // ±2% 轻微错位
-    var jitterY = (Math.random()*4 - 2).toFixed(2);
-    var rot = (Math.random()*4 - 2).toFixed(2);       // 轻微旋转
+    // 抖动/旋转幅度随列数收敛：列越密越规整，避免相邻单元挤碰
+    var jit = cols >= 5 ? 1.5 : 2;
+    var jitterX = (Math.random()*jit - jit/2).toFixed(2);
+    var jitterY = (Math.random()*jit - jit/2).toFixed(2);
+    var rot = (Math.random()*2 - 1).toFixed(2);        // ±1° 轻微旋转
     var opacity = (0.5 + Math.random()*0.25).toFixed(3); // 0.5~0.75
     html += '<div class="poem-unit" style="left:'+left+'%;top:'+top+'%;'+
             'transform:translate(calc(-50% + '+jitterX+'%), calc(-50% + '+jitterY+'%)) rotate('+rot+'deg);opacity:'+opacity+'">'+
-              '<span class="poem-line">'+esc(pair[0])+'</span>'+
-              '<span class="poem-line">'+esc(pair[1])+'</span>'+
+              '<span class="poem-line" style="font-size:'+fontPx+'px">'+esc(pair[0])+'</span>'+
+              '<span class="poem-line" style="font-size:'+fontPx+'px">'+esc(pair[1])+'</span>'+
             '</div>';
   }
   box.innerHTML = html;
 }
+// 窗口尺寸变化（拉宽/缩小/手机转屏）时防抖重排，避免诗句错位重叠
+var _poemResizeTimer = null;
+window.addEventListener('resize', function(){
+  if(_poemResizeTimer) clearTimeout(_poemResizeTimer);
+  _poemResizeTimer = setTimeout(renderPoems, 180);
+});
 
 // ---------- 密码门禁 ----------
 function gateInit(){
