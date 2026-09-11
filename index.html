@@ -50,14 +50,15 @@
     writing-mode:vertical-rl;          /* 从上往下竖排 */
     text-orientation:upright;
     font-family:"Mao Zedong","毛泽东字体","STXingkai","华文行楷","STKaiti","KaiTi","楷体",serif;
-    font-size:clamp(20px,2.6vw,30px);
-    line-height:1.9;letter-spacing:4px;
-    /* 温润墨金：降饱和、微提亮，如宣纸古籍烫金，书卷气更足 */
-    color:rgba(224,190,118,.46);
-    text-shadow:0 0 1px rgba(255,240,200,.35), 0 2px 16px rgba(180,140,60,.22);
+    font-size:clamp(12px,1.4vw,17px);  /* 缩小，退为背景 */
+    line-height:1.85;letter-spacing:2px;
+    /* 墨金色，实际淡度由 poem-unit 的 opacity 控制，使其仅作背景、无意间才看清 */
+    color:rgba(212,178,108,1);
     white-space:nowrap;
-    padding:0 5px;
+    padding:0 1px;                      /* 两句之间更紧凑，凸显同一部分的关联 */
   }
+  /* 下句（句尾带句号）与上句之间留一道极细的呼吸缝，区分上下句又不割裂 */
+  .poem-line-end{ padding-left:2px; }
   /* 让所有内容浮在诗词背景之上（topnav 自带 z-index:100 吸顶，无需处理） */
   .hero,.notes-sec,.hint,.wrap,footer,.gate{position:relative;z-index:1}
 
@@ -422,7 +423,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-11.14</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-11.17</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -2162,22 +2163,23 @@ var POEMS = [
 function renderPoems(){
   var box = document.getElementById('poemBg');
   if(!box) return;
-  // 阵列式均匀排布：按“视口像素宽度”动态算列数，保证每列有足够像素，
-  // 无论窗口多宽多窄，诗句单元之间都留有安全间距，横向永不挤碰。
+  // 每两句诗作为“一个部分”排布（10 首 = 10 个单元）：
+  // 单元内两句紧密相邻（体现上下句关联），单元与单元之间散得更开。
   var W = window.innerWidth || document.documentElement.clientWidth || 1000;
   var H = window.innerHeight || document.documentElement.clientHeight || 800;
   var n = POEMS.length;
-  // 每个诗句单元（两句竖排）约占 90~100px 宽 → 每列至少 180px
-  var MIN_COL_PX = 180;
+  // 一个单元含两句竖排，宽度约为单句两倍 → 列宽下限取 130px 保证横向不碰，
+  // 同时让单元之间天然留出更大间距。
+  var MIN_COL_PX = 130;
   var cols = Math.max(1, Math.min(n, Math.floor(W / MIN_COL_PX)));
   var rows = Math.ceil(n / cols);
   // 高度约束：竖排诗句高度是瓶颈。按可用高度算每行能容纳的最大字号，
   // 高度不够时等比缩小字号（列数不变，保证横向不碰），纵向永不重叠。
-  // 诗句最长约 7 字，竖排高度 ≈ 字数 × 字号 × 行高(1.9)
+  // 单句最长约 7 字，竖排高度 ≈ 字数 × 字号 × 行高(1.85)
   var availH = H * 0.92;
   var perRowH = availH / rows;
-  var maxFont = Math.floor(perRowH / (7 * 1.9));
-  var fontPx = Math.max(12, Math.min(30, maxFont));   // 限制在 12~30px
+  var maxFont = Math.floor(perRowH / (7 * 1.85));
+  var fontPx = Math.max(9, Math.min(17, maxFont));    // 背景化：字号限制在 9~17px
   var html = '';
   for(var k=0;k<POEMS.length;k++){
     var pair = POEMS[k];
@@ -2187,15 +2189,17 @@ function renderPoems(){
     var left = ((c + 0.5) / cols * 100).toFixed(2);
     var top  = ((r + 0.5) / rows * 100).toFixed(2);
     // 抖动/旋转幅度随列数收敛：列越密越规整，避免相邻单元挤碰
-    var jit = cols >= 5 ? 1.5 : 2;
+    var jit = cols >= 5 ? 1.2 : 1.8;
     var jitterX = (Math.random()*jit - jit/2).toFixed(2);
     var jitterY = (Math.random()*jit - jit/2).toFixed(2);
-    var rot = (Math.random()*2 - 1).toFixed(2);        // ±1° 轻微旋转
-    var opacity = (0.5 + Math.random()*0.25).toFixed(3); // 0.5~0.75
+    var rot = (Math.random()*1.6 - 0.8).toFixed(2);    // ±0.8° 轻微旋转
+    // 大幅降低透明度：仅作背景，无意间瞥见才能看清
+    var opacity = (0.18 + Math.random()*0.14).toFixed(3); // 0.18~0.32
+    // 上句、下句各为一个 span，单元内紧密相邻体现关联（不加标点）
     html += '<div class="poem-unit" style="left:'+left+'%;top:'+top+'%;'+
             'transform:translate(calc(-50% + '+jitterX+'%), calc(-50% + '+jitterY+'%)) rotate('+rot+'deg);opacity:'+opacity+'">'+
               '<span class="poem-line" style="font-size:'+fontPx+'px">'+esc(pair[0])+'</span>'+
-              '<span class="poem-line" style="font-size:'+fontPx+'px">'+esc(pair[1])+'</span>'+
+              '<span class="poem-line poem-line-end" style="font-size:'+fontPx+'px">'+esc(pair[1])+'</span>'+
             '</div>';
   }
   box.innerHTML = html;
