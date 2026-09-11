@@ -1,0 +1,23 @@
+{
+  "id": "habit_checkins",
+  "habits": [
+    { "id": "h1", "name": "喝水 2L", "icon": "💧" },
+    { "id": "h2", "name": "蛋白质达标", "icon": "🥚" },
+    { "id": "h3", "name": "力量训练", "icon": "🏋️" },
+    { "id": "h4", "name": "7小时睡眠", "icon": "😴" },
+    { "id": "h5", "name": "不喝含糖饮料", "icon": "🚫" }
+  ],
+  "checkins": [
+    { "date": "2026-09-11", "habitId": "h1", "done": true },
+    { "date": "2026-09-11", "habitId": "h2", "done": true },
+    { "date": "2026-09-11", "habitId": "h3", "done": false },
+    { "date": "2026-09-11", "habitId": "h4", "done": true },
+    { "date": "2026-09-11", "habitId": "h5", "done": true },
+    { "date": "2026-09-10", "habitId": "h1", "done": true },
+    { "date": "2026-09-10", "habitId": "h2", "done": true },
+    { "date": "2026-09-10", "habitId": "h3", "done": true },
+    { "date": "2026-09-10", "habitId": "h4", "done": false },
+    { "date": "2026-09-10", "habitId": "h5", "done": true }
+  ],
+  "updatedAt": "2026-09-11T09:00:00.000Z"
+}
