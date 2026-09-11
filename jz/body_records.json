@@ -1,0 +1,20 @@
+{
+  "id": "body_records",
+  "records": [
+    { "date": "2026-08-29", "weightKg": 66.2, "bodyFatPct": 24.5, "note": "起始记录" },
+    { "date": "2026-08-30", "weightKg": 66.0, "bodyFatPct": 24.3, "note": "" },
+    { "date": "2026-08-31", "weightKg": 65.7, "bodyFatPct": 24.1, "note": "经期前水肿" },
+    { "date": "2026-09-01", "weightKg": 65.9, "bodyFatPct": 24.2, "note": "" },
+    { "date": "2026-09-02", "weightKg": 65.4, "bodyFatPct": 23.9, "note": "控制饮食第3天" },
+    { "date": "2026-09-03", "weightKg": 65.2, "bodyFatPct": 23.8, "note": "" },
+    { "date": "2026-09-04", "weightKg": 65.0, "bodyFatPct": 23.6, "note": "首次破65" },
+    { "date": "2026-09-05", "weightKg": 64.8, "bodyFatPct": 23.5, "note": "" },
+    { "date": "2026-09-06", "weightKg": 64.9, "bodyFatPct": 23.4, "note": "周末聚餐" },
+    { "date": "2026-09-07", "weightKg": 64.5, "bodyFatPct": 23.3, "note": "" },
+    { "date": "2026-09-08", "weightKg": 64.2, "bodyFatPct": 23.1, "note": "" },
+    { "date": "2026-09-09", "weightKg": 64.0, "bodyFatPct": 23.0, "note": "破64" },
+    { "date": "2026-09-10", "weightKg": 63.7, "bodyFatPct": 22.8, "note": "" },
+    { "date": "2026-09-11", "weightKg": 63.5, "bodyFatPct": 22.6, "note": "今日" }
+  ],
+  "updatedAt": "2026-09-11T09:00:00.000Z"
+}
