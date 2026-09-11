@@ -337,7 +337,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-10.8</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-11.1</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -830,8 +830,11 @@ function bindScrollSpy(){
 // ===== 仓库检索 =====
 // 递归扫描仓库目录，收集所有 HTML 文件（含子文件夹）—— 作为兜底方案
 function scanDir(path){
-  var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/' + (path || '') + '?ref=' + SYNC_BRANCH;
-  return fetch(url, {headers:{'Accept':'application/vnd.github+json'}})
+  var tk = getToken();
+  var h = {'Accept':'application/vnd.github+json'};
+  if(tk) h['Authorization'] = 'token ' + tk;   // 带 PAT：认证后限流 60/h→5000/h，避免递归多请求被 403
+  var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/' + (path || '') + '?ref=' + SYNC_BRANCH + '&t=' + Date.now();
+  return fetch(url, {headers:h, cache:'no-store'})
     .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(function(items){
       if(!Array.isArray(items)) return [];   // 单个文件对象（不应出现在目录扫描）
@@ -864,8 +867,11 @@ function mergeFiles(out, arr){
 // 相比 Contents API 逐层递归（多次请求、易被 403 限流而整体失败），此接口一次到位，
 // 且返回的 path 已是完整相对路径（含 tutorials/ 前缀），最可靠。未认证同样可能被限流，故失败不致命。
 function scanTree(){
+  var tk = getToken();
+  var h = {'Accept':'application/vnd.github+json'};
+  if(tk) h['Authorization'] = 'token ' + tk;   // 带 PAT：认证后限流 60/h→5000/h，避免被 403 限流
   var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/git/trees/' + SYNC_BRANCH + '?recursive=1&t=' + Date.now();
-  return fetch(url, {headers:{'Accept':'application/vnd.github+json'}})
+  return fetch(url, {headers:h, cache:'no-store'})
     .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(function(d){
       var tree = (d && d.tree) || [];
