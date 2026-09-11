@@ -1,0 +1,26 @@
+{
+  "id": "weekly_reviews",
+  "reviews": [
+    {
+      "weekStart": "2026-09-07",
+      "weekEnd": "2026-09-13",
+      "avgWeightKg": 64.1,
+      "weightChangeKg": -0.9,
+      "trainingCompleted": 4,
+      "habitRatePct": 80,
+      "reflection": "本周体重稳步下降0.9kg，力量训练状态回升。周末饮食略有放松，下周加强控糖。",
+      "nextFocus": "保持每日蛋白质 90g，周末不暴食。"
+    },
+    {
+      "weekStart": "2026-08-31",
+      "weekEnd": "2026-09-06",
+      "avgWeightKg": 65.0,
+      "weightChangeKg": -1.2,
+      "trainingCompleted": 5,
+      "habitRatePct": 75,
+      "reflection": "起步周，体重下降明显（含水分）。有氧完成度高，力量还需适应。",
+      "nextFocus": "逐步提升力量训练强度。"
+    }
+  ],
+  "updatedAt": "2026-09-11T09:00:00.000Z"
+}
