@@ -1,0 +1,19 @@
+{
+  "id": "profile",
+  "name": "Leah",
+  "greeting": "Leah",
+  "gender": "female",
+  "age": 28,
+  "heightCm": 165,
+  "activityFactor": 1.375,
+  "currentWeightKg": 63.5,
+  "targetWeightKg": 55.0,
+  "goalDeadline": "2026-12-31",
+  "dailyGreeting": "今天也要温柔地对待自己，一步一个脚印。",
+  "theme": {
+    "paper": "#f4f1ea",
+    "forest": "#1f3a2e",
+    "terra": "#c9784f"
+  },
+  "updatedAt": "2026-09-11T09:00:00.000Z"
+}
