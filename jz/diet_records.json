@@ -1,0 +1,11 @@
+{
+  "id": "diet_records",
+  "records": [
+    { "date": "2026-09-11", "meal": "早餐", "food": "全麦面包2片+水煮蛋2个+无糖豆浆", "kcal": 320, "proteinG": 22, "carbG": 30, "fatG": 12 },
+    { "date": "2026-09-11", "meal": "午餐", "food": "糙米饭100g+煎鸡胸150g+西兰花", "kcal": 480, "proteinG": 40, "carbG": 45, "fatG": 14 },
+    { "date": "2026-09-11", "meal": "加餐", "food": "希腊酸奶100g+蓝莓一把", "kcal": 150, "proteinG": 10, "carbG": 18, "fatG": 4 },
+    { "date": "2026-09-11", "meal": "晚餐", "food": "三文鱼120g+红薯150g+芦笋", "kcal": 520, "proteinG": 34, "carbG": 40, "fatG": 22 },
+    { "date": "2026-09-10", "meal": "午餐", "food": "荞麦面+卤牛肉100g+黄瓜", "kcal": 460, "proteinG": 30, "carbG": 52, "fatG": 15 }
+  ],
+  "updatedAt": "2026-09-11T09:00:00.000Z"
+}
