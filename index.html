@@ -170,10 +170,14 @@
   .card .fi-bg{font-size:30px;line-height:1}
   .card .fi-img{position:absolute;width:34px;height:34px;object-fit:contain;border-radius:4px}
   .card .c-name{
-    font-size:12.5px;font-weight:600;line-height:1.35;margin-bottom:6px;
+    font-size:13px;font-weight:600;line-height:1.4;margin-bottom:6px;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-    min-height:34px;color:var(--text);
+    min-height:36px;color:var(--text);
+    text-align:center;align-self:center;
+    word-break:break-all;
   }
+  /* 文件卡片（无图标）：内容垂直居中，仅显示文件名 + 标签 */
+  .card:not(.is-link){justify-content:center;text-align:center}
   .card .c-tags{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;min-height:16px}
   .tag{padding:1px 7px;border-radius:9px;font-size:10.5px;border:1px solid var(--border);color:var(--text2)}
   .tag.doc{color:var(--teal);border-color:rgba(57,197,207,.4)}
@@ -337,7 +341,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-11.1</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-11.6</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -359,23 +363,19 @@
 
 <!-- 云同步设置弹窗 -->
 <div class="modal-mask" id="syncModal">
-  <div class="modal" style="max-width:440px">
-    <h3>☁️ 云同步设置</h3>
-    <p style="font-size:12.5px;color:var(--text2);line-height:1.7;margin:0 0 12px">
-      把便签、常用网址、卡片分类同步到 GitHub 仓库的 <code>site-data.json</code>，
-      这样手机、电脑、平板打开看到的是<b>同一份数据</b>。<br>
-      <b>读取</b>公开仓库无需密钥；<b>写入</b>需要一个 GitHub 个人访问令牌（PAT），
-      只勾 <code>repo</code> 权限即可，可随时在 GitHub 撤销。
-    </p>
+  <div class="modal" style="max-width:420px">
+    <h3>☁️ 云同步</h3>
     <label for="syncTokenInput">GitHub 个人访问令牌（PAT）</label>
     <input type="password" id="syncTokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" spellcheck="false">
     <div style="font-size:11.5px;color:var(--text2);margin-top:6px;line-height:1.6">
-      创建路径：GitHub 右上角头像 → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token，勾选 <b>repo</b> 后生成并复制粘贴到此处。
+      填入 PAT 后，所有仓库操作（读取/写入）均优先使用令牌权限。创建：GitHub 头像 → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token，勾选 <b>repo</b>。
     </div>
-    <div class="modal-btns" style="margin-top:14px">
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn primary" onclick="cloudUpload()">⬆️ 上传</button>
+      <button class="btn" onclick="cloudRefresh()">🔄 刷新</button>
+    </div>
+    <div class="modal-btns" style="margin-top:10px">
       <button class="btn" onclick="closeSyncModal()">关闭</button>
-      <button class="btn" onclick="syncPull()">⬇️ 从云端拉取</button>
-      <button class="btn primary" onclick="saveTokenAndPush()">💾 保存并同步</button>
     </div>
     <div class="modal-status" id="syncModalStatus"></div>
   </div>
@@ -408,7 +408,13 @@ var NAME2SEC = {
   'tutorials/移动端抓包与日志分析实战教程.html':'test',
   'tutorials/Fiddler抓包工具实操教程.html':'test',
   'tutorials/ADB工具使用实操教程.html':'test',
-  'tutorials/移动端测试脚本代码交互手册.html':'dev'
+  'tutorials/移动端测试脚本代码交互手册.html':'dev',
+  'tutorials/Python自学笔记精解.html':'dev',
+  'tutorials/C-C++自学笔记精解.html':'dev',
+  'tutorials/Requests接口测试快速入门教程.html':'test',
+  'tutorials/JMeter性能测试快速入门教程.html':'test',
+  'tutorials/pytest测试框架快速入门教程.html':'test',
+  'tutorials/题库.html':'summary'
 };
 
 var META = {
@@ -431,6 +437,36 @@ var META = {
     emoji:'🤖', title:'ADB 工具使用实操教程',
     desc:'安卓测试核心：设备管理、应用管理、文件传输、logcat 日志抓取与崩溃定位、Shell 调试，7 章 + 速查表。',
     tags:[{cls:'doc',text:'教程'},{cls:'',text:'日志'}]
+  },
+  'tutorials/Python自学笔记精解.html':{
+    emoji:'🐍', title:'Python 自学笔记精解',
+    desc:'逐行注释版：装饰器、输入输出、四大容器、循环、推导式、迭代器与生成器等核心语法精讲。',
+    tags:[{cls:'doc',text:'笔记'},{cls:'',text:'Python'}]
+  },
+  'tutorials/C-C++自学笔记精解.html':{
+    emoji:'📘', title:'C/C++ 自学笔记精解',
+    desc:'逐行注释版：指针、内存管理、函数、结构体、模板、STL 等 C/C++ 核心知识精讲。',
+    tags:[{cls:'doc',text:'笔记'},{cls:'',text:'C/C++'}]
+  },
+  'tutorials/Requests接口测试快速入门教程.html':{
+    emoji:'🔌', title:'Requests 接口测试快速入门',
+    desc:'可上手的 HTTP 请求实战：GET/POST、参数与请求体、响应断言、会话保持、异常处理与接口测试落地。',
+    tags:[{cls:'doc',text:'教程'},{cls:'',text:'接口'}]
+  },
+  'tutorials/JMeter性能测试快速入门教程.html':{
+    emoji:'⚡', title:'JMeter 性能测试快速入门',
+    desc:'可上手的性能测试实战：线程组、取样器、断言、参数化、聚合报告、压力场景设计与结果分析。',
+    tags:[{cls:'doc',text:'教程'},{cls:'',text:'性能'}]
+  },
+  'tutorials/pytest测试框架快速入门教程.html':{
+    emoji:'🧪', title:'pytest 测试框架快速入门',
+    desc:'可上手的实战学习路径：断言、fixture、参数化、mock、插件生态与测试工程化最佳实践。',
+    tags:[{cls:'doc',text:'教程'},{cls:'',text:'测试'}]
+  },
+  'tutorials/题库.html':{
+    emoji:'📚', title:'游戏测试面试题库',
+    desc:'基于简历深度定制的游戏测试面试题库，覆盖测试用例设计、缺陷管理、抓包与自动化等高频考点。',
+    tags:[{cls:'doc',text:'总结'},{cls:'',text:'面试'}]
   }
 };
 
@@ -597,8 +633,8 @@ function totalCount(){
 // ===== 渲染：单个文件卡片 =====
 function cardHtml(token){
   var m = META[token] || {};
-  var title = m.title || token.replace(/\.html?$/i,'').split('/').pop();
-  var emoji = m.emoji || '📄';
+  // 文件卡片仅显示文件名本身（去掉 .html 扩展名），不再用定制标题，风格统一
+  var title = token.replace(/\.html?$/i,'').split('/').pop();
   var tags = (m.tags || []).map(function(t){
     var cls = t.cls ? (' class="'+esc(t.cls)+'"') : '';
     return '<span class="tag'+cls+'">'+esc(t.text)+'</span>';
@@ -608,7 +644,6 @@ function cardHtml(token){
   return '<a class="card" draggable="true" data-item="'+esc(token)+'" href="'+esc(href)+'" title="'+esc(title)+'">'+
       '<span class="grip">⠿</span>'+
       '<button class="card-del" title="从列表移除" onclick="delCard(event,\''+esc(token).replace(/'/g,'\\\'')+'\')">×</button>'+
-      '<div class="c-emoji"><span class="fi-bg">'+esc(emoji)+'</span></div>'+
       '<div class="c-name">'+esc(title)+'</div>'+
       '<div class="c-tags">'+tags+'</div>'+
     '</a>';
@@ -883,10 +918,17 @@ function scanTree(){
         });
     });
 }
-// 双源并集（v2026-09-10.8）：Git Trees（权威实时）为主，jsDelivr（缓存滞后）+ Contents 递归为辅。
-// 三者取并集去重：任一源失败不致命，只要有一个成功就能拿到完整文件列表，
-// 彻底修复"新上传文件扫不到 / 只显示 jsDelivr 陈旧缓存"的问题。
+// 扫描主入口（v2026-09-11.4）：
+// 【有 PAT 令牌】→ 只用带令牌的 Git Trees 权威源（实时、全路径），
+//   不再混入 jsDelivr / Contents 的缓存结果，彻底避免"陈旧幽灵文件"残留。
+// 【无令牌】→ 退回多源并集兜底（Git Trees + jsDelivr + Contents 递归），任一源失败不致命。
 function scanAllFiles(){
+  var tk = getToken();
+  // 有令牌：权威单源，绝不掺入缓存，保证与仓库实时一致
+  if(tk){
+    return scanTree().catch(function(){ return []; });
+  }
+  // 无令牌：多源兜底
   var jsdUrl = 'https://data.jsdelivr.com/v1/packages/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '?t=' + Date.now();
   var jsd = fetch(jsdUrl, {headers:{'Accept':'application/json'}})
     .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -1275,12 +1317,18 @@ function fetchCloudData(cb){
 
 // 把数据写回仓库（需要 PAT）。带 409 冲突自动重试：
 // 若写入期间仓库又被改动（自动同步/多标签/连点导致 SHA 失配），
-// 自动重新拉取最新 SHA 再重试，最多 4 次，避免"移动靶"报错。
-function pushCloudData(token, cb){
+// 不再硬覆盖，而是【拉取云端实时内容 → 与本机做并集合并 → 用合并结果重试】，
+// 从根上杜绝"A、B 并发时后写者覆盖先写者"的丢失更新问题。
+// data 可选：传入则推送该数据（合并场景），否则推送 collectData()。
+function pushCloudData(token, cb, data){
   var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/contents/' + DATA_FILE;
   var MAX_TRY = 4;
+  var payloadData = data || collectData();
 
-  function putOnce(tryLeft){
+  function encodeContent(obj){
+    return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+  }
+  function putOnce(tryLeft, mergeOnConflict){
     // 1) 先拿文件当前 sha（若已存在）。
     // 【关键】必须禁用 HTTP 缓存：GitHub Contents API 的 GET 响应带
     // `Cache-Control: public, max-age=60`，若命中浏览器缓存会拿到"过期 sha"，
@@ -1290,11 +1338,14 @@ function pushCloudData(token, cb){
         headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},
         cache:'no-store'
       })
-      .then(function(r){ return r.status === 404 ? {sha:null} : r.json(); })
+      .then(function(r){
+        if(r.status === 404) return {sha:null, content:null};
+        return r.json().then(function(j){ return {sha:(j&&j.sha)||null, content:(j&&j.content)||null}; });
+      })
       .then(function(existing){
         var payload = {
           message: 'sync: 更新知识脉络数据 ' + new Date().toLocaleString('zh-CN'),
-          content: btoa(unescape(encodeURIComponent(JSON.stringify(collectData())))),
+          content: encodeContent(payloadData),
           branch: SYNC_BRANCH
         };
         if(existing.sha) payload.sha = existing.sha;
@@ -1302,21 +1353,32 @@ function pushCloudData(token, cb){
           method:'PUT',
           headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},
           body: JSON.stringify(payload)
+        }).then(function(rr){
+          return rr.json().then(function(j){ return {ok:rr.ok, status:rr.status, json:j, _cloudContent:existing.content}; });
         });
       })
-      .then(function(r){
-        return r.json().then(function(j){ return {ok:r.ok, status:r.status, json:j}; })
-          .then(function(res){
-            // 409 冲突：SHA 失配（仓库在 GET 与 PUT 之间被改动）→ 稍等后重试
-            if(!res.ok && res.status === 409 && tryLeft > 0){
-              return new Promise(function(resolve){ setTimeout(function(){ resolve(putOnce(tryLeft-1)); }, 400 + Math.random()*400); });
-            }
-            return res;
-          });
+      .then(function(res){
+        // 409 冲突：SHA 失配（仓库在 GET 与 PUT 之间被改动）→ 拉云端实时内容做并集合并后重试
+        if(!res.ok && res.status === 409 && tryLeft > 0 && mergeOnConflict){
+          var cloud = null;
+          try{ if(res._cloudContent) cloud = JSON.parse(b64ToUtf8(res._cloudContent)); }catch(e){}
+          if(cloud){
+            // 用云端实时内容与本机合并，合并结果替换 payloadData 后重试（两边改动都保留）
+            payloadData = unionMerge({layout:LAYOUT, links:LINKS, notes:NOTES, sections:sectionOrder()}, cloud);
+            LAYOUT = canonLayout(payloadData.layout); LINKS = payloadData.links; NOTES = payloadData.notes;
+            try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){}
+            try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){}
+            try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){}
+            if(typeof renderNotes==='function') renderNotes();
+            if(typeof render==='function') render();
+          }
+          return new Promise(function(resolve){ setTimeout(function(){ resolve(putOnce(tryLeft-1, true)); }, 400 + Math.random()*400); });
+        }
+        return res;
       });
   }
 
-  putOnce(MAX_TRY)
+  putOnce(MAX_TRY, true)
     .then(function(res){ cb(res.ok, res.json); })
     .catch(function(err){ cb(false, {message: err.message}); });
 }
@@ -1325,6 +1387,74 @@ function pushCloudData(token, cb){
 function diag(msg){
   var el = document.getElementById('diagLine');
   if(el) el.textContent = msg ? ('· ' + msg) : '';
+}
+
+// ===== 并发写覆盖防护（A+B 方案）=====
+// 计算云端数据 d 的指纹，结构与 dataFp() 对齐（排除 updatedAt），用于乐观锁比对。
+function cloudFp(d){
+  if(!d || typeof d !== 'object') return null;
+  var layout = {dev:[],test:[],summary:[],links:[],inbox:[]};
+  SEC_IDS.forEach(function(id){
+    layout[id] = (d.layout && Array.isArray(d.layout[id])) ? d.layout[id].map(canonFile) : [];
+  });
+  layout.inbox = (d.layout && Array.isArray(d.layout.inbox)) ? d.layout.inbox.map(canonFile) : [];
+  var secs = (Array.isArray(d.sections) && d.sections.length) ? d.sections : sectionOrder();
+  return JSON.stringify({l:layout, k:(d.links||[]), n:(d.notes||[]), s:secs});
+}
+// 纯函数：把 base（本机，优先保留顺序/同 id 值）与 inc（云端）按 id/token 取并集，
+// 返回合并后的普通数据对象 {layout,links,notes,sections}（不触碰内存，供两条路径复用）。
+function unionMerge(base, inc){
+  base = base || {}; inc = inc || {};
+  var out = {};
+  // NOTES：按 id 并集，本机顺序在前，云端独有的补后
+  var nMap = {};
+  (inc.notes||[]).forEach(function(n){ if(n && n.id) nMap[n.id] = n; });
+  (base.notes||[]).forEach(function(n){ if(n && n.id) nMap[n.id] = n; });
+  var nIds = [];
+  (base.notes||[]).forEach(function(n){ if(n && n.id) nIds.push(n.id); });
+  (inc.notes||[]).forEach(function(n){ if(n && n.id && nIds.indexOf(n.id)===-1) nIds.push(n.id); });
+  out.notes = nIds.map(function(id){ return nMap[id]; }).filter(Boolean);
+  // LINKS：按 id 并集，本机优先
+  var lMap = {};
+  (inc.links||[]).forEach(function(l){ if(l && l.id) lMap[l.id] = l; });
+  (base.links||[]).forEach(function(l){ if(l && l.id) lMap[l.id] = l; });
+  var lIds = [];
+  (base.links||[]).forEach(function(l){ if(l && l.id) lIds.push(l.id); });
+  (inc.links||[]).forEach(function(l){ if(l && l.id && lIds.indexOf(l.id)===-1) lIds.push(l.id); });
+  out.links = lIds.map(function(id){ return lMap[id]; }).filter(Boolean);
+  // LAYOUT：每板块 token 并集，本机顺序在前、云端独有追加
+  var lay = {dev:[],test:[],summary:[],links:[],inbox:[]};
+  SEC_IDS.forEach(function(id){
+    var b = (base.layout && Array.isArray(base.layout[id])) ? base.layout[id].map(canonFile) : [];
+    var c = (inc.layout && Array.isArray(inc.layout[id])) ? inc.layout[id].map(canonFile) : [];
+    var seen={}, arr=[];
+    b.concat(c).forEach(function(tk){ if(!seen[tk]){ seen[tk]=1; arr.push(tk); } });
+    lay[id] = arr;
+  });
+  var si={}, ai=[];
+  ((base.layout&&base.layout.inbox)||[]).concat((inc.layout&&inc.layout.inbox)||[]).forEach(function(tk){
+    tk = canonFile(tk); if(!si[tk]){ si[tk]=1; ai.push(tk); }
+  });
+  lay.inbox = ai;
+  out.layout = lay;
+  // sections：以本机为准（板块顺序是用户主动排的，不参与合并）
+  out.sections = (Array.isArray(base.sections) && base.sections.length) ? base.sections : (inc.sections || sectionOrder());
+  return out;
+}
+// 把云端数据 d 与本机内存数据合并（包装 unionMerge），写回内存 + localStorage + 重渲染。
+function mergeCloudIntoLocal(d){
+  if(!d || typeof d !== 'object') return false;
+  var merged = unionMerge({layout:LAYOUT, links:LINKS, notes:NOTES, sections:sectionOrder()}, d);
+  var changed = (JSON.stringify(merged) !== JSON.stringify({layout:LAYOUT, links:LINKS, notes:NOTES}));
+  LAYOUT = canonLayout(merged.layout);
+  LINKS = merged.links;
+  NOTES = merged.notes;
+  try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){}
+  try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){}
+  try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){}
+  if(typeof renderNotes === 'function') renderNotes();
+  if(typeof render === 'function') render();
+  return changed;
 }
 
 // 从云端拉取并覆盖本地（silent=true 时不弹提示，仅静默失败；done 在拉取流程结束后调用）
@@ -1340,7 +1470,7 @@ function syncPull(silent, done){
     } else {
       diag(why === 'notfound' ? '云端暂无同步数据，显示本机内容' : ('云端读取失败：' + why + '，显示本机内容'));
       if(!silent){
-        if(why === 'notfound') st.textContent = 'ℹ️ 云端还没有同步数据。点「保存并同步」把本机数据上传一次即可。';
+        if(why === 'notfound') st.textContent = 'ℹ️ 云端还没有同步数据。点「上传」把本机数据传一次即可。';
         else st.textContent = '⚠️ 拉取失败：' + why;
       } else if(st){
         // 静默模式失败也要给个线索，避免"页面正常但数据没同步"却毫无提示
@@ -1365,26 +1495,42 @@ function syncPush(cb, force){
   }
   // 内容与上次推送/拉取的一致 → 跳过，避免"无变化也产生新提交"
   // （每次推送都新生成 updatedAt → 新 blob → sha 轮换，是 409 反复出现的根源之一）
-  // force=true（手动点"保存并同步"）时忽略该判断，强制回写一次。
+  // force=true（手动点"上传"）时忽略该判断，强制回写一次。
   var fp = dataFp();
   if(!force && _lastPushedFp === fp){ if(cb) cb(true, 'nochange'); return; }
   // 已有推送在进行 → 标记待补推，等当前完成后自动再推一次最新数据（避免两个 PUT 抢同一 SHA）
   if(_pushing){ _needRepull = true; if(cb) cb(true, 'queued'); return; }
   _pushing = true;
   if(st) st.textContent = '🔼 正在同步到云端...';
-  pushCloudData(token, function(ok, res){
-    _pushing = false;
-    if(ok){
-      _lastPushedFp = fp;             // 记录本次成功推送的内容指纹
-      if(st) st.textContent = '✅ 已同步到云端（' + new Date().toLocaleString('zh-CN') + '），其他设备刷新即可看到。';
-      if(cb) cb(true);
-    } else {
-      var msg = (res && (res.message || res.error)) || '未知错误';
-      if(st) st.textContent = '⚠️ 同步失败：' + msg + (msg.indexOf('401')!==-1||msg.indexOf('Bad credentials')!==-1 ? '（令牌无效或已过期，请重新粘贴）' : '');
-      if(cb) cb(false, msg);
+  // 【方案A：推送前乐观锁预检】先拉云端实时内容比对：
+  //  若云端指纹 ≠ 本机基线(_lastPushedFp)，说明别的设备已改过 → 先与本机并集合并，再推送合并结果，
+  //  从源头避免"拿旧基线直接覆盖云端"。force（手动上传）时跳过预检，尊重用户"以本机为准"的意图。
+  function doPush(){
+    pushCloudData(token, function(ok, res){
+      _pushing = false;
+      if(ok){
+        _lastPushedFp = dataFp();     // 记录本次成功推送后的内容指纹（合并结果即当前内存状态）
+        if(st) st.textContent = '✅ 已同步到云端（' + new Date().toLocaleString('zh-CN') + '），其他设备刷新即可看到。';
+        if(cb) cb(true);
+      } else {
+        var msg = (res && (res.message || res.error)) || '未知错误';
+        if(st) st.textContent = '⚠️ 同步失败：' + msg + (msg.indexOf('401')!==-1||msg.indexOf('Bad credentials')!==-1 ? '（令牌无效或已过期，请重新粘贴）' : '');
+        if(cb) cb(false, msg);
+      }
+      // 推送期间累积了新改动 → 补推一次（用最新数据 + 最新 SHA）
+      if(_needRepull){ _needRepull = false; setTimeout(function(){ syncPush(); }, 300); }
+    });
+  }
+  if(force){ doPush(); return; }
+  // 预检：拉云端（只读，不覆盖本地），比对指纹决定是否先合并
+  fetchCloudData(function(data, why){
+    if(data && cloudFp(data) !== _lastPushedFp){
+      // 云端已被别设备改动 → 先合并到本机，再用合并结果推送（两边改动都保留）
+      mergeCloudIntoLocal(data);
+      _lastPushedFp = dataFp();   // 更新基线为合并后状态
+      diag('检测到云端更新，已合并后再同步');
     }
-    // 推送期间累积了新改动 → 补推一次（用最新数据 + 最新 SHA）
-    if(_needRepull){ _needRepull = false; setTimeout(function(){ syncPush(); }, 300); }
+    doPush();
   });
 }
 
@@ -1395,16 +1541,47 @@ function openSyncModal(){
   document.getElementById('syncModal').classList.add('show');
 }
 function closeSyncModal(){ document.getElementById('syncModal').classList.remove('show'); }
-function saveTokenAndPush(){
+// 保存弹窗中填入的 PAT（若为空则不覆盖已有令牌）。所有仓库操作前调用，保证用最新令牌。
+function saveTokenFromModal(){
   var token = document.getElementById('syncTokenInput').value.trim();
+  if(token){ setToken(token); return true; }
+  return false;
+}
+// 上传：优先级最高，先存令牌再上传；sha 冲突由 pushCloudData 内部自动重试处理
+function cloudUpload(){
+  saveTokenFromModal();
   var status = document.getElementById('syncModalStatus');
-  if(!token){ status.textContent = '⚠️ 请粘贴 GitHub PAT（以 ghp_ 开头）。'; return; }
-  setToken(token);
-  status.textContent = '🔼 正在同步到云端...';
+  if(!getToken()){ status.textContent = '⚠️ 请先填入 GitHub PAT（以 ghp_ 开头）。'; return; }
+  status.textContent = '🔼 正在上传到云端...';
   syncPush(function(ok, why){
-    if(ok){ status.textContent = '✅ 同步成功！令牌已记住，本设备后续改动会自动同步。'; closeSyncModal(); }
-    else { status.textContent = '⚠️ 同步失败：' + why + '（令牌已先保存，修正后可重试）。'; }
-  }, true);   // force=true：手动同步忽略"内容未变"的去重，确保一定写一次
+    status.textContent = ok ? '✅ 上传成功！' : '⚠️ 上传失败：' + why;
+  }, true);   // force=true：忽略"内容未变"去重，确保一定写一次
+}
+// 刷新：先存令牌再从云端拉取最新；若有上传在进行，延迟到上传结束再拉（轮询 _pushing 锁）
+function cloudRefresh(){
+  saveTokenFromModal();
+  var status = document.getElementById('syncModalStatus');
+  function doRefresh(){
+    status.textContent = '🔄 正在从云端刷新...';
+    syncPull(false, function(){
+      var st = document.getElementById('syncStatus');
+      status.textContent = (st && st.textContent) ? st.textContent : '✅ 已从云端刷新';
+    });
+  }
+  // 有上传在进行 → 轮询等待其结束（最多约 30s），避免拉到上传前的旧数据 / sha 冲突
+  if(typeof _pushing !== 'undefined' && _pushing){
+    status.textContent = '⏳ 上传进行中，待上传完成后刷新...';
+    var tries = 0;
+    var timer = setInterval(function(){
+      tries++;
+      if(!(_pushing) || tries > 60){
+        clearInterval(timer);
+        doRefresh();
+      }
+    }, 500);
+  } else {
+    doRefresh();
+  }
 }
 
 // ---------- 诗词背景 ----------
@@ -1416,7 +1593,6 @@ var POEMS = [
   ['金沙水拍云崖暖', '大渡桥横铁索寒'],
   ['天若有情天亦老', '人间正道是沧桑'],
   ['萧瑟秋风今又是', '换了人间'],
-  ['已是悬崖百丈冰', '犹有花枝俏'],
   ['为有牺牲多壮志', '敢教日月换新天']
 ];
 function renderPoems(){
