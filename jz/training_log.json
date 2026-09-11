@@ -1,0 +1,10 @@
+{
+  "id": "training_log",
+  "records": [
+    { "date": "2026-09-07", "day": "周一", "type": "力量", "durationMin": 55, "calorie": 320, "note": "深蹲状态好" },
+    { "date": "2026-09-08", "day": "周二", "type": "有氧", "durationMin": 35, "calorie": 260, "note": "心率稳定" },
+    { "date": "2026-09-09", "day": "周三", "type": "力量", "durationMin": 50, "calorie": 300, "note": "卧推加片" },
+    { "date": "2026-09-10", "day": "周四", "type": "休息", "durationMin": 0, "calorie": 0, "note": "拉伸放松" }
+  ],
+  "updatedAt": "2026-09-11T09:00:00.000Z"
+}
