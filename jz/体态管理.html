@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>体态管理 · 减脂健身追踪台</title>
+<style>
+  :root{
+    --paper:#f4f1ea;
+    --paper-2:# efe9df;
+    --forest:#1f3a2e;
+    --forest-soft:#2f5445;
+    --terra:#c9784f;
+    --terra-soft:#e0a37f;
+    --ink:#2b2b28;
+    --muted:#7a756b;
+    --line:#d9d2c4;
+    --card:#fbf9f4;
+    --ok:#3f7d5a;
+    --warn:#c0562f;
+    --shadow:0 6px 22px rgba(31,58,46,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:Georgia,'Times New Roman','Songti SC','STSong',serif;
+    line-height:1.65;
+    -webkit-text-size-adjust:100%;
+    font-size:15px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px 80px}
+
+  /* ---------- Top bar ---------- */
+  header.top{
+    position:sticky;top:0;z-index:50;
+    background:rgba(244,241,234,.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{max-width:1080px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .brand{font-size:19px;font-weight:700;color:var(--forest);letter-spacing:.5px;white-space:nowrap}
+  .brand .leaf{color:var(--terra)}
+  .top-nav{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+  .navbtn{
+    border:1px solid var(--line);background:transparent;color:var(--forest-soft);
+    padding:6px 11px;border-radius:20px;cursor:pointer;font-size:12.5px;font-family:inherit;
+    transition:all .18s;white-space:nowrap;
+  }
+  .navbtn:hover{background:var(--forest);color:var(--paper);border-color:var(--forest)}
+  .navbtn.accent{background:var(--terra);color:#fff;border-color:var(--terra)}
+  .navbtn.accent:hover{background:var(--warn)}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:34px 0 10px}
+  .hero h1{font-size:30px;margin:0 0 6px;color:var(--forest);font-weight:700;letter-spacing:.5px}
+  .hero .sub{color:var(--muted);font-size:14.5px;margin:0}
+  .hero .hi{color:var(--terra);font-weight:700}
+
+  /* ---------- Cards & grid ---------- */
+  .grid{display:grid;gap:16px;margin-top:18px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:820px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:18px 18px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .card h2{
+    font-size:16px;margin:0 0 12px;color:var(--forest);font-weight:700;
+    display:flex;align-items:center;gap:8px;letter-spacing:.3px;
+  }
+  .card h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--terra);flex:none}
+  .card .hint{color:var(--muted);font-size:12px;margin:0 0 12px}
+
+  /* KPI */
+  .kpi{display:flex;flex-direction:column;gap:2px}
+  .kpi .label{font-size:12px;color:var(--muted);letter-spacing:.5px}
+  .kpi .val{font-size:26px;font-weight:700;color:var(--forest);line-height:1.1}
+  .kpi .val small{font-size:13px;color:var(--muted);font-weight:400}
+  .kpi .delta{font-size:12px;font-weight:700}
+  .kpi .delta.up{color:var(--warn)}
+  .kpi .delta.down{color:var(--ok)}
+
+  /* ---------- Form controls ---------- */
+  label.fld{display:block;font-size:12.5px;color:var(--muted);margin:8px 0 4px}
+  input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{
+    width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;
+    background:#fff;color:var(--ink);font-family:inherit;font-size:14px;outline:none;
+    transition:border-color .18s;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--forest-soft)}
+  textarea{resize:vertical;min-height:60px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1;min-width:90px}
+
+  .btn{
+    border:none;border-radius:9px;padding:9px 16px;cursor:pointer;font-family:inherit;
+    font-size:13.5px;font-weight:700;transition:all .18s;letter-spacing:.3px;
+  }
+  .btn.primary{background:var(--forest);color:var(--paper)}
+  .btn.primary:hover{background:var(--forest-soft)}
+  .btn.accent{background:var(--terra);color:#fff}
+  .btn.accent:hover{background:var(--warn)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--forest-soft)}
+  .btn.ghost:hover{border-color:var(--forest)}
+  .btn.sm{padding:6px 11px;font-size:12.5px;border-radius:7px}
+  .btn.danger{background:transparent;border:1px solid var(--warn);color:var(--warn)}
+  .btn.danger:hover{background:var(--warn);color:#fff}
+
+  /* ---------- Table ---------- */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:480px}
+  th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{color:var(--muted);font-weight:700;font-size:12px;letter-spacing:.4px;text-transform:uppercase}
+  tbody tr:hover{background:rgba(201,120,79,.05)}
+  td.num,th.num{text-align:right}
+  .tag{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11.5px;font-weight:700}
+  .tag.green{background:rgba(63,125,90,.14);color:var(--ok)}
+  .tag.orange{background:rgba(201,120,79,.16);color:var(--terra)}
+  .tag.gray{background:rgba(122,117,107,.14);color:var(--muted)}
+
+  /* ---------- Progress ---------- */
+  .progress-track{height:14px;background:var(--paper-2);border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--forest),var(--forest-soft));border-radius:10px;transition:width .5s}
+  .progress-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+
+  /* ---------- Habit / plan check ---------- */
+  .check-list{display:flex;flex-direction:column;gap:8px}
+  .check-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer;transition:all .15s}
+  .check-item:hover{border-color:var(--forest-soft)}
+  .check-item.done{background:rgba(63,125,90,.07);border-color:rgba(63,125,90,.35)}
+  .check-item.done .ci-name{text-decoration:line-through;color:var(--muted)}
+  .cbox{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;transition:all .15s}
+  .check-item.done .cbox{background:var(--ok);border-color:var(--ok)}
+  .ci-name{font-size:14px}
+  .ci-meta{margin-left:auto;font-size:12px;color:var(--muted)}
+
+  /* ---------- Chart ---------- */
+  .chart-box{width:100%;position:relative}
+  canvas{display:block;width:100%;touch-action:none}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+  .chart-tabs{display:flex;gap:6px;margin-bottom:10px}
+  .ctab{padding:5px 12px;border:1px solid var(--line);border-radius:16px;background:transparent;cursor:pointer;font-family:inherit;font-size:12.5px;color:var(--muted)}
+  .ctab.on{background:var(--forest);color:var(--paper);border-color:var(--forest)}
+
+  /* ---------- Macro bar ---------- */
+  .macro{margin-top:6px}
+  .macro-row{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13px}
+  .macro-name{width:64px;color:var(--muted);flex:none}
+  .macro-track{flex:1;height:10px;background:var(--paper-2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .macro-fill{height:100%;border-radius:6px;transition:width .5s}
+  .macro-val{width:96px;text-align:right;color:var(--ink);flex:none;font-weight:700}
+
+  /* ---------- Suggestion card ---------- */
+  .sugg{background:linear-gradient(135deg,rgba(31,58,46,.06),rgba(201,120,79,.08));border:1px solid var(--line)}
+  .sugg .next{font-size:14.5px;color:var(--forest);font-weight:700;margin:4px 0 0}
+  .sugg ul{margin:10px 0 0;padding-left:20px}
+  .sugg li{margin:5px 0;font-size:13.5px}
+
+  /* ---------- Modal ---------- */
+  .overlay{position:fixed;inset:0;background:rgba(31,58,46,.45);z-index:100;display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto}
+  .overlay.open{display:flex}
+  .modal{background:var(--paper);border-radius:16px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden}
+  .modal-h{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+  .modal-h h3{margin:0;font-size:17px;color:var(--forest)}
+  .modal-h .x{margin-left:auto;cursor:pointer;color:var(--muted);font-size:22px;line-height:1;border:none;background:none}
+  .modal-b{padding:18px 20px;max-height:70vh;overflow-y:auto}
+  .modal-b .btnrow{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+
+  /* ---------- Theme panel ---------- */
+  .swatch-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+  .swatch{flex:1;min-width:120px}
+  .swatch label{font-size:12.5px;color:var(--muted);display:block;margin-bottom:4px}
+  .swatch input[type=color]{width:100%;height:38px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;padding:3px}
+
+  /* ---------- Toast / diag ---------- */
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--forest);color:var(--paper);padding:11px 20px;border-radius:24px;font-size:13.5px;z-index:200;opacity:0;transition:opacity .3s,bottom .3s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  #toast.show{opacity:1;bottom:34px}
+  #diag{position:fixed;right:8px;bottom:8px;font-size:10.5px;color:var(--muted);background:rgba(244,241,234,.85);padding:4px 8px;border-radius:6px;max-width:60%;text-align:right;opacity:.75;z-index:40}
+
+  .footnote{margin-top:40px;text-align:center;color:var(--muted);font-size:12px}
+  .section-anchor{scroll-margin-top:74px}
+  .empty{color:var(--muted);font-size:13px;padding:14px;text-align:center}
+  .pill-num{display:inline-block;min-width:20px;text-align:center}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><span class="leaf">❦</span> 体态管理</div>
+    <nav class="top-nav">
+      <button class="navbtn" onclick="scrollToId('sec-overview')">总览</button>
+      <button class="navbtn" onclick="scrollToId('sec-body')">身体记录</button>
+      <button class="navbtn" onclick="scrollToId('sec-chart')">趋势图</button>
+      <button class="navbtn" onclick="scrollToId('sec-train')">训练打卡</button>
+      <button class="navbtn" onclick="scrollToId('sec-habit')">习惯打卡</button>
+      <button class="navbtn" onclick="scrollToId('sec-nutri')">热量&amp;宏量</button>
+      <button class="navbtn" onclick="scrollToId('sec-diary')">日记复盘</button>
+      <button class="navbtn accent" onclick="openSync()">☁ 云同步</button>
+      <button class="navbtn" onclick="openTheme()">🎨 主题</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1 id="heroTitle">你好，<span class="hi">Leah</span></h1>
+    <p class="sub" id="heroSub">今天也要温柔地对待自己，一步一个脚印。</p>
+  </section>
+
+  <!-- OVERVIEW KPI -->
+  <section id="sec-overview" class="section-anchor">
+    <div class="grid g4">
+      <div class="card kpi">
+        <span class="label">当前体重</span>
+        <span class="val" id="kWeight">– <small>kg</small></span>
+        <span class="delta" id="kWeightDelta"></span>
+      </div>
+      <div class="card kpi">
+        <span class="label">体脂率</span>
+        <span class="val" id="kFat">– <small>%</small></span>
+        <span class="delta" id="kFatDelta"></span>
+      </div>
+      <div class="card kpi">
+        <span class="label">目标进度</span>
+        <span class="val" id="kProgress">– <small>%</small></span>
+        <span class="delta" id="kProgressMeta"></span>
+      </div>
+      <div class="card kpi">
+        <span class="label">BMI</span>
+        <span class="val" id="kBmi">–</span>
+        <span class="delta" id="kBmiTag"></span>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card sugg">
+        <h2><span class="dot"></span> 今日下一步</h2>
+        <p class="next" id="nextStep">正在为你生成建议…</p>
+        <ul id="nextList"></ul>
+      </div>
+      <div class="card">
+        <h2><span class="dot"></span> 目标进度</h2>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">
+          起点 <b id="goalStart" style="color:var(--forest)">–</b> kg
+          → 目标 <b id="goalTarget" style="color:var(--terra)">–</b> kg
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="goalFill" style="width:0%"></div></div>
+        <div class="progress-labels">
+          <span id="goalNow">– kg</span>
+          <span id="goalRemain">还差 – kg</span>
+        </div>
+        <div style="margin-top:14px;font-size:13px;color:var(--muted)">
+          已坚持 <b id="goalDays" style="color:var(--forest)">–</b> 天 ·
+          距截止 <b id="goalDeadline" style="color:var(--terra)">–</b> 天
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BODY RECORDS -->
+  <section id="sec-body" class="section-anchor" style="margin-top:16px">
+    <div class="card">
+      <h2><span class="dot"></span> 每日身体记录</h2>
+      <p class="hint">记录当天体重与体脂率。数据自动保存到本机，并可通过「云同步」上传到 GitHub。</p>
+      <div class="row">
+        <div style="flex:0 0 auto;min-width:130px">
+          <label class="fld">日期</label>
+          <input type="date" id="bodyDate">
+        </div>
+        <div>
+          <label class="fld">体重 (kg)</label>
+          <input type="number" id="bodyWeight" step="0.1" placeholder="如 63.5">
+        </div>
+        <div>
+          <label class="fld">体脂率 (%)</label>
+          <input type="number" id="bodyFat" step="0.1" placeholder="如 22.6">
+        </div>
+        <div style="flex:2;min-width:140px">
+          <label class="fld">备注（可选）</label>
+          <input type="text" id="bodyNote" placeholder="如 经期前水肿 / 聚餐">
+        </div>
+        <div style="flex:0 0 auto;display:flex;align-items:flex-end;gap:8px">
+          <button class="btn primary" onclick="saveBody()">保存</button>
+        </div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <strong style="color:var(--forest);font-size:13.5px">历史记录</strong>
+        <button class="btn danger sm" onclick="clearBody()">清空全部身体记录</button>
+      </div>
+      <div class="tbl-wrap" style="margin-top:8px">
+        <table>
+          <thead><tr><th>日期</th><th class="num">体重(kg)</th><th class="num">体脂(%)</th><th>备注</th><th></th></tr></thead>
+          <tbody id="bodyTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHART -->
+  <section id="sec-chart" class="section-anchor" style="margin-top:16px">
+    <div class="card">
+      <h2><span class="dot"></span> 趋势图 · 7 日移动平均</h2>
+      <div class="chart-tabs">
+        <button class="ctab on" id="tabWeight" onclick="setChart('weight')">体重</button>
+        <button class="ctab" id="tabFat" onclick="setChart('fat')">体脂</button>
+      </div>
+      <div class="chart-box"><canvas id="trendCanvas" height="320"></canvas></div>
+      <div class="legend" id="chartLegend"></div>
+    </div>
+  </section>
+
+  <!-- TRAIN + HABIT -->
+  <section id="sec-train" class="section-anchor" style="margin-top:16px">
+    <div class="grid g2">
+      <div class="card">
+        <h2><span class="dot"></span> 本周训练计划</h2>
+        <p class="hint">点击勾选完成。周计划可整体重置。</p>
+        <div class="check-list" id="planList"></div>
+        <div style="margin-top:12px"><button class="btn ghost sm" onclick="resetPlan()">重置本周计划</button></div>
+      </div>
+      <div class="card">
+        <h2><span class="dot"></span> 训练日志</h2>
+        <p class="hint">记录每次实际训练。</p>
+        <div class="row">
+          <div style="flex:0 0 auto;min-width:120px"><label class="fld">日期</label><input type="date" id="logDate"></div>
+          <div><label class="fld">类型</label>
+            <select id="logType"><option>力量</option><option>有氧</option><option>休息</option></select>
+          </div>
+          <div style="flex:0 0 auto;min-width:80px"><label class="fld">分钟</label><input type="number" id="logDur" value="30"></div>
+          <div style="flex:0 0 auto;min-width:80px"><label class="fld">消耗(kcal)</label><input type="number" id="logKcal" value="0"></div>
+        </div>
+        <div style="margin-top:8px"><label class="fld">备注</label><input type="text" id="logNote" placeholder="训练感受"></div>
+        <div style="margin-top:10px"><button class="btn accent sm" onclick="saveLog()">添加训练日志</button></div>
+        <div class="tbl-wrap" style="margin-top:12px">
+          <table><thead><tr><th>日期</th><th>类型</th><th class="num">分钟</th><th class="num">消耗</th></tr></thead>
+          <tbody id="logTbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-habit" class="section-anchor" style="margin-top:16px">
+    <div class="card">
+      <h2><span class="dot"></span> 习惯打卡 · <span id="habitToday" style="color:var(--terra)"></span></h2>
+      <p class="hint">勾选今日完成的习惯，连续坚持会体现在每周复盘里。</p>
+      <div class="check-list" id="habitList"></div>
+      <div style="margin-top:12px;font-size:13px;color:var(--muted)">
+        今日完成 <b id="habitDone" style="color:var(--forest)">0</b> / <span id="habitTotal">0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- NUTRITION -->
+  <section id="sec-nutri" class="section-anchor" style="margin-top:16px">
+    <div class="grid g2">
+      <div class="card">
+        <h2><span class="dot"></span> 代谢与热量目标</h2>
+        <p class="hint">基于 Mifflin-St Jeor 公式估算（可在档案中修改参数）。</p>
+        <div class="grid g2" style="margin-top:6px">
+          <div class="kpi"><span class="label">BMR 基础代谢</span><span class="val" id="bmrVal">–</span></div>
+          <div class="kpi"><span class="label">TDEE 维持热量</span><span class="val" id="tdeeVal">–</span></div>
+        </div>
+        <div style="margin-top:12px;font-size:13.5px;color:var(--ink)">
+          目标热量缺口 <b style="color:var(--terra)" id="deficitVal">500–750</b> kcal/日
+          → 建议摄入 <b style="color:var(--forest)" id="targetKcal">–</b> kcal/日
+        </div>
+        <div style="margin-top:10px;font-size:12.5px;color:var(--muted)" id="macroHint"></div>
+      </div>
+      <div class="card">
+        <h2><span class="dot"></span> 今日宏量摄入</h2>
+        <p class="hint">从「饮食记录」自动汇总，对照目标提醒。</p>
+        <div class="macro" id="macroBox"></div>
+        <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+          <strong style="font-size:13px;color:var(--forest)">饮食记录</strong>
+          <div class="row" style="margin-top:8px">
+            <div style="flex:0 0 auto;min-width:110px"><label class="fld">日期</label><input type="date" id="dietDate"></div>
+            <div><label class="fld">餐次</label>
+              <select id="dietMeal"><option>早餐</option><option>午餐</option><option>加餐</option><option>晚餐</option></select>
+            </div>
+            <div style="flex:2;min-width:140px"><label class="fld">食物</label><input type="text" id="dietFood" placeholder="如 煎鸡胸150g+糙米饭"></div>
+            <div style="flex:0 0 auto;min-width:70px"><label class="fld">kcal</label><input type="number" id="dietKcal" value="0"></div>
+          </div>
+          <div class="row" style="margin-top:6px">
+            <div><label class="fld">蛋白(g)</label><input type="number" id="dietP" value="0"></div>
+            <div><label class="fld">碳水(g)</label><input type="number" id="dietC" value="0"></div>
+            <div><label class="fld">脂肪(g)</label><input type="number" id="dietF" value="0"></div>
+            <div style="flex:0 0 auto;display:flex;align-items:flex-end"><button class="btn accent sm" onclick="saveDiet()">添加</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIARY + REVIEW -->
+  <section id="sec-diary" class="section-anchor" style="margin-top:16px">
+    <div class="grid g2">
+      <div class="card">
+        <h2><span class="dot"></span> 日记</h2>
+        <div class="row">
+          <div style="flex:0 0 auto;min-width:120px"><label class="fld">日期</label><input type="date" id="diaryDate"></div>
+          <div><label class="fld">心情</label>
+            <select id="diaryMood"><option>很好</option><option>良好</option><option>一般</option><option>疲惫</option></select>
+          </div>
+        </div>
+        <label class="fld">今日记录</label>
+        <textarea id="diaryContent" placeholder="记录今天的训练、饮食或感受…"></textarea>
+        <label class="fld">感恩小事</label>
+        <input type="text" id="diaryGrat" placeholder="一件值得开心的事">
+        <div style="margin-top:10px"><button class="btn primary sm" onclick="saveDiary()">保存日记</button></div>
+        <div id="diaryList" style="margin-top:12px"></div>
+      </div>
+      <div class="card">
+        <h2><span class="dot"></span> 每周复盘</h2>
+        <p class="hint">系统按身体记录自动汇总近 7 天数据，可补充反思。</p>
+        <div id="reviewBox"></div>
+        <label class="fld">本周反思</label>
+        <textarea id="reviewText" placeholder="本周做得好的、下周改进的…"></textarea>
+        <label class="fld">下周重点</label>
+        <input type="text" id="reviewFocus" placeholder="下周的一个小目标">
+        <div style="margin-top:10px"><button class="btn accent sm" onclick="saveReview()">保存本周复盘</button></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="footnote">❦ 体态管理 · 单文件离线可用 · 数据存于本机并可同步至 GitHub · 图表由原生 Canvas 自绘</p>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="overlay" id="overlaySync">
+  <div class="modal">
+    <div class="modal-h"><h3>☁ 云端同步</h3><button class="x" onclick="closeOverlay('overlaySync')">×</button></div>
+    <div class="modal-b">
+      <p class="hint" style="margin-top:0">填入 GitHub PAT 令牌后，可从你的个人库 <code>jz/</code> 目录读取 8 张数据表并关联，也可把本机数据推送到云端。</p>
+      <label class="fld">GitHub 用户名 / 仓库</label>
+      <div class="row">
+        <input type="text" id="ghUser" placeholder="用户名" value="lhalex1902">
+        <input type="text" id="ghRepo" placeholder="仓库名" value="knowledge-site">
+      </div>
+      <label class="fld">分支</label>
+      <input type="text" id="ghBranch" value="main">
+      <label class="fld">PAT 令牌（勾选 repo 权限即可）</label>
+      <input type="password" id="ghToken" placeholder="ghp_xxxxxxxx">
+      <div class="btnrow">
+        <button class="btn ghost sm" onclick="pullCloud()">⬇ 从云端读取</button>
+        <button class="btn accent sm" onclick="pushCloud()">⬆ 上传到云端</button>
+      </div>
+      <div id="syncStatus" style="margin-top:14px;font-size:13px;color:var(--forest-soft)"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayTheme">
+  <div class="modal">
+    <div class="modal-h"><h3>🎨 自定义主题</h3><button class="x" onclick="closeOverlay('overlayTheme')">×</button></div>
+    <div class="modal-b">
+      <p class="hint" style="margin-top:0">调整配色（不影响字号）。修改即时预览，自动保存到本机。</p>
+      <div class="swatch-row">
+        <div class="swatch"><label>纸张底色</label><input type="color" id="colPaper"></div>
+        <div class="swatch"><label>主色（森林）</label><input type="color" id="colForest"></div>
+        <div class="swatch"><label>点缀色（陶土）</label><input type="color" id="colTerra"></div>
+        <div class="swatch"><label>按钮色</label><input type="color" id="colBtn"></div>
+      </div>
+      <div class="btnrow">
+        <button class="btn ghost sm" onclick="resetTheme()">恢复默认</button>
+        <button class="btn primary sm" onclick="applyThemeFromPanel()">应用</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="diag"></div>
+
+<script>
+/* =========================================================================
+   体态管理 · 减脂健身追踪台  —  单文件 / 离线可用 / 原生 Canvas
+   数据模型：8 张表（profile 主表 + 7 明细表），云端为 GitHub 仓库 jz/ 下的 JSON
+   ========================================================================= */
+
+/* ---------- 全局状态 ---------- */
+var LS_KEY = 'jz_state_v1';
+var LS_THEME = 'jz_theme_v1';
+var GH = { user:'lhalex1902', repo:'knowledge-site', branch:'main', dir:'jz', token:'' };
+
+// 8 张表的定义（id → 文件名）
+var TABLES = {
+  profile:'profile.json',
+  body:'body_records.json',
+  diet:'diet_records.json',
+  plan:'training_plan.json',
+  log:'training_log.json',
+  habit:'habit_checkins.json',
+  review:'weekly_reviews.json',
+  diary:'diary.json'
+};
+
+// 运行时状态
+var state = {
+  profile:null,
+  body:[], diet:[], plan:null, log:[], habit:null, review:[], diary:[]
+};
+var chartMode = 'weight';
+
+/* ---------- 工具 ---------- */
+function $(id){ return document.getElementById(id); }
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function pad(n){ return (n<10?'0':'') + n; }
+function parseD(s){ if(!s) return null; var p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+function fmtDateCN(s){ var d=parseD(s); return d ? (d.getMonth()+1)+'月'+d.getDate()+'日' : s; }
+function daysBetween(a,b){ return Math.round((b-a)/86400000); }
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+function round1(v){ return Math.round(v*10)/10; }
+
+function toast(msg){
+  var t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+function diag(msg){ var el=$('diag'); if(el) el.textContent = msg||''; }
+
+/* =========================================================================
+   主题
+   ========================================================================= */
+var DEFAULT_THEME = { paper:'#f4f1ea', forest:'#1f3a2e', terra:'#c9784f', btn:'#c9784f' };
+function loadTheme(){
+  try{ var t = JSON.parse(localStorage.getItem(LS_THEME)); return (t && t.paper) ? t : null; }catch(e){ return null; }
+}
+function applyTheme(t){
+  var r = document.documentElement.style;
+  r.setProperty('--paper', t.paper);
+  r.setProperty('--paper-2', shade(t.paper,-6));
+  r.setProperty('--forest', t.forest);
+  r.setProperty('--forest-soft', shade(t.forest,18));
+  r.setProperty('--terra', t.terra);
+  r.setProperty('--terra-soft', shade(t.terra,28));
+  r.setProperty('--card', shade(t.paper,3));
+  r.setProperty('--line', shade(t.paper,-14));
+  // 按钮色：主色按钮用森林色，accent 按钮用自定义按钮色
+  r.setProperty('--accent-btn', t.btn);
+  Array.prototype.forEach.call(document.querySelectorAll('.btn.accent'), function(b){ b.style.background=t.btn; });
+}
+function shade(hex, amt){
+  var c=hex.replace('#',''); if(c.length===3) c=c[0]+c[0]+c[1]+c[1]+c[2]+c[2];
+  var n=parseInt(c,16), r=(n>>16)+amt, g=((n>>8)&255)+amt, b=(n&255)+amt;
+  r=clamp(r,0,255); g=clamp(g,0,255); b=clamp(b,0,255);
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+function openTheme(){
+  var t = loadTheme() || DEFAULT_THEME;
+  $('colPaper').value=t.paper; $('colForest').value=t.forest; $('colTerra').value=t.terra; $('colBtn').value=t.btn;
+  $('overlayTheme').classList.add('open');
+}
+function applyThemeFromPanel(){
+  var t={ paper:$('colPaper').value, forest:$('colForest').value, terra:$('colTerra').value, btn:$('colBtn').value };
+  localStorage.setItem(LS_THEME, JSON.stringify(t));
+  applyTheme(t);
+  if(state.profile && state.profile.theme){ state.profile.theme = {paper:t.paper,forest:t.forest,terra:t.terra}; }
+  closeOverlay('overlayTheme'); render(); toast('主题已应用');
+}
+function resetTheme(){
+  localStorage.removeItem(LS_THEME); applyTheme(DEFAULT_THEME);
+  $('colPaper').value=DEFAULT_THEME.paper; $('colForest').value=DEFAULT_THEME.forest;
+  $('colTerra').value=DEFAULT_THEME.terra; $('colBtn').value=DEFAULT_THEME.btn;
+  toast('已恢复默认主题');
+}
+
+/* =========================================================================
+   本地存储
+   ========================================================================= */
+function saveLocal(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){ toast('本机存储失败'); }
+}
+function loadLocal(){
+  try{
+    var s = JSON.parse(localStorage.getItem(LS_KEY));
+    if(s && s.profile){ state = s; return true; }
+  }catch(e){}
+  return false;
+}
+
+/* =========================================================================
+   Mifflin-St Jeor & 营养目标
+   ========================================================================= */
+function calcBMR(p){
+  // p: gender 'female'/'male', weightKg, heightCm, age
+  var w = p.currentWeightKg || 60, h = p.heightCm || 165, a = p.age || 30;
+  if(p.gender === 'male'){ return 10*w + 6.25*h - 5*a + 5; }
+  return 10*w + 6.25*h - 5*a - 161;
+}
+function calcTDEE(bmr, factor){ return bmr * (factor||1.375); }
+
+/* =========================================================================
+   渲染：总览 KPI + 目标 + 建议
+   ========================================================================= */
+function renderHero(){
+  var p = state.profile || {};
+  var name = p.name || p.greeting || '朋友';
+  $('heroTitle').innerHTML = '你好，<span class="hi">'+escapeHtml(name)+'</span>';
+  $('heroSub').textContent = p.dailyGreeting || '今天也要温柔地对待自己，一步一个脚印。';
+}
+function latestBody(){
+  var b = state.body.slice().sort(function(x,y){ return x.date<y?1:-1; });
+  return b.length ? b[0] : null;
+}
+function bmiOf(w,p){ var h=(p.heightCm||165)/100; return w/(h*h); }
+function bmiTag(bmi){
+  if(bmi<18.5) return {t:'偏瘦',c:'orange'};
+  if(bmi<24) return {t:'正常',c:'green'};
+  if(bmi<28) return {t:'偏胖',c:'orange'};
+  return {t:'肥胖',c:'orange'};
+}
+function renderOverview(){
+  var p = state.profile || {};
+  var cur = latestBody();
+  var w = cur ? cur.weightKg : (p.currentWeightKg||0);
+  var f = cur ? cur.bodyFatPct : null;
+
+  $('kWeight').innerHTML = (w?round1(w):'–') + ' <small>kg</small>';
+  $('kFat').innerHTML = (f!=null ? round1(f) : '–') + ' <small>%</small>';
+
+  // 目标进度：从"起始体重"（最早记录或档案）到目标
+  var startW = p.currentWeightKg || w;
+  var first = state.body.slice().sort(function(x,y){ return x.date<y?-1:1; })[0];
+  if(first) startW = first.weightKg;
+  var target = p.targetWeightKg || 0;
+  var total = startW - target;
+  var done = startW - w;
+  var pct = total>0 ? clamp(done/total*100,0,100) : 0;
+  $('kProgress').innerHTML = Math.round(pct) + ' <small>%</small>';
+  $('kProgressMeta').textContent = (target>0 ? ('目标 '+round1(target)+'kg') : '');
+
+  // BMI
+  var bmi = w>0 ? bmiOf(w,p) : 0;
+  $('kBmi').textContent = bmi>0 ? round1(bmi) : '–';
+  var tag = bmi>0 ? bmiTag(bmi) : null;
+  $('kBmiTag').innerHTML = tag ? '<span class="tag '+tag.c+'">'+tag.t+'</span>' : '';
+
+  // 体重/体脂变化（与上一条比）
+  var sorted = state.body.slice().sort(function(x,y){ return x.date<y?1:-1; });
+  if(sorted.length>=2){
+    var dW = round1(sorted[0].weightKg - sorted[1].weightKg);
+    $('kWeightDelta').innerHTML = '较上次 '+(dW<=0?'↓ ':'↑ ')+Math.abs(dW)+' kg';
+    $('kWeightDelta').className = 'delta '+(dW<=0?'down':'up');
+    if(sorted[0].bodyFatPct!=null && sorted[1].bodyFatPct!=null){
+      var dF = round1(sorted[0].bodyFatPct - sorted[1].bodyFatPct);
+      $('kFatDelta').innerHTML = '较上次 '+(dF<=0?'↓ ':'↑ ')+Math.abs(dF)+' %';
+      $('kFatDelta').className = 'delta '+(dF<=0?'down':'up');
+    }
+  }
+
+  // 目标进度条
+  $('goalStart').textContent = round1(startW);
+  $('goalTarget').textContent = round1(target);
+  $('goalFill').style.width = pct+'%';
+  $('goalNow').textContent = round1(w)+' kg';
+  $('goalRemain').textContent = (w>0 && target>0) ? ('还差 '+round1(w-target)+' kg') : '—';
+
+  // 天数
+  if(first){ $('goalDays').textContent = Math.max(0,daysBetween(parseD(first.date),new Date())); }
+  if(p.goalDeadline){ $('goalDeadline').textContent = Math.max(0,daysBetween(new Date(),parseD(p.goalDeadline))); }
+
+  renderSuggestion();
+}
+
+function renderSuggestion(){
+  var p = state.profile || {};
+  var cur = latestBody();
+  var w = cur ? cur.weightKg : (p.currentWeightKg||0);
+  var target = p.targetWeightKg || 0;
+  var list = [];
+
+  // 基于今日打卡情况给建议
+  var today = todayStr();
+  var planToday = (state.plan && state.plan.items) ? state.plan.items.filter(function(x){return x.day===weekdayCN();}) : [];
+  var todayLogs = state.log.filter(function(x){ return x.date===today; });
+  var todayHabits = state.habit ? state.habit.checkins.filter(function(c){ return c.date===today && c.done; }) : [];
+  var todayDietKcal = state.diet.filter(function(x){ return x.date===today; }).reduce(function(s,x){return s+(+x.kcal||0);},0);
+
+  if(planToday.length && !planToday[0].done){ list.push('今天是「'+planToday[0].day+'」训练日：'+planToday[0].content); }
+  else if(todayLogs.length===0 && planToday.length){ list.push('今日训练已完成 ✓，别忘了拉伸放松 5 分钟。'); }
+
+  var tdee = calcTDEE(calcBMR(p), p.activityFactor);
+  var kcalTarget = Math.round(tdee - 625);
+  if(todayDietKcal < kcalTarget*0.6 && todayDietKcal>0){ list.push('今日热量偏少（'+Math.round(todayDietKcal)+' kcal），注意补充蛋白质。'); }
+  else if(todayDietKcal > kcalTarget*1.1){ list.push('今日热量略超目标，晚餐可清淡一些。'); }
+
+  if(todayHabits.length < (state.habit?state.habit.habits.length:0)){ list.push('还有 '+(state.habit.habits.length - todayHabits.length)+' 个习惯待打卡。'); }
+
+  if(w>0 && target>0 && w-target>0){
+    var daysLeft = p.goalDeadline ? Math.max(1,daysBetween(new Date(),parseD(p.goalDeadline))) : 120;
+    var perWeek = (w-target)/(daysLeft/7);
+    list.push('距目标还差 '+round1(w-target)+'kg，按当前节奏约每周减 '+round1(Math.abs(perWeek))+'kg。');
+  }
+
+  if(!list.length){ list.push('今天状态很好，保持节奏即可！'); }
+
+  $('nextStep').textContent = list[0];
+  var ul = $('nextList'); ul.innerHTML='';
+  list.slice(1,4).forEach(function(t){ var li=document.createElement('li'); li.textContent=t; ul.appendChild(li); });
+}
+function weekdayCN(){
+  var d=new Date().getDay(); var m=['周日','周一','周二','周三','周四','周五','周六']; return m[d];
+}
+
+/* =========================================================================
+   身体记录
+   ========================================================================= */
+function renderBody(){
+  $('bodyDate').value = todayStr();
+  var tb = $('bodyTbody'); tb.innerHTML='';
+  var rows = state.body.slice().sort(function(x,y){ return x.date<y?1:-1; });
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="5" class="empty">暂无记录，添加第一条吧</td></tr>'; return; }
+  rows.forEach(function(r){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+r.date+'</td><td class="num">'+round1(r.weightKg)+'</td><td class="num">'+(r.bodyFatPct!=null?round1(r.bodyFatPct):'–')+'</td><td>'+escapeHtml(r.note||'')+'</td>'+
+      '<td><button class="btn danger sm" onclick="delBody(\''+r.date+'\')">删</button></td>';
+    tb.appendChild(tr);
+  });
+}
+function saveBody(){
+  var date=$('bodyDate').value, w=parseFloat($('bodyWeight').value), f=parseFloat($('bodyFat').value), note=$('bodyNote').value;
+  if(!date || !(w>0)){ toast('请填写日期与体重'); return; }
+  var rec={ date:date, weightKg:round1(w), bodyFatPct:(f>0?round1(f):null), note:note };
+  // 覆盖同日
+  state.body = state.body.filter(function(x){ return x.date!==date; });
+  state.body.push(rec);
+  // 同步到 profile 当前体重
+  if(state.profile){ state.profile.currentWeightKg = rec.weightKg; }
+  saveLocal(); renderBody(); render(); toast('已保存身体记录');
+}
+function delBody(date){
+  state.body = state.body.filter(function(x){ return x.date!==date; });
+  saveLocal(); renderBody(); render();
+}
+function clearBody(){
+  if(!confirm('确定清空全部身体记录？此操作不可撤销。')) return;
+  state.body=[]; saveLocal(); renderBody(); render(); toast('身体记录已清空');
+}
+
+/* =========================================================================
+   趋势图（原生 Canvas）
+   ========================================================================= */
+function setChart(mode){
+  chartMode=mode;
+  $('tabWeight').className='ctab'+(mode==='weight'?' on':'');
+  $('tabFat').className='ctab'+(mode==='fat'?' on':'');
+  drawChart();
+}
+function ma(arr,win){
+  // 简单移动平均，返回与 arr 等长（前 win-1 个为 null）
+  var out=[];
+  for(var i=0;i<arr.length;i++){
+    if(i<win-1){ out.push(null); continue; }
+    var s=0,cnt=0;
+    for(var j=i-win+1;j<=i;j++){ if(arr[j]!=null){ s+=arr[j]; cnt++; } }
+    out.push(cnt? s/cnt : null);
+  }
+  return out;
+}
+function drawChart(){
+  var cv=$('trendCanvas');
+  var dpr = window.devicePixelRatio || 1;
+  var cssW = cv.clientWidth || 600, cssH = 320;
+  cv.width = cssW*dpr; cv.height = cssH*dpr;
+  cv.style.height = cssH+'px';
+  var ctx = cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+
+  var rows = state.body.slice().sort(function(x,y){ return x.date<y?-1:1; }); // 升序
+  if(rows.length<1){
+    ctx.fillStyle='#7a756b'; ctx.font='13px Georgia,serif'; ctx.textAlign='center';
+    ctx.fillText('暂无数据，先去「身体记录」添加吧', cssW/2, cssH/2);
+    $('chartLegend').innerHTML=''; return;
+  }
+
+  var key = chartMode==='weight' ? 'weightKg' : 'bodyFatPct';
+  var vals = rows.map(function(r){ return r[key]!=null ? r[key] : null; });
+  var labels = rows.map(function(r){ return r.date.slice(5); }); // MM-DD
+
+  // 主题色
+  var cs = getComputedStyle(document.documentElement);
+  var forest = cs.getPropertyValue('--forest').trim() || '#1f3a2e';
+  var terra = cs.getPropertyValue('--terra').trim() || '#c9784f';
+  var line = cs.getPropertyValue('--line').trim() || '#d9d2c4';
+  var muted = '#7a756b';
+
+  var padL=44, padR=16, padT=18, padB=30;
+  var plotW=cssW-padL-padR, plotH=cssH-padT-padB;
+
+  // 有效值范围
+  var clean = vals.filter(function(v){ return v!=null; });
+  var minV=Math.min.apply(null,clean), maxV=Math.max.apply(null,clean);
+  if(minV===maxV){ minV-=1; maxV+=1; }
+  var span=maxV-minV; minV-=span*0.1; maxV+=span*0.1;
+  if(chartMode==='weight' && minV<0) minV=0;
+  if(chartMode==='fat' && minV<0) minV=0;
+
+  function X(i){ return padL + (rows.length===1?plotW/2:(i/(rows.length-1))*plotW); }
+  function Y(v){ return padT + (1-(v-minV)/(maxV-minV))*plotH; }
+
+  // 网格 + Y 轴刻度
+  ctx.strokeStyle=line; ctx.lineWidth=1; ctx.fillStyle=muted; ctx.font='11px Georgia,serif'; ctx.textAlign='right';
+  var ticks=5;
+  for(var k=0;k<=ticks;k++){
+    var v=minV+(maxV-minV)*k/ticks; var y=Y(v);
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+plotW,y); ctx.stroke();
+    ctx.fillText(chartMode==='weight'? v.toFixed(1) : v.toFixed(1)+'%', padL-6, y+3);
+  }
+
+  // X 轴标签（最多 8 个）
+  ctx.textAlign='center';
+  var step=Math.max(1,Math.ceil(rows.length/8));
+  for(var i=0;i<rows.length;i+=step){
+    ctx.fillText(labels[i], X(i), cssH-10);
+  }
+  if((rows.length-1)%step!==0) ctx.fillText(labels[rows.length-1], X(rows.length-1), cssH-10);
+
+  // 7 日移动平均线（先画，作为底层）
+  var m = ma(vals,7);
+  drawLine(ctx, m, X, Y, terra, true);
+
+  // 主线
+  drawLine(ctx, vals, X, Y, forest, false);
+
+  // 数据点
+  for(var i=0;i<rows.length;i++){
+    if(vals[i]==null) continue;
+    ctx.fillStyle=forest; ctx.beginPath(); ctx.arc(X(i),Y(vals[i]),3,0,Math.PI*2); ctx.fill();
+  }
+
+  // 图例
+  $('chartLegend').innerHTML =
+    '<span><i style="background:'+forest+'"></i>'+(chartMode==='weight'?'体重 (kg)':'体脂率 (%)')+'</span>'+
+    '<span><i style="background:'+terra+'"></i>7 日移动平均</span>';
+}
+function drawLine(ctx, vals, X, Y, color, dashed){
+  ctx.save();
+  ctx.strokeStyle=color; ctx.lineWidth=2; ctx.lineJoin='round';
+  if(dashed) ctx.setLineDash([6,4]);
+  var started=false;
+  ctx.beginPath();
+  for(var i=0;i<vals.length;i++){
+    if(vals[i]==null){ started=false; continue; }
+    var x=X(i), y=Y(vals[i]);
+    if(!started){ ctx.moveTo(x,y); started=true; } else { ctx.lineTo(x,y); }
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* =========================================================================
+   训练计划 + 日志
+   ========================================================================= */
+function renderPlan(){
+  var box=$('planList'); box.innerHTML='';
+  if(!state.plan || !state.plan.items){ box.innerHTML='<div class="empty">暂无计划</div>'; return; }
+  state.plan.items.forEach(function(it,idx){
+    var div=document.createElement('div');
+    div.className='check-item'+(it.done?' done':'');
+    div.innerHTML='<span class="cbox">'+(it.done?'✓':'')+'</span>'+
+      '<span class="ci-name"><b>'+it.day+'</b> · '+escapeHtml(it.type)+'</span>'+
+      '<span class="ci-meta">'+escapeHtml(it.content)+'</span>';
+    div.onclick=function(){
+      state.plan.items[idx].done=!state.plan.items[idx].done;
+      saveLocal(); renderPlan(); renderOverview();
+    };
+    box.appendChild(div);
+  });
+}
+function resetPlan(){
+  if(!state.plan) return;
+  state.plan.items.forEach(function(it){ it.done=false; });
+  saveLocal(); renderPlan(); toast('本周计划已重置');
+}
+function renderLog(){
+  $('logDate').value=todayStr();
+  var tb=$('logTbody'); tb.innerHTML='';
+  var rows=state.log.slice().sort(function(x,y){ return x.date<y?1:-1; });
+  if(!rows.length){ tb.innerHTML='<tr><td colspan="4" class="empty">暂无训练日志</td></tr>'; return; }
+  rows.forEach(function(r){
+    var tr=document.createElement('tr');
+    var tagCls = r.type==='力量'?'green':(r.type==='有氧'?'orange':'gray');
+    tr.innerHTML='<td>'+r.date+'</td><td><span class="tag '+tagCls+'">'+r.type+'</span></td>'+
+      '<td class="num">'+r.durationMin+'</td><td class="num">'+r.calorie+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function saveLog(){
+  var date=$('logDate').value, type=$('logType').value, dur=parseInt($('logDur').value)||0, kcal=parseInt($('logKcal').value)||0, note=$('logNote').value;
+  if(!date){ toast('请填写日期'); return; }
+  state.log.push({date:date,day:weekdayCN(),type:type,durationMin:dur,calorie:kcal,note:note});
+  saveLocal(); renderLog(); renderOverview(); toast('已添加训练日志');
+  $('logNote').value=''; $('logKcal').value='0';
+}
+
+/* =========================================================================
+   习惯打卡
+   ========================================================================= */
+function renderHabit(){
+  $('habitToday').textContent = fmtDateCN(todayStr());
+  var box=$('habitList'); box.innerHTML='';
+  if(!state.habit){ box.innerHTML='<div class="empty">暂无习惯</div>'; return; }
+  var today=todayStr();
+  var done=0;
+  state.habit.habits.forEach(function(h){
+    var ck = state.habit.checkins.filter(function(c){ return c.date===today && c.habitId===h.id; });
+    var isDone = ck.length && ck[0].done;
+    if(isDone) done++;
+    var div=document.createElement('div');
+    div.className='check-item'+(isDone?' done':'');
+    div.innerHTML='<span class="cbox">'+(isDone?'✓':'')+'</span>'+
+      '<span class="ci-name">'+(h.icon?h.icon+' ':'')+escapeHtml(h.name)+'</span>';
+    div.onclick=function(){
+      toggleHabit(h.id, today);
+    };
+    box.appendChild(div);
+  });
+  $('habitDone').textContent=done;
+  $('habitTotal').textContent=state.habit.habits.length;
+}
+function toggleHabit(hid, date){
+  var arr=state.habit.checkins;
+  var idx=-1;
+  for(var i=0;i<arr.length;i++){ if(arr[i].date===date && arr[i].habitId===hid){ idx=i; break; } }
+  if(idx>=0){ arr[idx].done=!arr[idx].done; }
+  else { arr.push({date:date,habitId:hid,done:true}); }
+  saveLocal(); renderHabit(); renderOverview();
+}
+
+/* =========================================================================
+   营养 & 宏量
+   ========================================================================= */
+function renderNutri(){
+  var p=state.profile||{};
+  var bmr=Math.round(calcBMR(p));
+  var tdee=Math.round(calcTDEE(bmr,p.activityFactor));
+  var targetKcal=Math.round(tdee-625); // 中值缺口 625
+  $('bmrVal').textContent=bmr;
+  $('tdeeVal').textContent=tdee;
+  $('targetKcal').textContent=targetKcal;
+  $('deficitVal').textContent='500–750';
+  $('macroHint').textContent='按缺口 500–750 kcal 减脂。蛋白按体重 1.6–2.0 g/kg，脂肪不低于 0.8 g/kg，其余给碳水。';
+
+  // 今日汇总
+  var today=todayStr();
+  var eaten=state.diet.filter(function(x){ return x.date===today; });
+  var kcal=eaten.reduce(function(s,x){return s+(+x.kcal||0);},0);
+  var prot=eaten.reduce(function(s,x){return s+(+x.proteinG||0);},0);
+  var carb=eaten.reduce(function(s,x){return s+(+x.carbG||0);},0);
+  var fat=eaten.reduce(function(s,x){return s+(+x.fatG||0);},0);
+
+  // 目标宏量：蛋白 30% / 脂肪 25% / 碳水 45%
+  var protG=Math.round(targetKcal*0.30/4);
+  var fatG=Math.round(targetKcal*0.25/9);
+  var carbG=Math.round(targetKcal*0.45/4);
+
+  var box=$('macroBox'); box.innerHTML='';
+  macroRow(box,'热量',kcal,targetKcal,'kcal', getComputedStyle(document.documentElement).getPropertyValue('--terra').trim());
+  macroRow(box,'蛋白',prot,protG,'g', '#3f7d5a');
+  macroRow(box,'碳水',carb,carbG,'g', '#c9784f');
+  macroRow(box,'脂肪',fat,fatG,'g', '#8a6d3b');
+}
+function macroRow(box,name,cur,tgt,unit,color){
+  var pct = tgt>0 ? clamp(cur/tgt*100,0,100) : 0;
+  var div=document.createElement('div');
+  div.className='macro-row';
+  div.innerHTML='<span class="macro-name">'+name+'</span>'+
+    '<span class="macro-track"><span class="macro-fill" style="width:'+pct+'%;background:'+color+'"></span></span>'+
+    '<span class="macro-val">'+Math.round(cur)+'/'+tgt+' '+unit+'</span>';
+  box.appendChild(div);
+}
+function saveDiet(){
+  var date=$('dietDate').value, meal=$('dietMeal').value, food=$('dietFood').value;
+  var kcal=parseInt($('dietKcal').value)||0, p=parseInt($('dietP').value)||0, c=parseInt($('dietC').value)||0, f=parseInt($('dietF').value)||0;
+  if(!date || !food){ toast('请填写日期与食物'); return; }
+  state.diet.push({date:date,meal:meal,food:food,kcal:kcal,proteinG:p,carbG:c,fatG:f});
+  saveLocal(); renderNutri(); renderOverview(); toast('已添加饮食记录');
+  $('dietFood').value=''; $('dietKcal').value='0'; $('dietP').value='0'; $('dietC').value='0'; $('dietF').value='0';
+}
+
+/* =========================================================================
+   日记 + 复盘
+   ========================================================================= */
+function renderDiary(){
+  $('diaryDate').value=todayStr();
+  var box=$('diaryList'); box.innerHTML='';
+  var rows=state.diary.slice().sort(function(x,y){ return x.date<y?1:-1; });
+  if(!rows.length){ box.innerHTML='<div class="empty">还没有日记</div>'; return; }
+  rows.slice(0,8).forEach(function(r){
+    var div=document.createElement('div');
+    div.style.cssText='border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:8px;background:#fff';
+    div.innerHTML='<div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)">'+
+      '<b style="color:var(--forest)">'+r.date+' · '+escapeHtml(r.mood||'')+'</b>'+
+      '<button class="btn danger sm" onclick="delDiary(\''+r.date+'\')">删</button></div>'+
+      '<div style="margin-top:6px;font-size:13.5px">'+escapeHtml(r.content||'')+'</div>'+
+      (r.gratitude?'<div style="margin-top:4px;font-size:12.5px;color:var(--terra)">🌿 '+escapeHtml(r.gratitude)+'</div>':'');
+    box.appendChild(div);
+  });
+}
+function saveDiary(){
+  var date=$('diaryDate').value, mood=$('diaryMood').value, content=$('diaryContent').value, grat=$('diaryGrat').value;
+  if(!date || !content){ toast('请填写日期与内容'); return; }
+  state.diary=state.diary.filter(function(x){ return x.date!==date; });
+  state.diary.push({date:date,mood:mood,content:content,gratitude:grat});
+  saveLocal(); renderDiary(); toast('日记已保存');
+  $('diaryContent').value=''; $('diaryGrat').value='';
+}
+function delDiary(date){ state.diary=state.diary.filter(function(x){ return x.date!==date; }); saveLocal(); renderDiary(); }
+
+function renderReview(){
+  var box=$('reviewBox'); box.innerHTML='';
+  // 自动汇总近 7 天身体数据
+  var recent=state.body.slice().sort(function(x,y){ return x.date<y?1:-1; }).slice(0,7);
+  if(recent.length>=2){
+    var ws=recent.map(function(r){return r.weightKg;});
+    var avg=ws.reduce(function(a,b){return a+b;},0)/ws.length;
+    var change=round1(recent[0].weightKg - recent[recent.length-1].weightKg);
+    var div=document.createElement('div');
+    div.style.cssText='font-size:13px;color:var(--ink);background:rgba(31,58,46,.05);border-radius:9px;padding:10px 12px';
+    div.innerHTML='近 '+recent.length+' 次记录：均重 <b style="color:var(--forest)">'+round1(avg)+'kg</b>，'+
+      '较上期 <b style="color:'+(change<=0?'var(--ok)':'var(--warn)')+'">'+(change<=0?'下降 ':'上升 ')+Math.abs(change)+'kg</b>';
+    box.appendChild(div);
+  } else {
+    box.innerHTML='<div class="empty">身体记录不足，暂无法汇总</div>';
+  }
+  // 历史复盘
+  var box2=document.createElement('div'); box2.style.marginTop='10px';
+  var rows=(state.review||[]).slice().sort(function(x,y){ return x.weekStart<y.weekStart?1:-1; });
+  rows.slice(0,4).forEach(function(r){
+    var div=document.createElement('div');
+    div.style.cssText='border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin-bottom:8px;background:#fff;font-size:13px';
+    div.innerHTML='<b style="color:var(--forest)">'+r.weekStart+' ~ '+r.weekEnd+'</b> '+
+      '<span style="color:var(--muted);float:right">均重 '+round1(r.avgWeightKg)+'kg · '+r.weightChangeKg+'kg</span>'+
+      '<div style="margin-top:5px;color:var(--ink)">'+escapeHtml(r.reflection||'')+'</div>'+
+      (r.nextFocus?'<div style="color:var(--terra);margin-top:3px">→ '+escapeHtml(r.nextFocus)+'</div>':'');
+    box2.appendChild(div);
+  });
+  box.appendChild(box2);
+}
+function saveReview(){
+  var text=$('reviewText').value, focus=$('reviewFocus').value;
+  if(!text){ toast('请写点反思'); return; }
+  // 计算本周起止
+  var now=new Date(); var day=now.getDay()||7;
+  var mon=new Date(now); mon.setDate(now.getDate()-day+1);
+  var sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  var ws=fmt(mon), weStr=fmt(sun);
+  function fmt(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  var recent=state.body.slice().sort(function(x,y){ return x.date<y?1:-1; }).slice(0,7);
+  var avg= recent.length? recent.reduce(function(s,x){return s+x.weightKg;},0)/recent.length : 0;
+  var change= recent.length>=2? round1(recent[0].weightKg-recent[recent.length-1].weightKg) : 0;
+  var trained=state.log.filter(function(x){ return x.type!=='休息'; }).length;
+  var rec={weekStart:ws,weekEnd:weStr,avgWeightKg:round1(avg),weightChangeKg:change,trainingCompleted:trained,habitRatePct:0,reflection:text,nextFocus:focus};
+  state.review=state.review.filter(function(x){ return x.weekStart!==ws; });
+  state.review.push(rec);
+  saveLocal(); renderReview(); toast('复盘已保存');
+  $('reviewText').value=''; $('reviewFocus').value='';
+}
+
+/* =========================================================================
+   主渲染
+   ========================================================================= */
+function render(){
+  renderHero();
+  renderOverview();
+  renderBody();
+  renderPlan();
+  renderLog();
+  renderHabit();
+  renderNutri();
+  renderDiary();
+  renderReview();
+  drawChart();
+}
+
+/* =========================================================================
+   云端同步（GitHub 多表）
+   ========================================================================= */
+function openSync(){
+  $('ghUser').value=GH.user; $('ghRepo').value=GH.repo; $('ghBranch').value=GH.branch;
+  $('ghToken').value=GH.token||'';
+  $('syncStatus').textContent='';
+  $('overlaySync').classList.add('open');
+}
+function closeOverlay(id){ $(id).classList.remove('open'); }
+function ghHeaders(){
+  var h={'Accept':'application/vnd.github+json'};
+  if(GH.token) h['Authorization']='token '+GH.token;
+  return h;
+}
+function fileUrl(name){
+  return 'https://api.github.com/repos/'+GH.user+'/'+GH.repo+'/contents/'+GH.dir+'/'+name+'?ref='+GH.branch;
+}
+function b64ToUtf8(b){ return decodeURIComponent(Array.prototype.map.call(atob(b),function(c){return '%'+('00'+c.charCodeAt(0).toString(16)).slice(-2);}).join('')); }
+function utf8ToB64(s){ return btoa(unescape(encodeURIComponent(s))); }
+
+function readJsonFromGitHub(name, cb){
+  // 优先 Contents API（带令牌），失败退回 raw
+  var h=ghHeaders();
+  fetch(fileUrl(name)+'&t='+Date.now(), {headers:h, cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(j){ cb(null, JSON.parse(b64ToUtf8(j.content))); })
+    .catch(function(e){
+      // 退回 raw（无令牌也可读，公开仓库）
+      var raw='https://raw.githubusercontent.com/'+GH.user+'/'+GH.repo+'/'+GH.branch+'/'+GH.dir+'/'+name+'?t='+Date.now();
+      fetch(raw,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('raw HTTP '+r.status); return r.json(); })
+        .then(function(d){ cb(null,d); }).catch(function(e2){ cb(e2.message||'读取失败',null); });
+    });
+}
+function pullCloud(){
+  GH.user=$('ghUser').value.trim(); GH.repo=$('ghRepo').value.trim();
+  GH.branch=$('ghBranch').value.trim(); GH.token=$('ghToken').value.trim();
+  $('syncStatus').textContent='正在从云端读取 8 张数据表…';
+  var names=Object.keys(TABLES); var loaded={}; var errs=[]; var done=0;
+  names.forEach(function(nm){
+    readJsonFromGitHub(TABLES[nm], function(err,data){
+      done++;
+      if(err){ errs.push(nm+':'+err); } else { loaded[nm]=data; }
+      if(done===names.length){
+        if(errs.length && !Object.keys(loaded).length){
+          $('syncStatus').textContent='❌ 读取失败：'+errs.join('；'); return;
+        }
+        applyCloud(loaded);
+        var msg='✅ 已同步 '+Object.keys(loaded).length+'/'+names.length+' 张表';
+        if(errs.length) msg+='（'+errs.length+' 张失败：'+errs.join('，')+'）';
+        $('syncStatus').textContent=msg;
+        toast('云端同步完成');
+      }
+    });
+  });
+}
+function applyCloud(data){
+  // 多表关联：把各表内容合并进 state
+  if(data.profile){ state.profile=data.profile; }
+  if(data.body) state.body=Array.isArray(data.body.records)? data.body.records : (Array.isArray(data.body)?data.body:[]);
+  if(data.diet) state.diet=Array.isArray(data.diet.records)? data.diet.records : (Array.isArray(data.diet)?data.diet:[]);
+  if(data.plan) state.plan = data.plan;
+  if(data.log) state.log=Array.isArray(data.log.records)? data.log.records : (Array.isArray(data.log)?data.log:[]);
+  if(data.habit) state.habit=data.habit;
+  if(data.review) state.review=Array.isArray(data.review.records)? data.review.records : (Array.isArray(data.review)?data.review:[]);
+  if(data.diary) state.diary=Array.isArray(data.diary.entries)? data.diary.entries : (Array.isArray(data.diary)?data.diary:[]);
+  // 主题跟随云端
+  if(state.profile && state.profile.theme){ applyTheme(state.profile.theme); localStorage.setItem(LS_THEME, JSON.stringify(state.profile.theme)); }
+  saveLocal(); render();
+}
+
+function pushCloud(){
+  GH.user=$('ghUser').value.trim(); GH.repo=$('ghRepo').value.trim();
+  GH.branch=$('ghBranch').value.trim(); GH.token=$('ghToken').value.trim();
+  if(!GH.token){ $('syncStatus').textContent='❌ 上传需要 PAT 令牌'; return; }
+  $('syncStatus').textContent='正在上传…';
+  // 把 state 拆回 8 张表
+  var payloads={
+    profile: state.profile,
+    body: {id:'body_records', records:state.body, updatedAt:new Date().toISOString()},
+    diet: {id:'diet_records', records:state.diet, updatedAt:new Date().toISOString()},
+    plan: state.plan,
+    log: {id:'training_log', records:state.log, updatedAt:new Date().toISOString()},
+    habit: state.habit,
+    review: {id:'weekly_reviews', records:state.review, updatedAt:new Date().toISOString()},
+    diary: {id:'diary', entries:state.diary, updatedAt:new Date().toISOString()}
+  };
+  var names=Object.keys(payloads); var done=0; var errs=[];
+  names.forEach(function(nm){
+    putOne(TABLES[nm], payloads[nm], function(err){
+      done++;
+      if(err) errs.push(nm+':'+err);
+      if(done===names.length){
+        if(errs.length){ $('syncStatus').textContent='⚠️ 部分失败：'+errs.join('；'); }
+        else { $('syncStatus').textContent='✅ 全部 '+names.length+' 张表已上传到云端'; toast('上传完成'); }
+      }
+    });
+  });
+}
+function putOne(name, obj, cb){
+  // 先取 sha（若存在），再 PUT
+  var base='https://api.github.com/repos/'+GH.user+'/'+GH.repo+'/contents/'+GH.dir+'/'+name;
+  fetch(base+'?ref='+GH.branch+'&t='+Date.now(), {headers:ghHeaders(), cache:'no-store'})
+    .then(function(r){ return r.status===404? {sha:null} : r.json().then(function(j){return {sha:j.sha};}); })
+    .then(function(ex){
+      var payload={ message:'sync: 更新 '+name+' '+new Date().toLocaleString('zh-CN'),
+        content:utf8ToB64(JSON.stringify(obj)), branch:GH.branch };
+      if(ex.sha) payload.sha=ex.sha;
+      return fetch(base,{method:'PUT',headers:ghHeaders(),body:JSON.stringify(payload)});
+    })
+    .then(function(r){ return r.ok? cb(null): r.json().then(function(j){ cb(j.message||'HTTP '+r.status); }).catch(function(){ cb('HTTP '+r.status); }); })
+    .catch(function(e){ cb(e.message||'网络错误'); });
+}
+
+/* =========================================================================
+   导航 & 初始化
+   ========================================================================= */
+function scrollToId(id){ var el=$(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); }
+function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+function boot(){
+  // 主题
+  var theme = loadTheme();
+  if(!theme && state.profile && state.profile.theme){ theme = state.profile.theme; }
+  applyTheme(theme || DEFAULT_THEME);
+
+  // 默认日期
+  $('bodyDate').value=todayStr(); $('logDate').value=todayStr();
+  $('dietDate').value=todayStr(); $('diaryDate').value=todayStr();
+
+  // 窗口尺寸变化重绘图表
+  window.addEventListener('resize', function(){ clearTimeout(window._rt); window._rt=setTimeout(drawChart,150); });
+
+  render();
+  diag('就绪 · 数据存于本机，可点「云同步」连接 GitHub');
+}
+
+/* 启动：先读本地，无则用内置示例（首次访问展示示例数据） */
+(function init(){
+  if(!loadLocal()){
+    // 内置最小示例（与 jz/ 下 JSON 一致，供首次预览）
+    state.profile={ id:'profile', name:'Leah', gender:'female', age:28, heightCm:165, activityFactor:1.375,
+      currentWeightKg:63.5, targetWeightKg:55.0, goalDeadline:'2026-12-31',
+      dailyGreeting:'今天也要温柔地对待自己，一步一个脚印。', theme:{paper:'#f4f1ea',forest:'#1f3a2e',terra:'#c9784f'} };
+    state.body=[
+      {date:'2026-09-07',weightKg:64.5,bodyFatPct:23.3,note:''},
+      {date:'2026-09-08',weightKg:64.2,bodyFatPct:23.1,note:''},
+      {date:'2026-09-09',weightKg:64.0,bodyFatPct:23.0,note:'破64'},
+      {date:'2026-09-10',weightKg:63.7,bodyFatPct:22.8,note:''},
+      {date:'2026-09-11',weightKg:63.5,bodyFatPct:22.6,note:'今日'}
+    ];
+    state.plan={ id:'training_plan', weekStart:'2026-09-07', items:[
+      {day:'周一',type:'力量',content:'深蹲 4×8 / 硬拉 3×8 / 核心',done:true},
+      {day:'周二',type:'有氧',content:'慢跑 35 分钟',done:true},
+      {day:'周三',type:'力量',content:'卧推 4×8 / 划船 4×10',done:true},
+      {day:'周四',type:'休息',content:'拉伸放松',done:true},
+      {day:'周五',type:'力量',content:'硬拉变式 4×6 / 弓步蹲 3×10',done:false},
+      {day:'周六',type:'有氧',content:'HIIT 20 分钟',done:false},
+      {day:'周日',type:'休息',content:'完全休息',done:false}
+    ]};
+    state.habit={ id:'habit_checkins', habits:[
+      {id:'h1',name:'喝水 2L',icon:'💧'},{id:'h2',name:'蛋白质达标',icon:'🥚'},
+      {id:'h3',name:'力量训练',icon:'🏋️'},{id:'h4',name:'7小时睡眠',icon:'😴'},{id:'h5',name:'不喝含糖饮料',icon:'🚫'}
+    ], checkins:[] };
+    state.diet=[]; state.log=[]; state.review=[]; state.diary=[];
+    saveLocal();
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
