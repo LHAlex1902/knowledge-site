@@ -365,7 +365,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-11.7</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-11.8</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -1708,7 +1708,9 @@ function aiSend(){
   inp.style.height = 'auto';
   // 组装发给模型的历史（仅最近 12 条，控制 token）
   var recent = _aiHistory.slice(-12);
-  var payload = { model: AI_MODEL, messages: recent, stream: true, temperature: 0.7, max_tokens: 1024 };
+  // 根据浏览器能力决定是否流式：不支持 ReadableStream 的老内核用非流式（返回 JSON），避免 SSE 解析报错
+  var supportStream = (typeof ReadableStream !== 'undefined');
+  var payload = { model: AI_MODEL, messages: recent, stream: supportStream, temperature: 0.7, max_tokens: 1024 };
   if(AI_CLIENT_KEY) payload.clientKey = AI_CLIENT_KEY;
   _aiBusy = true;
   var sendBtn = document.getElementById('aiSendBtn');
@@ -1732,7 +1734,7 @@ function aiSend(){
     aiSave(); aiRender();
   });
 }
-// 流式请求 Worker；不支持流式的老内核自动降级为整段返回
+// 流式请求 Worker；不支持流式的老内核走非流式（stream:false，返回 JSON）
 function aiStream(payload, done){
   var headers = {'Content-Type':'application/json'};
   if(AI_CLIENT_KEY) headers['X-Client-Key'] = AI_CLIENT_KEY;
@@ -1743,19 +1745,21 @@ function aiStream(payload, done){
     done('', '网络请求失败：'+e.message);
     return;
   }
-  // 老内核：fetch 不支持 ReadableStream → 走整段返回
-  if(typeof fetchP.then !== 'function' || !fetchP.body){
-    fetchP.then(function(r){ return r.json(); })
-      .then(function(j){
-        var txt = (j && j.choices && j.choices[0] && j.choices[0].message) ? j.choices[0].message.content : '';
-        if(!txt) throw new Error('返回为空');
-        // 逐字模拟打字机（整段也能有打字效果）
-        aiTypewriter(txt, done);
-      })
-      .catch(function(e){ done('', e.message); });
+  // 非流式：直接解析 JSON 返回
+  if(!payload.stream){
+    fetchP.then(function(r){
+      if(!r.ok){
+        return r.text().then(function(t){ throw new Error(t || ('HTTP '+r.status)); });
+      }
+      return r.json();
+    }).then(function(j){
+      var txt = (j && j.choices && j.choices[0] && j.choices[0].message) ? j.choices[0].message.content : '';
+      if(!txt) throw new Error('返回为空');
+      aiTypewriter(txt, done);   // 逐字模拟打字机
+    }).catch(function(e){ done('', e.message); });
     return;
   }
-  // 现代内核：读 SSE 流
+  // 流式：读 SSE 流（现代内核）
   fetchP.then(function(r){
     if(!r.ok){
       return r.json().then(function(j){
