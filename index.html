@@ -337,7 +337,7 @@
 
 <footer data-page-node-id="WaHMarnLv3JauFe4xxEepn">
   知识脉络 · 由 WorkBuddy 生成 · 部署于 GitHub Pages · 支持仓库检索 + 拖拽分类 + 便签 + 常用网址 · 手机浏览器直接访问
-  <span id="buildTag" style="opacity:.8"> · v2026-09-10.7</span>
+  <span id="buildTag" style="opacity:.8"> · v2026-09-10.8</span>
   <div id="diagLine" style="margin-top:6px;opacity:.7;font-size:11px"></div>
 </footer>
 
@@ -860,9 +860,26 @@ function mergeFiles(out, arr){
   });
   return out;
 }
-// 双源扫描：jsDelivr data API（全量、免限流，但有数小时缓存滞后）
-//          + GitHub Contents API 递归（实时，能补上 jsDelivr 尚未索引的新文件，未认证可能 403）
-// 取两者并集：新上传的文件即使 jsDelivr 没缓存到，Contents API 也能实时扫到。
+// 源⓪：Git Trees API（递归全树）—— 权威、实时、单次请求返回所有文件完整路径。
+// 相比 Contents API 逐层递归（多次请求、易被 403 限流而整体失败），此接口一次到位，
+// 且返回的 path 已是完整相对路径（含 tutorials/ 前缀），最可靠。未认证同样可能被限流，故失败不致命。
+function scanTree(){
+  var url = 'https://api.github.com/repos/' + GH_USER + '/' + GH_REPO + '/git/trees/' + SYNC_BRANCH + '?recursive=1&t=' + Date.now();
+  return fetch(url, {headers:{'Accept':'application/vnd.github+json'}})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d){
+      var tree = (d && d.tree) || [];
+      return tree
+        .filter(function(it){ return it.type === 'blob' && /\.html?$/i.test(it.path); })
+        .map(function(it){
+          var fullPath = canonFile(it.path);   // 已是 tutorials/xxx.html，canonFile 幂等原样返回
+          return { name: fullPath.split('/').pop(), path: fullPath };
+        });
+    });
+}
+// 双源并集（v2026-09-10.8）：Git Trees（权威实时）为主，jsDelivr（缓存滞后）+ Contents 递归为辅。
+// 三者取并集去重：任一源失败不致命，只要有一个成功就能拿到完整文件列表，
+// 彻底修复"新上传文件扫不到 / 只显示 jsDelivr 陈旧缓存"的问题。
 function scanAllFiles(){
   var jsdUrl = 'https://data.jsdelivr.com/v1/packages/gh/' + GH_USER + '/' + GH_REPO + '@' + SYNC_BRANCH + '?t=' + Date.now();
   var jsd = fetch(jsdUrl, {headers:{'Accept':'application/json'}})
@@ -876,15 +893,16 @@ function scanAllFiles(){
           return { name: fullPath.split('/').pop(), path: fullPath };
         });
     })
-    .catch(function(){ return []; });   // jsDelivr 失败不致命，交给 Contents 兜底
+    .catch(function(){ return []; });   // jsDelivr 失败不致命
   var gh = scanDir('').then(function(items){
     return items.map(function(it){
       var fullPath = canonFile(it.path || it.name);
       return { name: fullPath.split('/').pop(), path: fullPath };
     });
-  }).catch(function(){ return []; });   // Contents API 失败（如 403 限流）不致命，交给 jsDelivr 兜底
-  return Promise.all([jsd, gh]).then(function(res){
-    return mergeFiles([], res[0].concat(res[1]));
+  }).catch(function(){ return []; });   // Contents 递归失败（如 403 限流）不致命
+  var tree = scanTree().catch(function(){ return []; });   // Git Trees 失败不致命
+  return Promise.all([tree, jsd, gh]).then(function(res){
+    return mergeFiles([], res[0].concat(res[1]).concat(res[2]));
   });
 }
 
