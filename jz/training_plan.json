@@ -1,0 +1,14 @@
+{
+  "id": "training_plan",
+  "weekStart": "2026-09-07",
+  "items": [
+    { "day": "周一", "type": "力量", "content": "深蹲 4×8 / 硬拉 3×8 / 核心训练", "done": true },
+    { "day": "周二", "type": "有氧", "content": "慢跑 35 分钟 / 心率 130-145", "done": true },
+    { "day": "周三", "type": "力量", "content": "卧推 4×8 / 划船 4×10 / 肩推 3×10", "done": true },
+    { "day": "周四", "type": "休息", "content": "拉伸放松 / 泡沫轴", "done": true },
+    { "day": "周五", "type": "力量", "content": "硬拉变式 4×6 / 弓步蹲 3×10 / 腿弯举 3×12", "done": false },
+    { "day": "周六", "type": "有氧", "content": "HIIT 20 分钟 / 爬坡快走 30 分钟", "done": false },
+    { "day": "周日", "type": "休息", "content": "完全休息 / 散步", "done": false }
+  ],
+  "updatedAt": "2026-09-11T09:00:00.000Z"
+}
