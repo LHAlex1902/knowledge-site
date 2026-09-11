@@ -1,0 +1,39 @@
+{
+  "id": "checkins",
+  "records": [
+    {"id":"c001","goalId":"g1","date":"2026-08-29","amount":60,"minutes":40,"isBackfill":false,"note":""},
+    {"id":"c002","goalId":"g1","date":"2026-08-30","amount":55,"minutes":35,"isBackfill":false,"note":""},
+    {"id":"c003","goalId":"g1","date":"2026-08-31","amount":60,"minutes":45,"isBackfill":false,"note":""},
+    {"id":"c004","goalId":"g1","date":"2026-09-01","amount":50,"minutes":30,"isBackfill":false,"note":""},
+    {"id":"c005","goalId":"g1","date":"2026-09-02","amount":60,"minutes":40,"isBackfill":true,"note":"补记"},
+    {"id":"c006","goalId":"g1","date":"2026-09-03","amount":65,"minutes":42,"isBackfill":false,"note":""},
+    {"id":"c007","goalId":"g1","date":"2026-09-04","amount":60,"minutes":38,"isBackfill":false,"note":""},
+    {"id":"c008","goalId":"g1","date":"2026-09-06","amount":60,"minutes":40,"isBackfill":false,"note":""},
+    {"id":"c009","goalId":"g1","date":"2026-09-07","amount":60,"minutes":40,"isBackfill":false,"note":""},
+    {"id":"c010","goalId":"g1","date":"2026-09-08","amount":65,"minutes":44,"isBackfill":false,"note":""},
+    {"id":"c011","goalId":"g1","date":"2026-09-09","amount":60,"minutes":40,"isBackfill":false,"note":""},
+    {"id":"c012","goalId":"g1","date":"2026-09-10","amount":60,"minutes":38,"isBackfill":false,"note":""},
+
+    {"id":"c020","goalId":"g2","date":"2026-08-30","amount":30,"minutes":45,"isBackfill":false,"note":""},
+    {"id":"c021","goalId":"g2","date":"2026-08-31","amount":35,"minutes":50,"isBackfill":false,"note":""},
+    {"id":"c022","goalId":"g2","date":"2026-09-01","amount":30,"minutes":42,"isBackfill":false,"note":""},
+    {"id":"c023","goalId":"g2","date":"2026-09-02","amount":40,"minutes":55,"isBackfill":false,"note":""},
+    {"id":"c024","goalId":"g2","date":"2026-09-03","amount":30,"minutes":40,"isBackfill":false,"note":""},
+    {"id":"c025","goalId":"g2","date":"2026-09-04","amount":35,"minutes":48,"isBackfill":false,"note":""},
+    {"id":"c026","goalId":"g2","date":"2026-09-05","amount":30,"minutes":40,"isBackfill":false,"note":""},
+    {"id":"c027","goalId":"g2","date":"2026-09-06","amount":30,"minutes":38,"isBackfill":false,"note":""},
+    {"id":"c028","goalId":"g2","date":"2026-09-07","amount":40,"minutes":52,"isBackfill":false,"note":""},
+    {"id":"c029","goalId":"g2","date":"2026-09-08","amount":35,"minutes":46,"isBackfill":false,"note":""},
+
+    {"id":"c030","goalId":"g3","date":"2026-09-01","amount":2,"minutes":30,"isBackfill":true,"note":"补记"},
+    {"id":"c031","goalId":"g3","date":"2026-09-02","amount":1,"minutes":20,"isBackfill":false,"note":""},
+    {"id":"c032","goalId":"g3","date":"2026-09-03","amount":2,"minutes":28,"isBackfill":false,"note":""},
+    {"id":"c033","goalId":"g3","date":"2026-09-04","amount":1,"minutes":18,"isBackfill":false,"note":""},
+    {"id":"c034","goalId":"g3","date":"2026-09-05","amount":2,"minutes":25,"isBackfill":false,"note":""},
+    {"id":"c035","goalId":"g3","date":"2026-09-06","amount":1,"minutes":15,"isBackfill":false,"note":""},
+    {"id":"c036","goalId":"g3","date":"2026-09-07","amount":2,"minutes":28,"isBackfill":false,"note":""},
+    {"id":"c037","goalId":"g3","date":"2026-09-09","amount":2,"minutes":30,"isBackfill":false,"note":""},
+    {"id":"c038","goalId":"g3","date":"2026-09-10","amount":1,"minutes":18,"isBackfill":false,"note":""}
+  ],
+  "updatedAt": "2026-09-11T10:00:00.000Z"
+}
