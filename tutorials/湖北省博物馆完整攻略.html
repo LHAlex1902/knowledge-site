@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>湖北省博物馆完整攻略</title>
+<style>
+:root{
+  --bg:#12171b;
+  --card:#1a2126;
+  --card2:#202a30;
+  --text:#e6edf3;
+  --muted:#9aa5ae;
+  --line:#2b343c;
+  --green:#4a9e88;
+  --red:#d9534f;
+  --gold:#d4af3f;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC",sans-serif;
+  font-size:17px;
+  line-height:1.85;
+  letter-spacing:.01em;
+  padding:0 0 40px;
+}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px}
+
+/* ---------- 头部 ---------- */
+header{
+  max-width:640px;margin:0 auto;
+  padding:26px 16px 20px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(160deg,#1b2429 0%,#12171b 70%);
+}
+.kicker{
+  display:inline-block;font-size:12.5px;letter-spacing:.18em;
+  color:var(--gold);border:1px solid rgba(212,175,63,.45);
+  border-radius:999px;padding:2px 11px;margin-bottom:12px;
+}
+h1{
+  font-size:29px;line-height:1.35;margin:0 0 6px;font-weight:800;
+  letter-spacing:.01em;
+}
+h1 .accent{
+  background:linear-gradient(90deg,var(--green),var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sub{color:var(--muted);font-size:14.5px;line-height:1.7;margin:0}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{
+  font-size:13px;color:var(--text);background:var(--card2);
+  border:1px solid var(--line);border-radius:8px;padding:4px 10px;
+}
+.chip b{color:var(--green);font-weight:700}
+
+/* ---------- 快速导航 ---------- */
+.nav{
+  position:sticky;top:0;z-index:20;
+  background:rgba(18,23,27,.94);
+  backdrop-filter:saturate(160%) blur(6px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  max-width:640px;margin:0 auto;padding:9px 12px;
+  display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;
+}
+.nav-inner::-webkit-scrollbar{display:none}
+.nav a{
+  flex:0 0 auto;font-size:13px;color:var(--muted);text-decoration:none;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:999px;padding:5px 12px;white-space:nowrap;
+}
+.nav a:active{color:var(--green);border-color:var(--green)}
+
+/* ---------- 区块 ---------- */
+section{padding-top:30px;scroll-margin-top:60px}
+.sec-head{display:flex;align-items:baseline;gap:10px;margin:0 0 4px}
+.sec-num{
+  font-size:13px;font-weight:700;color:var(--bg);background:var(--green);
+  border-radius:6px;padding:1px 8px;line-height:1.6;flex:0 0 auto;
+}
+h2{font-size:21px;margin:0;font-weight:700;letter-spacing:.01em}
+.sec-desc{color:var(--muted);font-size:14px;margin:0 0 14px}
+
+.card{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:16px 16px 12px;margin-top:14px;
+}
+.card-t{
+  display:flex;align-items:center;gap:8px;
+  font-size:16.5px;font-weight:700;margin:0 0 10px;
+}
+.dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.dot.g{background:var(--green)}
+.dot.r{background:var(--red)}
+.dot.y{background:var(--gold)}
+.hr{height:1px;background:var(--line);margin:16px 0}
+
+/* ---------- 清单 ---------- */
+ul.check{list-style:none;margin:0;padding:0}
+ul.check li{
+  display:flex;align-items:flex-start;gap:11px;
+  padding:9px 0;border-bottom:1px dashed var(--line);
+}
+ul.check li:last-child{border-bottom:none}
+ul.check input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:21px;height:21px;flex:0 0 auto;margin-top:4px;
+  border:1.5px solid #46545e;border-radius:6px;background:#151c21;
+  position:relative;cursor:pointer;
+}
+ul.check input[type=checkbox]:checked{
+  background:var(--green);border-color:var(--green);
+}
+ul.check input[type=checkbox]:checked::after{
+  content:"";position:absolute;left:6px;top:2px;
+  width:5px;height:10px;border:solid #0d1215;border-width:0 2.2px 2.2px 0;
+  transform:rotate(42deg);
+}
+ul.check .txt{flex:1}
+ul.check .t{font-weight:600}
+ul.check .d{display:block;color:var(--muted);font-size:14.5px;line-height:1.65}
+ul.check input[type=checkbox]:checked + .txt .t{
+  color:var(--muted);text-decoration:line-through;
+}
+ul.check.no input[type=checkbox]:checked{background:var(--red);border-color:var(--red)}
+
+/* ---------- 注意事项 ---------- */
+ol.tips{list-style:none;counter-reset:t;margin:0;padding:0}
+ol.tips li{
+  counter-increment:t;position:relative;
+  padding:11px 0 11px 38px;border-bottom:1px solid var(--line);
+}
+ol.tips li:last-child{border-bottom:none}
+ol.tips li::before{
+  content:counter(t);position:absolute;left:0;top:12px;
+  width:25px;height:25px;border-radius:8px;
+  background:rgba(74,158,136,.16);border:1px solid rgba(74,158,136,.5);
+  color:var(--green);font-size:13px;font-weight:700;text-align:center;
+  line-height:23px;
+}
+ol.tips li.key::before{
+  background:rgba(217,83,79,.16);border-color:rgba(217,83,79,.55);color:var(--red);
+}
+ol.tips b{color:var(--gold)}
+ol.tips em{font-style:normal;color:var(--green);font-weight:600}
+
+.warn{
+  background:rgba(217,83,79,.14);border:1px solid rgba(217,83,79,.45);
+  border-left:3px solid var(--red);
+  border-radius:10px;padding:12px 14px;margin-top:12px;font-size:15.5px;
+}
+.warn .wt{color:#f08b88;font-weight:700;display:block;margin-bottom:3px}
+.note{
+  background:rgba(212,175,63,.12);border:1px solid rgba(212,175,63,.4);
+  border-left:3px solid var(--gold);
+  border-radius:10px;padding:12px 14px;margin-top:12px;font-size:15.5px;
+}
+.note .nt{color:var(--gold);font-weight:700;display:block;margin-bottom:3px}
+.ok{
+  background:rgba(74,158,136,.13);border:1px solid rgba(74,158,136,.42);
+  border-left:3px solid var(--green);
+  border-radius:10px;padding:12px 14px;margin-top:12px;font-size:15.5px;
+}
+.ok .ot{color:var(--green);font-weight:700;display:block;margin-bottom:3px}
+
+/* ---------- 信息表 ---------- */
+table.info{width:100%;border-collapse:collapse;font-size:15.5px}
+table.info th,table.info td{
+  text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);vertical-align:top;
+}
+table.info th{color:var(--muted);font-weight:500;width:92px;white-space:nowrap}
+table.info tr:last-child th,table.info tr:last-child td{border-bottom:none}
+.hl{color:var(--gold);font-weight:700}
+.hl-g{color:var(--green);font-weight:700}
+
+/* ---------- 时间线 ---------- */
+.tl{list-style:none;margin:0;padding:0 0 0 4px}
+.tl li{position:relative;padding:0 0 16px 26px;border-left:2px solid var(--line)}
+.tl li:last-child{border-left-color:transparent;padding-bottom:0}
+.tl li::before{
+  content:"";position:absolute;left:-7px;top:7px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--green);border:2px solid var(--bg);
+}
+.tl li.star::before{background:var(--gold);box-shadow:0 0 0 3px rgba(212,175,63,.18)}
+.tl li.rest::before{background:var(--red)}
+.time{font-size:13.5px;color:var(--gold);font-weight:700;letter-spacing:.04em}
+.tl .title{font-weight:700;margin:1px 0 2px}
+.tl .desc{color:var(--muted);font-size:15px;line-height:1.75}
+.tag{
+  display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;
+  border:1px solid rgba(212,175,63,.45);color:var(--gold);margin-left:6px;
+  vertical-align:2px;
+}
+.tag.g{border-color:rgba(74,158,136,.5);color:var(--green)}
+
+/* ---------- 镇馆之宝 ---------- */
+.tre{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:13px 14px;margin-top:11px;
+}
+.tre-h{display:flex;align-items:baseline;gap:9px}
+.rank{
+  font-size:12px;font-weight:800;color:var(--bg);background:var(--gold);
+  border-radius:6px;padding:1px 7px;flex:0 0 auto;line-height:1.7;
+}
+.tre-name{font-size:16.5px;font-weight:700;margin:0}
+.tre-desc{color:var(--muted);font-size:15px;margin:5px 0 0}
+.loc{
+  display:inline-block;margin-top:8px;font-size:13.5px;color:var(--green);
+  background:rgba(74,158,136,.1);border:1px solid rgba(74,158,136,.3);
+  border-radius:7px;padding:2px 9px;
+}
+
+/* ---------- 场次 ---------- */
+.shows{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.show{
+  background:var(--card2);border:1px solid var(--line);
+  border-radius:10px;padding:6px 12px;font-size:15px;
+}
+.show.pick{border-color:var(--gold);background:rgba(212,175,63,.12);color:var(--gold);font-weight:700}
+.show.last{border-color:rgba(217,83,79,.45);color:#f08b88}
+
+/* ---------- 四馆 ---------- */
+.hall{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:13px 14px;margin-top:11px;
+}
+.hall-h{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.hall-n{font-size:15.5px;font-weight:800}
+.hall-h .badge{
+  font-size:11.5px;color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;padding:1px 8px;
+}
+.badge.day{border-color:rgba(217,83,79,.45);color:#f08b88}
+.hall ul{margin:0;padding-left:19px;color:var(--muted);font-size:15px}
+.hall ul li{margin:3px 0}
+.hall ul b{color:var(--text);font-weight:600}
+
+/* ---------- 门 ---------- */
+.gate{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:12px 14px;margin-top:11px;
+}
+.gate-n{font-weight:700;font-size:15.5px}
+.gate-n span{color:var(--gold);font-size:13px;font-weight:600;margin-left:6px}
+.gate p{margin:3px 0 0;color:var(--muted);font-size:15px}
+
+/* ---------- 其他 ---------- */
+ul.plain{margin:0;padding-left:19px;color:var(--muted);font-size:15.5px}
+ul.plain li{margin:5px 0}
+ul.plain b{color:var(--text);font-weight:600}
+code{
+  background:var(--card2);border:1px solid var(--line);border-radius:6px;
+  padding:1px 6px;font-size:14.5px;color:var(--green);
+  font-family:inherit;
+}
+
+footer{
+  max-width:640px;margin:34px auto 0;padding:22px 16px 0;
+  border-top:1px solid var(--line);text-align:center;
+}
+.bye{
+  font-size:19px;font-weight:800;
+  background:linear-gradient(90deg,var(--green),var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin:0 0 10px;
+}
+footer p{color:var(--muted);font-size:13.5px;line-height:1.75;margin:0}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap" style="padding:0">
+    <span class="kicker">WUHAN · HUBEI MUSEUM</span>
+    <h1>湖北省博物馆<span class="accent">完整攻略</span></h1>
+    <p class="sub">出发前必读 · 轻松版路线 · 十大镇馆之宝 · 编钟演奏 · 四馆速查 · 交通讲解</p>
+    <div class="meta-row">
+      <span class="chip">2026-09-13 <b>周日</b></span>
+      <span class="chip">开放 <b>9:00–20:30</b></span>
+      <span class="chip">门票 <b>免费 · 需预约</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#s1">出发前必读</a>
+    <a href="#s2">今日信息</a>
+    <a href="#s3">推荐路线</a>
+    <a href="#s4">镇馆之宝</a>
+    <a href="#s5">编钟演奏</a>
+    <a href="#s6">四馆速查</a>
+    <a href="#s7">交通</a>
+    <a href="#s8">讲解其他</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ============ 第一屏 ============ -->
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">01</span><h2>出发前必读</h2></div>
+  <p class="sec-desc">要准备的东西 + 注意事项，进馆前花两分钟看完，能省掉大半麻烦。</p>
+
+  <div class="card">
+    <div class="card-t"><span class="dot g"></span>A · 要准备的东西</div>
+
+    <p style="margin:0 0 4px;font-size:15px;color:var(--green);font-weight:700">必带（出发前逐项打勾）</p>
+    <ul class="check">
+      <li><input type="checkbox"><span class="txt"><span class="t">身份证原件</span><span class="d">刷闸机入馆，没带进不去，电子证不管用</span></span></li>
+      <li><input type="checkbox"><span class="txt"><span class="t">手机</span><span class="d">存预约码、用小程序导览、买编钟演出票</span></span></li>
+      <li><input type="checkbox"><span class="txt"><span class="t">空水瓶</span><span class="d">馆内有免费直饮机，可随时接水</span></span></li>
+      <li><input type="checkbox"><span class="txt"><span class="t">轻薄外套</span><span class="d">展厅空调很足，待久了会冷</span></span></li>
+      <li><input type="checkbox"><span class="txt"><span class="t">舒适平底鞋</span><span class="d">馆很大，全程走路多</span></span></li>
+      <li><input type="checkbox"><span class="txt"><span class="t">充电宝</span><span class="d">拍照 + 导览很耗电</span></span></li>
+      <li><input type="checkbox"><span class="txt"><span class="t">耳机</span><span class="d">租语音导览或听讲解用</span></span></li>
+    </ul>
+
+    <div class="hr"></div>
+
+    <p style="margin:0 0 4px;font-size:15px;color:#f08b88;font-weight:700">建议不带</p>
+    <ul class="check no">
+      <li><input type="checkbox"><span class="txt"><span class="t">自拍杆、三脚架</span><span class="d">禁止携带，安检会被拦下</span></span></li>
+      <li><input type="checkbox"><span class="txt"><span class="t">大件行李</span><span class="d">北门可免费寄存，但轻便为上</span></span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-t"><span class="dot r"></span>B · 注意事项 · 避坑要点</div>
+    <p class="sec-desc" style="margin-bottom:8px">来自真实游客经验，红色条目最容易踩坑。</p>
+    <ol class="tips">
+      <li class="key"><b>没预约千万别去</b>，门口蹲一天也进不去。已预约 ✓ 记得带身份证。</li>
+      <li><b>周一闭馆</b>（法定节假日除外）——今天是周日，正常开放。</li>
+      <li class="key"><b>下午 3 点后是人最多的时段</b>，越王勾践剑这类热门展厅要排队。对策：热门展厅安排在<em>闭馆前两小时（18:30 后）</em>看，人明显少。</li>
+      <li class="key">编钟演出票要<b>单独购买</b>（约 50 元/人），不含在免费预约内。入馆后尽快去一楼服务台或官方小程序买，<em>晚了可能没座</em>。</li>
+      <li class="key">拍照<b>禁止开闪光灯</b>；<b>别把手机贴着展柜玻璃拍</b>——留一片指纹，后面的人看不清，工作人员要反复擦。</li>
+      <li><b>绝对不要摸展品</b>，安保会盯上。</li>
+      <li class="key">文创店<b>线上更划算</b>，别冲动买大件编钟摆件（沉、贵、不好带），买<em>书签、拓片、钥匙扣</em>更实在。</li>
+      <li>警惕馆外"免费讲解、赠品多多"的搭讪，基本是团客导流。</li>
+      <li><b>17:00 之后只开放南馆、北馆</b>；西馆（VR、舞台剧）和东馆（三峡）只在白天开。</li>
+      <li>编钟演奏时请静音，馆内保持安静。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 第二屏 ============ -->
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">02</span><h2>今日基本信息</h2></div>
+  <p class="sec-desc">2026年9月13日（周日）</p>
+
+  <div class="card">
+    <table class="info">
+      <tr><th>今日开放</th><td><span class="hl">9:00–20:30</span>（<span class="hl">19:30 停止入馆</span>）</td></tr>
+      <tr><th>平日</th><td>周二至周五 9:00–17:00（16:00 停止入馆）</td></tr>
+      <tr><th>周末</th><td>周六日 9:00–20:30</td></tr>
+      <tr><th>闭馆</th><td><span style="color:#f08b88;font-weight:700">周一闭馆</span>（法定节假日除外）</td></tr>
+      <tr><th>门票</th><td>免费，但必须<span class="hl-g">实名分时段预约</span><br><span style="color:var(--muted);font-size:14.5px">官方微信公众号／官网，最早提前 5 天</span></td></tr>
+      <tr><th>地址</th><td>武汉市武昌区东湖路 160 号</td></tr>
+      <tr><th>电话</th><td>027-86716789</td></tr>
+    </table>
+    <div class="ok" style="margin-bottom:2px">
+      <span class="ot">今天是周日</span>
+      按周末时段开放到 20:30，19:30 前完成入馆即可，时间很宽裕。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 第三屏 ============ -->
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">03</span><h2>推荐路线（轻松版）</h2></div>
+  <p class="sec-desc">15:00 入园 → 20:30 离场。少移动、多坐、每段留缓冲，热门展厅错峰。</p>
+
+  <div class="card">
+    <ul class="tl">
+      <li>
+        <div class="time">15:00</div>
+        <div class="title">南门入馆</div>
+        <div class="desc">先去南馆一层服务台，或用官方小程序买 <b style="color:var(--text)">16:00 场编钟票</b>，别拖。</div>
+      </li>
+      <li>
+        <div class="time">15:20</div>
+        <div class="title">南馆 1F · 曾侯乙展厅<span class="tag g">约 40 分钟</span></div>
+        <div class="desc">曾侯乙编钟本体（65 件三层八组）+ 曾侯乙尊盘。避开剑的排队高峰，先看这里。</div>
+      </li>
+      <li class="rest">
+        <div class="time">16:00</div>
+        <div class="title">编钟演奏<span class="tag">30 分钟 · 有座</span></div>
+        <div class="desc">全程坐着，当休息。</div>
+      </li>
+      <li>
+        <div class="time">16:40</div>
+        <div class="title">南馆 3F · 楚国八百年 + 梁庄王珍藏<span class="tag g">约 45 分钟</span></div>
+        <div class="desc">虎座鸟架鼓、彩绘人物车马出行图、明代金宝。</div>
+      </li>
+      <li class="rest">
+        <div class="time">17:30</div>
+        <div class="title">休息 / 晚餐<span class="tag g">约 50 分钟</span></div>
+        <div class="desc">馆内有休息区，别硬撑。</div>
+      </li>
+      <li class="star">
+        <div class="time">18:30</div>
+        <div class="title">南馆 2F · 越王勾践剑<span class="tag">★ 错峰关键</span></div>
+        <div class="desc">闭馆前两小时人最少，这时候看剑基本不排队。</div>
+      </li>
+      <li>
+        <div class="time">19:15</div>
+        <div class="title">经 3F 连廊去北馆</div>
+        <div class="desc">不用绕回一楼，直接走连廊。</div>
+      </li>
+      <li>
+        <div class="time">19:20</div>
+        <div class="title">北馆 2F · 湖北古代文明<span class="tag g">约 30 分钟</span></div>
+        <div class="desc">郧县人头骨化石、云梦睡虎地秦简、石家河玉人像、崇阳铜鼓——四件集中一层，效率最高。</div>
+      </li>
+      <li>
+        <div class="time">19:50</div>
+        <div class="title">北馆 3F · 元青花四爱图梅瓶<span class="tag g">10 分钟</span></div>
+        <div class="desc">收尾看一件顶珍就够了。</div>
+      </li>
+      <li>
+        <div class="time">20:00</div>
+        <div class="title">文创店逛逛 / 盖章<span class="tag g">约 25 分钟</span></div>
+        <div class="desc">小件更值，大件摆件建议线上下单。</div>
+      </li>
+      <li>
+        <div class="time">20:30</div>
+        <div class="title">从容离场</div>
+        <div class="desc">走南门打车更方便。</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-t"><span class="dot y"></span>省力提示</div>
+    <ul class="plain">
+      <li>全程<b>只跨馆一次</b>，走南馆 3F 连廊直达北馆</li>
+      <li>楼层间<b>坐电梯</b>，别爬楼梯</li>
+      <li>编钟演奏 30 分钟有座，<b>当休息</b>用</li>
+      <li><b>18:30 后</b>看热门展厅，避开人流</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 第四屏 ============ -->
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">04</span><h2>十大镇馆之宝</h2></div>
+  <p class="sec-desc">按推荐观看顺序排列，附具体展厅位置。</p>
+
+  <div class="tre"><div class="tre-h"><span class="rank">1</span><span class="tre-name">曾侯乙编钟</span></div>
+    <p class="tre-desc">65 件三层八组，钟身三千余字乐理铭文，改写世界音乐史，至今能奏。</p>
+    <span class="loc">南馆 1F · 曾侯乙展厅</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">2</span><span class="tre-name">越王勾践剑</span></div>
+    <p class="tre-desc">两千余年不锈锋利，菱形暗纹，剑格嵌绿松石琉璃，独享一整个展厅。</p>
+    <span class="loc">南馆 2F · 越王勾践剑专题展厅</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">3</span><span class="tre-name">曾侯乙尊盘</span></div>
+    <p class="tre-desc">先秦失蜡法巅峰，镂空多层纹饰，肉眼难辨铸造缝隙。</p>
+    <span class="loc">南馆 1F · 曾侯乙展厅</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">4</span><span class="tre-name">虎座鸟架鼓</span></div>
+    <p class="tre-desc">楚式漆器，卧虎为座、凤鸟立其上、悬鼓其间。</p>
+    <span class="loc">南馆 3F · 楚国八百年</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">5</span><span class="tre-name">彩绘人物车马出行图</span></div>
+    <p class="tre-desc">漆奁外圈连环长卷，中国现存最早的长卷「连环画」。</p>
+    <span class="loc">南馆 3F · 楚国八百年</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">6</span><span class="tre-name">郧县人头骨化石</span></div>
+    <p class="tre-desc">距今约 100 万年，长江流域人类起源的重要实证。</p>
+    <span class="loc">北馆 2F · 湖北古代文明</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">7</span><span class="tre-name">云梦睡虎地秦简</span></div>
+    <p class="tre-desc">记载秦代律法、官吏、农事、徭役。</p>
+    <span class="loc">北馆 2F · 湖北古代文明</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">8</span><span class="tre-name">石家河玉人像</span></div>
+    <p class="tre-desc">四千多年前的史前圆雕玉人。</p>
+    <span class="loc">北馆 2F · 湖北古代文明</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">9</span><span class="tre-name">崇阳铜鼓</span></div>
+    <p class="tre-desc">商代青铜鼓，存世极少。</p>
+    <span class="loc">北馆 2F · 湖北古代文明</span></div>
+
+  <div class="tre"><div class="tre-h"><span class="rank">10</span><span class="tre-name">元青花四爱图梅瓶</span></div>
+    <p class="tre-desc">元代青花顶珍，瓶身绘四爱图。</p>
+    <span class="loc">北馆 3F · 馆藏历代陶瓷</span></div>
+</section>
+
+<!-- ============ 第五屏 ============ -->
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">05</span><h2>编钟演奏</h2></div>
+  <p class="sec-desc">双休日一天 5 场，票要单独买。</p>
+
+  <div class="card">
+    <p style="margin:0 0 8px;font-size:15px;color:var(--muted)">双休日场次</p>
+    <div class="shows">
+      <span class="show">10:30</span>
+      <span class="show">11:30</span>
+      <span class="show">14:00</span>
+      <span class="show pick">16:00 ★ 推荐</span>
+      <span class="show last">19:30 末场</span>
+    </div>
+    <div class="hr"></div>
+    <table class="info">
+      <tr><th>推荐</th><td><span class="hl">16:00 场</span>　南馆 B1　约 30 分钟　有座</td></tr>
+      <tr><th>票价</th><td>约 <span class="hl">50 元/人</span>，<span style="color:#f08b88;font-weight:700">需另购</span>，不含在免费预约内</td></tr>
+      <tr><th>购票</th><td>入馆后一楼服务台／官方小程序</td></tr>
+      <tr><th>注意</th><td>19:30 是当天最后一场，售完即止</td></tr>
+    </table>
+    <div class="warn" style="margin-bottom:2px">
+      <span class="wt">最容易漏的一步</span>
+      编钟票和入馆预约是两回事。进馆后先买票再逛，拖到下午大概率没座。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 第六屏 ============ -->
+<section id="s6">
+  <div class="sec-head"><span class="sec-num">06</span><h2>四馆速查</h2></div>
+  <p class="sec-desc">先看南馆北馆，西馆东馆只有白天开。</p>
+
+  <div class="hall">
+    <div class="hall-h"><span class="hall-n">南馆 · 编钟馆</span><span class="badge">全天</span></div>
+    <ul>
+      <li><b>B1</b> 编钟演奏厅</li>
+      <li><b>1F</b> 曾侯乙</li>
+      <li><b>2F</b> 越王勾践剑、曾世家</li>
+      <li><b>3F</b> 楚国八百年、梁庄王</li>
+      <li><b>4F</b> 书画</li>
+    </ul>
+  </div>
+
+  <div class="hall">
+    <div class="hall-h"><span class="hall-n">北馆 · 通史馆</span><span class="badge">全天</span></div>
+    <ul>
+      <li><b>2F</b> 湖北古代文明</li>
+      <li><b>3F</b> 馆藏历代陶瓷</li>
+      <li>另有近代风云、现当代英杰</li>
+    </ul>
+  </div>
+
+  <div class="hall">
+    <div class="hall-h"><span class="hall-n">西馆</span><span class="badge day">仅白天</span></div>
+    <ul>
+      <li>VR《穿越青铜纪》</li>
+      <li>舞台剧《遇见·勾践剑》</li>
+      <li>历代陶瓷</li>
+    </ul>
+  </div>
+
+  <div class="hall">
+    <div class="hall-h"><span class="hall-n">东馆</span><span class="badge day">仅白天</span></div>
+    <ul>
+      <li>《永远的三峡》</li>
+      <li>荆楚印象主题邮局</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <span class="nt">17:00 后</span>
+    西馆、东馆关闭，只剩南馆和北馆。下午到的朋友优先安排南馆北馆。
+  </div>
+</section>
+
+<!-- ============ 第七屏 ============ -->
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">07</span><h2>交通</h2></div>
+  <p class="sec-desc">地铁到北门，打车到南门，自驾走西南门。</p>
+
+  <div class="card" style="padding-bottom:14px">
+    <p style="margin:0 0 10px">
+      <span style="color:var(--green);font-weight:700">地铁 8 号线</span>
+      「省博湖北日报站」<b style="color:var(--gold)">A / C 口</b>出，步行约 5–600 米到北门。
+    </p>
+  </div>
+
+  <div class="gate">
+    <div class="gate-n">南门（省博南路）<span>推荐</span></div>
+    <p>出租 / 网约车落客点，离编钟厅最近。</p>
+  </div>
+  <div class="gate">
+    <div class="gate-n">西南门（天鹅湖路）</div>
+    <p>自驾 / 大巴走这边。</p>
+  </div>
+  <div class="gate">
+    <div class="gate-n">北门（东湖路）</div>
+    <p>地铁公交通道，可免费寄存大件行李。</p>
+  </div>
+</section>
+
+<!-- ============ 第八屏 ============ -->
+<section id="s8">
+  <div class="sec-head"><span class="sec-num">08</span><h2>讲解与其他</h2></div>
+  <p class="sec-desc">想听故事的看这里，还有能带走的手作。</p>
+
+  <div class="card">
+    <ul class="plain">
+      <li><b>志愿者免费讲解</b>：约 10:00、14:00 场</li>
+      <li><b>语音导览器</b>：约 20–30 元</li>
+      <li><b>小程序导览</b>：微信搜「湖北省博物馆地图导览」，或用 AI 助手「小娥」</li>
+      <li><b>手作体验</b>：负一层可做编钟、拓片，20–50 元，成品可带走</li>
+      <li><b>文明参观</b>：馆内不许用闪光灯，保持安静</li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <p class="bye">祝观展愉快</p>
+  <p>信息核实于 2026-09-13，来源：湖北省博物馆官方微信公众号及公开旅游平台真实游客经验（含小红书类踩坑总结）。<br>开放时间、演奏场次与票价以馆方当日公告为准。</p>
+</footer>
+
+</body>
+</html>
