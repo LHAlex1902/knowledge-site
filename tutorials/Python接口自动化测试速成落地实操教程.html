@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="xoEvQRDOKqH4c1odnLAlZD">
+<head data-page-node-id="te0Ivb0pC33z2bEEFgJdmC">
+<meta charset="UTF-8" data-page-node-id="7blAACvB6tO3E2sCfN3R54">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="Rfzx7CupcrHjZsNrZItS9J">
+<title>Python 接口自动化测试 速成落地实操 — 从零到能上线</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2358a6ff'/><stop offset='1' stop-color='%233fb950'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><text x='50' y='68' font-size='58' text-anchor='middle' dominant-baseline='central'>🐍</text></svg>" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #0d1117; --bg-card: #161b22; --bg-code: #0d1117; --border: #30363d;
+    --text: #c9d1d9; --text-muted: #8b949e; --text-heading: #f0f6fc;
+    --accent: #58a6ff; --accent-green: #3fb950; --accent-orange: #d29922;
+    --accent-red: #f85149; --accent-purple: #a371f7; --accent-cyan: #39d2c0;
+    --radius: 8px; --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .topnav { position: sticky; top: 0; z-index: 100; background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 24px;
+    display: flex; align-items: center; gap: 6px; height: 52px; overflow-x: auto; white-space: nowrap; }
+  .topnav a { color: var(--text-muted); text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+  .topnav a:hover, .topnav a.active { color: var(--accent); background: rgba(88,166,255,0.1); }
+  .topnav .brand { color: var(--accent); font-weight: 700; font-size: 15px; margin-right: 8px; }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+  .hero { text-align: center; padding: 60px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+  .hero h1 { font-size: 2.4em; color: var(--text-heading); margin-bottom: 8px; }
+  .hero .emoji { font-size: 2.6em; display: block; margin-bottom: 8px; }
+  .hero .subtitle { color: var(--text-muted); font-size: 1.1em; }
+  .hero .badges { display: flex; gap: 8px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    background: rgba(88,166,255,0.12); color: var(--accent); border: 1px solid rgba(88,166,255,0.25); }
+  .badge.green { background: rgba(63,185,80,0.12); color: var(--accent-green); border-color: rgba(63,185,80,0.25); }
+  .badge.orange { background: rgba(210,153,34,0.12); color: var(--accent-orange); border-color: rgba(210,153,34,0.25); }
+  .badge.purple { background: rgba(163,113,247,0.12); color: var(--accent-purple); border-color: rgba(163,113,247,0.25); }
+  section { margin-bottom: 48px; scroll-margin-top: 64px; }
+  section h2 { font-size: 1.6em; color: var(--text-heading); padding-bottom: 8px; border-bottom: 2px solid var(--border);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+  section h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+    border-radius: 8px; background: var(--accent); color: #fff; font-size: 0.7em; font-weight: 700; flex-shrink: 0; }
+  section h3 { font-size: 1.15em; color: var(--text-heading); margin: 24px 0 10px; }
+  section h4 { font-size: 1em; color: var(--accent); margin: 16px 0 6px; }
+  p { margin-bottom: 12px; } ul, ol { margin: 8px 0 16px 24px; } li { margin-bottom: 4px; }
+  code { background: rgba(110,118,129,0.15); color: var(--accent-cyan); padding: 1px 6px; border-radius: 4px;
+    font-family: "Cascadia Code","Fira Code",Consolas,monospace; font-size: 0.88em; }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px; }
+  .card.tip { border-left: 3px solid var(--accent); }
+  .card.warning { border-left: 3px solid var(--accent-orange); }
+  .card.success { border-left: 3px solid var(--accent-green); }
+  .card.info { border-left: 3px solid var(--accent-cyan); }
+  .card.danger { border-left: 3px solid var(--accent-red); }
+  .code-block { background: var(--bg-code); border: 1px solid var(--border); border-radius: var(--radius); margin: 12px 0 16px; overflow: hidden; }
+  .code-block .header { display: flex; justify-content: space-between; align-items: center; padding: 6px 14px;
+    background: rgba(255,255,255,0.03); font-size: 12px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+  .code-block .header .fname { color: var(--accent-cyan); font-weight: 600; }
+  .code-block .header .lang { color:#fff; font-size:11px; font-weight:700; letter-spacing:.5px; padding:1px 8px; border-radius:4px; margin-right:6px;
+    background:rgba(88,166,255,0.18); border:1px solid rgba(88,166,255,0.40); }
+  .code-block .header .lang.lang-py { background:rgba(63,185,80,0.18); border-color:rgba(63,185,80,0.45); }
+  .code-block .header .lang.lang-shell { background:rgba(210,153,34,0.18); border-color:rgba(210,153,34,0.45); }
+  .code-block .header .lang.lang-json { background:rgba(163,113,247,0.18); border-color:rgba(163,113,247,0.45); }
+  .code-block pre { padding: 14px 16px; overflow-x: auto; margin: 0; font-family: "Cascadia Code","Fira Code","JetBrains Mono",Consolas,monospace;
+    font-size: 13px; line-height: 1.55; }
+  .code-block .copy-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 2px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: all 0.15s; }
+  .code-block .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .code-block .copy-btn.copied { color: var(--accent-green); border-color: var(--accent-green); }
+  .kw { color: #ff7b72; } .fn { color: #d2a8ff; } .str { color: #a5d6a7; }
+  .cmt { color: #8b949e; font-style: italic; } .num { color: #79c0ff; }
+  .dec { color: #d2a8ff; } .builtin { color: #ffa657; }
+  .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+  .tab-btn { padding: 8px 16px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px;
+    border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
+  .tab-btn:hover { color: var(--text); } .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; } .tab-content.active { display: block; }
+  .step-list { counter-reset: step; list-style: none; margin-left: 0; }
+  .step-list li { counter-increment: step; position: relative; padding: 12px 0 12px 44px; border-bottom: 1px solid var(--border); }
+  .step-list li::before { content: counter(step); position: absolute; left: 0; top: 12px; width: 28px; height: 28px;
+    border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .kp { background: rgba(88,166,255,0.06); border: 1px dashed rgba(88,166,255,0.35); border-radius: var(--radius);
+    padding: 12px 16px; margin: 12px 0; font-size: 14px; }
+  .kp b { color: var(--accent); }
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 16px 0; justify-content: center; }
+  .flow-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; text-align: center; font-size: 13px; }
+  .flow-box.accent { border-color: var(--accent); background: rgba(88,166,255,0.06); }
+  .flow-arrow { color: var(--text-muted); font-size: 16px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: rgba(255,255,255,0.03); color: var(--text-heading); font-weight: 600; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  details.accordion { margin: 12px 0; }
+  details.accordion summary { cursor: pointer; padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); font-weight: 600; color: var(--text-heading); list-style: none; display: flex; align-items: center; gap: 8px; }
+  details.accordion summary::-webkit-details-marker { display: none; }
+  details.accordion summary::before { content: '\25B6'; font-size: 10px; transition: transform 0.2s; }
+  details.accordion[open] summary::before { transform: rotate(90deg); }
+  details.accordion .accordion-body { padding: 12px 14px; border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); background: var(--bg-card); }
+  /* 面试题卡片 */
+  .qa { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 14px; overflow: hidden; }
+  .qa .q { padding: 14px 18px; font-weight: 600; color: var(--text-heading); cursor: pointer; display: flex; gap: 10px; align-items: flex-start; }
+  .qa .q .qno { flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px; background: var(--accent); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+  .qa .q .qtag { margin-left:auto; font-size:11px; color: var(--text-muted); font-weight:400; flex-shrink:0; }
+  .qa .a { padding: 0 18px 16px 54px; display: none; }
+  .qa.open .a { display: block; }
+  .qa .a .row { margin: 10px 0; }
+  .qa .a .lab { display:inline-block; font-size:12px; font-weight:700; padding:2px 9px; border-radius:5px; margin-bottom:5px; }
+  .lab.key { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .lab.ans { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+  .lab.line { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+  .qa .a .ans-text { background: rgba(63,185,80,0.05); border-left:3px solid var(--accent-green); padding:8px 12px; border-radius:0 6px 6px 0; }
+  .qa .a .line-text { background: rgba(248,81,73,0.05); border-left:3px solid var(--accent-red); padding:8px 12px; border-radius:0 6px 6px 0; }
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.6em; } .container { padding: 20px 14px 60px; } section h2 { font-size: 1.3em; }
+    .flow { flex-direction: column; } .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body data-page-node-id="tKHgD6kaHY7Hj8y9KJboNu">
+
+<nav class="topnav" data-page-node-id="XnlpkpO1Pbkge3FMicDQNp">
+  <span class="brand" data-page-node-id="F27gmH5l1ZhmLi2gYdmrBr">🐍 Python 接口自动化</span>
+  <a href="#intro" data-page-node-id="7FCmkSbcFV5gSZJnIIqbBy">认识</a>
+  <a href="#roadmap" data-page-node-id="7FCmkSbcFV5gSZJnIIqbBy">路线图</a>
+  <a href="#env" data-page-node-id="LXDO6QELm2dJtb2stZF8O5">环境</a>
+  <a href="#concepts" data-page-node-id="LYs9FKOSgeuhAMLLp80KZr">核心概念</a>
+  <a href="#requests" data-page-node-id="C8ExcPnMnXCgFsWSipD3Mj">requests</a>
+  <a href="#chain" data-page-node-id="jlqGZOphF0hWYRAnySHzHf">接口关联</a>
+  <a href="#pytest" data-page-node-id="coGt1DBY28q8OvBbyvEL09">pytest</a>
+  <a href="#ddt" data-page-node-id="ENjebOOjQEMbMe6OZIamRI">数据驱动</a>
+  <a href="#assert" data-page-node-id="XP4qYWYfhf6BkLY3y8670o">断言</a>
+  <a href="#project" data-page-node-id="jSotHHkYktCAbSLHYra6uZ">工程化</a>
+  <a href="#practice" data-page-node-id="08h4AOa8K5rj2gK6TCuToY">完整实战</a>
+  <a href="#cheatsheet" data-page-node-id="EHJOdl9mafD8Em6SoCiFLX">知识点速查</a>
+  <a href="#interview" data-page-node-id="iV6BUYZw5vNAI1Dwy0HVmt">面试考核</a>
+</nav>
+
+<header class="hero" data-page-node-id="JZvR9YLJTutRvL8FspNRDc">
+  <span class="emoji" data-page-node-id="A2UttfJlOvEoyjdVekOjYL">🐍</span>
+  <h1 data-page-node-id="yk80PHTRmwAnVglPu9oCjc">Python 接口自动化测试 速成落地实操</h1>
+  <p class="subtitle" data-page-node-id="F2CBAb6laM7jbTpfB74NYE">从零到能上线 — 跟着敲一遍，跑通一套真实可维护的接口自动化框架</p>
+  <div class="badges" data-page-node-id="1KwKpVQX2c0ZleeF1Cpcp5">
+    <span class="badge" data-page-node-id="PXQJ8UjBpgt4BpL0Dliy7C">📖 循序渐进</span>
+    <span class="badge green" data-page-node-id="q3krQxJswmNHkrpMOt8oXz">🧪 全程可运行代码</span>
+    <span class="badge orange" data-page-node-id="lGP5f1mRgvc5iAUQpcHsY5">🎯 落地即能用</span>
+    <span class="badge purple" data-page-node-id="7Eo9iAersUGwgUGHBRc4KY">💼 含 30+ 面试题</span>
+  </div>
+</header>
+
+<div class="container" data-page-node-id="A45H99QauBdqJzNIpgLaec">
+
+<!-- ═══════════════ 第 1 章 认识 ═══════════════ -->
+<section id="intro" data-page-node-id="djJJNdnp9Jn8bbCpZ4FK9Q">
+  <h2 data-page-node-id="0NHAll6V4nlZNi542AYydT"><span class="num" data-page-node-id="x8ilxJZdcClvUDQtmADo1b">1</span> 第 1 章 🤖 认识接口自动化测试</h2>
+  <h3 data-page-node-id="bTkD80XTaBdIRo0yThLcPm">1.1 📌 一句话认识</h3>
+  <p data-page-node-id="Tylu04oQlz95VzDoZ7cyCJ">接口自动化测试，就是用<b data-page-node-id="C9W8D8luzpGIjTz3rfFz5s">代码</b>代替人工，自动向后端接口发请求、拿响应、核对结果。它不关心页面长什么样，只关心「输入 → 输出」是否正确，是测试金字塔里<b data-page-node-id="UlRTWNBYWi3bGd7sTIHyfm">投入产出比最高</b>的一层。</p>
+  <div class="card tip" data-page-node-id="xYE7CjZNyCdGoCYZzPWAcp">
+    <strong data-page-node-id="cNJwIFf9OfLSgHDRGvxgEl">💡 一句话总结：</strong> 接口自动化 = 用脚本模拟客户端请求 + 自动断言响应，把「点接口、看返回」这件重复劳动交给程序。
+  </div>
+  <h3 data-page-node-id="OCybXUw1zakDJPylqnQgby">1.2 🎯 为什么优先做接口自动化</h3>
+  <table data-page-node-id="mYXAJDT9TFzirhPuSa3bAZ">
+    <tr data-page-node-id="lJIdfpiB2aaHURYBAXLT6u"><th data-page-node-id="K64hcddR3YstnkSFrenKBJ">对比维度</th><th data-page-node-id="ZCq9YOQ2BrQJuoXqgcXxew">UI 自动化</th><th data-page-node-id="I4Ujcnxl4gwQNXrnvi0iO7">接口自动化</th></tr>
+    <tr data-page-node-id="7X980B23tsNlQsycuMD12Q"><td data-page-node-id="wTHBclTTXUWnnHSa01Jwew">稳定性</td><td data-page-node-id="Gui1joxxg6hF6SAcfsG5qw">易受页面改版影响</td><td data-page-node-id="l2nKhTYSQz0Ync7VBqQZCP">接口契约相对稳定</td></tr>
+    <tr data-page-node-id="kRjaWWCRKQY2nh8BLXR9wj"><td data-page-node-id="07ekdEcG2X6XCa9HmpJ6AJ">执行速度</td><td data-page-node-id="jVghXdwJAbEshDkWBtkaUf">慢（要渲染、等待）</td><td data-page-node-id="tXp3Mmt3jD4Du6hW1tnZ0i">快（毫秒级返回）</td></tr>
+    <tr data-page-node-id="9ZQ8wmYox8BfIJliRi7Dbh"><td data-page-node-id="oGyMeG40BQTjBUW8MDqQPn">维护成本</td><td data-page-node-id="8KiDQsz1FGEzFAmUJ81f4O">高</td><td data-page-node-id="apGrOdWNyfpZATFhT3g2qT">低</td></tr>
+    <tr data-page-node-id="5OOi33CcOeJzCQSPkNtXno"><td data-page-node-id="6Dm7pJPdzBePJHdn9RGhH0">覆盖后端逻辑</td><td data-page-node-id="M5SbWNHdTeuX5ZohtYubQc">间接</td><td data-page-node-id="yERMFlR1gSdwtdJqHZ3R0p">直接命中业务逻辑</td></tr>
+    <tr data-page-node-id="fVkDznasvGWpxEgz1Sr0Cu"><td data-page-node-id="mP1aPF1LnYKwjOfSbEO165">CI 集成</td><td data-page-node-id="APDEcmcxLJyvwWwxB1x5Zj">较重</td><td data-page-node-id="ljAZqJXoSSYk52b52dPODP">轻量，秒级反馈</td></tr>
+  </table>
+  <h3 data-page-node-id="qdvn4WKcNr2TqO5AxwwQjI">1.3 🧭 技术栈全景</h3>
+  <div class="flow" data-page-node-id="crRV5s2S9PlXFBvWCg5ytC">
+    <div class="flow-box accent" data-page-node-id="ms34m4OcfNtEfpw2FWSxhK">Python 语言</div>
+    <span class="flow-arrow" data-page-node-id="qA0jM0ygCH95h3AzuM1FMB">→</span>
+    <div class="flow-box" data-page-node-id="pHrPqRXPyu7szpx43tunVz">requests 发请求</div>
+    <span class="flow-arrow" data-page-node-id="iHOvmrurhzdYKuJXEeWGph">→</span>
+    <div class="flow-box" data-page-node-id="uOd3AJPV2KtyFow1J7FhTa">pytest 组织用例</div>
+    <span class="flow-arrow" data-page-node-id="hOKUPa95njzkk5eKLgm0bZ">→</span>
+    <div class="flow-box" data-page-node-id="adI5wfUrKNw9uq1F3Ry3fU">断言校验</div>
+    <span class="flow-arrow" data-page-node-id="u2o5sWdFFXs7LWaaCEs86w">→</span>
+    <div class="flow-box" data-page-node-id="FMHaH00qVwN2jqrVfuFWkR">Allure 报告</div>
+    <span class="flow-arrow" data-page-node-id="NKlpApu8sX7pcwex45QZ24">→</span>
+    <div class="flow-box accent" data-page-node-id="H9mVB3DtrxAkFnY5ZqV3Uh">Jenkins/GitHub Actions CI</div>
+  </div>
+  <div class="card success" data-page-node-id="DCiN7bI7mIz9jMV1BqmzFS">
+    <strong data-page-node-id="op08nmpOFqNpBQvMrkuLGQ">✎ 实操练习</strong>
+    <ol data-page-node-id="VHyuMy8ADxDIkH0vgJIS5f">
+      <li data-page-node-id="TLJvVOVO6vtkgrjj7fG5Vs">打开浏览器 F12 → Network，随便访问一个网站，找到一个 <code data-page-node-id="Nn6jMrcwi3THVnXLvYpuBB">XHR/Fetch</code> 请求，观察它的 URL、Method、Status Code。</li>
+      <li data-page-node-id="SaGaL15tyepH5DeM4HjRcY">思考：如果这个请求要「自动发、自动判断对错」，你需要告诉程序哪几件事？（提示：地址、方法、参数、期望结果）</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 学习路线图 ═══════════════ -->
+<section id="roadmap">
+  <h2><span class="num">⚡</span> 学习路线图</h2>
+  <p>按下面 5 个阶段<b>依次推进</b>即可，节奏自己掌握——快的话集中几天，慢的话按自己步调来。核心原则只有一条：<b>每学完一个阶段就动手敲代码</b>，别只看不练。</p>
+  <div class="timeline">
+    <div class="timeline-item">
+      <h4>① 打地基（第 1~3 章）</h4>
+      <p>认识接口自动化 → 搭好虚拟环境与装库 → 摸清 HTTP 请求四要素和状态码。<b>产出：</b>能手动用 Postman/浏览器调通一个接口，知道 200/401/500 的含义。</p>
+    </div>
+    <div class="timeline-item">
+      <h4>② 会发请求（第 4~5 章）</h4>
+      <p>用 requests 跑通 GET/POST/PUT/DELETE → 学会接口关联（登录拿 token 传给下一个接口）。<b>产出：</b>写出一个「登录→带 token 查数据」的关联脚本。</p>
+    </div>
+    <div class="timeline-item">
+      <h4>③ 变成用例（第 6~8 章）</h4>
+      <p>用 pytest 组织用例 → fixture 抽公共逻辑 → 数据驱动参数化 → 三层断言。<b>产出：</b>一个含多条参数化用例、带断言的 test 文件，pytest 全绿。</p>
+    </div>
+    <div class="timeline-item">
+      <h4>④ 工程化 + 实战（第 9~10 章）</h4>
+      <p>pytest.ini 配置、logging 日志、Allure 报告 → 完整跑通第 10 章的可运行框架骨架。<b>产出：</b>分层目录的完整框架 + 一份测试报告，可直接换成你公司的测试环境复用。</p>
+    </div>
+    <div class="timeline-item">
+      <h4>⑤ 面试冲刺（第 11~12 章）</h4>
+      <p>用第 11 章速查表回顾全部知识点 → 刷第 12 章 36 道面试题，重点看「回答红线」。<b>产出：</b>能对着面试题自问自答，面试不慌。</p>
+    </div>
+  </div>
+  <div class="card tip">
+    <strong>💡 学完能到什么程度？</strong> 能独立搭起一个「登录关联 + 数据驱动 + 断言 + 报告」的接口自动化框架骨架，并理解每一块为什么这么设计。深度精通（签名加密、并发、复杂 CI）需要后续在实际项目里继续打磨——教程第 12 章的综合题已给出进阶方向。
+  </div>
+  <div class="card warning">
+    <b>⚠️【学习前提】</b>
+    <ul>
+      <li>建议具备<b>基础 Python 语法</b>（变量、函数、类、dict/list）；完全零基础可先把第 1~3 章多花时间吃透。</li>
+      <li>别跳过实操练习——只看不敲等于白学，代码必须亲手跑通。</li>
+      <li>遇到报错先按各章「⚠️【排查】」卡片自查，卡太久再问，别在一个坑里耗太久。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 2 章 环境 ═══════════════ -->
+<section id="env" data-page-node-id="Y7OgbHRZYv7IBtPqi7E9R1">
+  <h2 data-page-node-id="1EFWSbNgqiJZrR2xzIOdhj"><span class="num" data-page-node-id="yrcijcCsdrqAmDD5nRtSzE">2</span> 第 2 章 📦 环境搭建（一次配好，长期受益）</h2>
+  <h3 data-page-node-id="BYLYIhC5kAddZTitMgl3i1">2.1 🔍 前置条件</h3>
+  <ul data-page-node-id="wKlb4JIfAVzyQHgBBCwyHh">
+    <li data-page-node-id="sK888XkDNYTHnvMfOdzEQb">已安装 Python 3.8+（命令行执行 <code data-page-node-id="nXiqZpGPSB0gXVkYCGNAGH">python --version</code> 确认）。</li>
+    <li data-page-node-id="Agott74He5plcMdVxRWp84">已安装一个代码编辑器（推荐 VS Code）。</li>
+    <li data-page-node-id="UPeNKz10ltUMBBwSNTneN1">网络可访问 PyPI（国内可配镜像源）。</li>
+  </ul>
+  <h3 data-page-node-id="xHg7yDzKtyn9A9nRSXFUH1">2.2 ⬇️ 创建虚拟环境与安装依赖</h3>
+  <div class="tabs" data-page-node-id="Rn0tguTpvVvmxdkg6JG7tV">
+    <button class="tab-btn active" onclick="switchTab('env','win')" data-page-node-id="m01AbHmXHolZokvkQokse9">Windows</button>
+    <button class="tab-btn" onclick="switchTab('env','mac')" data-page-node-id="T8LBGZ7hQ2BHH6FRPhlkiQ">macOS / Linux</button>
+  </div>
+  <div class="tab-content active" id="env-win" data-page-node-id="Jabk0YUgwh4EHU72DEXHnD">
+    <div class="code-block" data-page-node-id="vqgilfdmNM6PE2BYzJxhw8">
+      <div class="header" data-page-node-id="iPTqSBqwNeZfymqbkhpsyM"><span class="lang lang-shell" data-page-node-id="Jt2BFE67shkTUSBG5HiWTm">Shell</span><span class="fname" data-page-node-id="E6QeiBvsUAV7ZMRhKLFMyk">创建并激活虚拟环境</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="E0aSLKpiHWkswnmP2B1eUj">📋 复制</button></div>
+      <pre data-page-node-id="10OjT129BHhZjHduA7slB4"><code data-page-node-id="VwhkCbdCa6NSmfPfy4wJQ5"><span class="cmt" data-page-node-id="FNZ73NSYnIzg4kQCnwgtAM"># 1. 建项目目录</span>
+mkdir api_test &amp; cd api_test
+<span class="cmt" data-page-node-id="6xdwZ9rGxVx5VNoZXSMue7"># 2. 创建虚拟环境（隔离依赖，避免污染全局）</span>
+python -m venv venv
+<span class="cmt" data-page-node-id="uX65yVXhhffHfK9HGtDVAS"># 3. 激活</span>
+venv\Scripts\activate
+<span class="cmt" data-page-node-id="LNRWkQRaOGHLXNeTy8SKu7"># 4. 升级 pip 并安装核心库</span>
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
+pip install requests pytest pytest-html allure-pytest PyYAML</code></pre>
+    </div>
+  </div>
+  <div class="tab-content" id="env-mac" data-page-node-id="L7bPrrD3wLC8BAg6BaJmcD">
+    <div class="code-block" data-page-node-id="WCLiSqXbNG3bFD55gTuadv">
+      <div class="header" data-page-node-id="LU07ph2rv8IYQzp9NnNlRF"><span class="lang lang-shell" data-page-node-id="PaiVj1DBLkUKqzO5rSgoId">Shell</span><span class="fname" data-page-node-id="bnUuG2H0RxL67ZDzD5W9NS">创建并激活虚拟环境</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="h1T6efDfsxMdFB3HzHI6V7">📋 复制</button></div>
+      <pre data-page-node-id="SLEtD0porj99KqFuV0Q3d8"><code data-page-node-id="upewU1BquGw6LaI8VXq8IR"><span class="cmt" data-page-node-id="cz2hWADiHX8l2J9MHd22VG"># 1. 建项目目录</span>
+mkdir api_test &amp;&amp; cd api_test
+<span class="cmt" data-page-node-id="qe3OqityeJJfs4gQzgA1Ud"># 2. 创建虚拟环境</span>
+python3 -m venv venv
+<span class="cmt" data-page-node-id="W508WZTSXkqjzAzlFmc17Z"># 3. 激活</span>
+source venv/bin/activate
+<span class="cmt" data-page-node-id="wZlJ1EGCudJ2FhFA2tbppu"># 4. 安装核心库</span>
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
+pip install requests pytest pytest-html allure-pytest PyYAML</code></pre>
+    </div>
+  </div>
+  <div class="kp" data-page-node-id="Nps70SaQ3p6CBtCGAFTkuH"><b data-page-node-id="v2uvLweC1jFDO63PfRG26j">🔑 知识点 · venv：</b> 虚拟环境给每个项目一套独立的 Python 包，A 项目用 requests 2.31、B 项目用 2.28 互不干扰。<code data-page-node-id="Kv2oCS35zGyQW4nJ3H4g1C">activate</code> 后命令行前会出现 <code data-page-node-id="orewHa4HakZvSlYcNqATRj">(venv)</code> 前缀，代表已进入隔离环境。</div>
+  <h3 data-page-node-id="x3yfXCZXKYuY1s1DB3ogr2">2.3 ✅ 验证安装</h3>
+  <div class="code-block" data-page-node-id="A6JW93fgixd41scNb1LRMD">
+    <div class="header" data-page-node-id="dbpniXqePKptbSeh4v8KZb"><span class="lang lang-py" data-page-node-id="oQjaHBSTxtCVBiUogponNT">Python</span><span class="fname" data-page-node-id="06ob10qvTdyZOW3AxcLoMa">check.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="2yX8oYakFSPxDf9s3IuUOj">📋 复制</button></div>
+    <pre data-page-node-id="jWWdN6aCVVBZ7Kvs3aUxKM"><code data-page-node-id="bhgqlyoc3nYAfxoQrba6f2"><span class="kw" data-page-node-id="cs7fZlHbPNvZ5uATy7lFXt">import</span> requests, pytest
+<span class="builtin" data-page-node-id="1fHM8bkcQALgXqzWhHiF4Z">print</span>(<span class="str" data-page-node-id="UJwHABURbTfTGbNEwy9jnw">"requests 版本："</span>, requests.__version__)
+<span class="builtin" data-page-node-id="WF5zWURlzpJCOzj2BqPmfJ">print</span>(<span class="str" data-page-node-id="hpSaUdQ6Q1kXDfCJDFVE9D">"pytest 版本："</span>, pytest.__version__)</code></pre>
+  </div>
+  <div class="card warning" data-page-node-id="kZ9G9bush6h4bgJ9BFJGF2">
+    <b data-page-node-id="V2izDnRPrLa6W6DaDEOeof">⚠️【装不上排查】</b>
+    <ul data-page-node-id="ya2XHrLt8fwL1ZgWsoE0Bf">
+      <li data-page-node-id="DemSo97kwBDA3H3hGE46Zv">提示 <code data-page-node-id="9h4kjdXFzqulqJXIulbadl">pip 不是内部命令</code> → Python 安装时没勾「Add to PATH」，重装并勾选。</li>
+      <li data-page-node-id="O3k4p3iyboWw1G3TGn1lOo">下载超时 → 一定加清华/阿里镜像源（见上）。</li>
+      <li data-page-node-id="RVrEooyiXMpXkYcBYqHC8h">激活后仍报 <code data-page-node-id="i7vumrGU2Q4k6couiki9JY">ModuleNotFoundError</code> → 确认命令行前有 <code data-page-node-id="KkjMj2RwTHEyhQzHND4nWG">(venv)</code>，否则依赖装到了全局。</li>
+    </ul>
+  </div>
+  <div class="card success" data-page-node-id="0iXOATDNuFUfpEFVIKavSg">
+    <strong data-page-node-id="hMhB2YNSwa4XGyzZwis8US">✎ 实操练习</strong>
+    <ol data-page-node-id="tEcBZs6X06kdDbVHeG75aL">
+      <li data-page-node-id="6BftcFu24pDDdiS2IzG2Z5">创建虚拟环境并激活，安装 <code data-page-node-id="5uXqduCfBfFU8WD5FWkFwS">requests pytest pytest-html</code> 三个库。</li>
+      <li data-page-node-id="ftxLmUUutS51SXunUFGznG">运行上面的 <code data-page-node-id="4GL6XAg88sGhkSkdIQAwHw">check.py</code>，能看到两个版本号即算成功。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 3 章 核心概念 ═══════════════ -->
+<section id="concepts" data-page-node-id="AwCnla4skxD9kbcRWURgFC">
+  <h2 data-page-node-id="cTX6PI1YpxxXrWVo5cgmyf"><span class="num" data-page-node-id="xIAvHsXDPIUu9AVkSlX1nk">3</span> 第 3 章 🧩 HTTP 与接口核心概念</h2>
+  <h3 data-page-node-id="9qBOAQeXaVXFpTHf9zEPJS">3.1 🔄 一次接口请求的完整流程</h3>
+  <div class="flow" data-page-node-id="QGHioXSaD6ya8kiMyljOV2">
+    <div class="flow-box accent" data-page-node-id="WdhFaQ2StA9XPCuYW4gxG7">客户端构造请求</div>
+    <span class="flow-arrow" data-page-node-id="woJX4oG5AzaX9UWsqL4nLj">→</span>
+    <div class="flow-box" data-page-node-id="CZhQkdm7VAFnGXCBcRnK8D">发送（方法+URL+头+体）</div>
+    <span class="flow-arrow" data-page-node-id="zaCgZKIvdV34kyJ8h8YA46">→</span>
+    <div class="flow-box" data-page-node-id="KH6XcK1wpACTCUekoGDpYb">服务器处理</div>
+    <span class="flow-arrow" data-page-node-id="KENpToFwVQyf3JNi9P6oKP">→</span>
+    <div class="flow-box" data-page-node-id="LkNk0xxvcEt1BqMLrHvgCG">返回状态码+响应体</div>
+    <span class="flow-arrow" data-page-node-id="aJpxAbzfjMAnDLIXqQCOfl">→</span>
+    <div class="flow-box accent" data-page-node-id="pUK3NoBNVPfNCJ3lY8CWoW">客户端断言</div>
+  </div>
+  <h3 data-page-node-id="RSBZ7yrtzXSQNrVX5BN4Vp">3.2 📋 HTTP 请求四要素</h3>
+  <table data-page-node-id="c3SPH4L6lZGvtctjAAIKX3">
+    <tr data-page-node-id="vtSbfqX97DqWBJ1C1ggmn2"><th data-page-node-id="euIURhq87uke7EZWkGNhdd">要素</th><th data-page-node-id="VjxNYYai2SCY2OjnLdeF2J">说明</th><th data-page-node-id="4Y0HGljFWWSgYOyUCKBHyJ">常见取值</th></tr>
+    <tr data-page-node-id="NYQQhKJDlZDs662xymCrrI"><td data-page-node-id="x0QWUZaHqxa3quXCHDsy3w">Method 方法</td><td data-page-node-id="uoxhsKqeB5xiCHU2VZejS9">对资源做什么</td><td data-page-node-id="boIDsXrxEMcyvFOQ1xhWn9">GET / POST / PUT / DELETE</td></tr>
+    <tr data-page-node-id="Scg98atQqCnXwSu8qtLby9"><td data-page-node-id="8zBgaK3E8OkAaFVyS0BWih">URL 地址</td><td data-page-node-id="YkIQfQ2GIc3StyasYcW6vj">资源定位，含域名+路径+查询参数</td><td data-page-node-id="tsT1VatUN5MzRSS9Mp2PiF"><code data-page-node-id="EnVulGlBg5ciWNHItpstDH">https://api.x.com/users?page=1</code></td></tr>
+    <tr data-page-node-id="tveJQdEEOiRixQwSFsTPrY"><td data-page-node-id="GIuzIGN041iWSEktyJUbDW">Headers 请求头</td><td data-page-node-id="q3L3tp1N8TFkuAoimWUfpz">元信息，如内容类型、鉴权</td><td data-page-node-id="ElAqYQZWKoQzECwsX2LmpB">Content-Type、Authorization</td></tr>
+    <tr data-page-node-id="WNNGWIoSzDOljigGgMmKfl"><td data-page-node-id="oBimfKWfPMIm7nyN88DLBO">Body 请求体</td><td data-page-node-id="Cco3WvxM3as2mOxE9OEPYy">POST/PUT 提交的数据</td><td data-page-node-id="rk4I4nsev3ZRemFxFboeTd">JSON / 表单 / 文件</td></tr>
+  </table>
+  <h3 data-page-node-id="sexdHhI3SCb1uYjZAU7mnL">3.3 📬 状态码速记</h3>
+  <table data-page-node-id="8hARZfGIahihbctZvGCM4d">
+    <tr data-page-node-id="Fs4HHxzjHQkf8QvexERSXl"><th data-page-node-id="rUiDBl1UDRKyclRLZ2vJOp">状态码</th><th data-page-node-id="PoZwGriMgUl0648EnV9tz9">含义</th><th data-page-node-id="hai0HIfqRIr5yWXoKTO8GJ">测试时怎么看</th></tr>
+    <tr data-page-node-id="JAiZCGwdUjsO2MBvULJhCQ"><td data-page-node-id="VrQg3T5TZZswjbdq6oA5ap"><code data-page-node-id="rChRVmekCjdHCgbgzeWHJb">200</code></td><td data-page-node-id="Rget8rWF6klMGRA5AdTH2O">成功</td><td data-page-node-id="iMBn8iW4Hvg8qh9pJ7zTNn">正常，继续断言响应体</td></tr>
+    <tr data-page-node-id="ka4gFRmrP5j4xqV2ViwsUf"><td data-page-node-id="HJUXCd99sU8VLxltwKHKSc"><code data-page-node-id="WRY4fmymHsr7Gx9OkIECpy">201</code></td><td data-page-node-id="mxCzEuyQ3mKBJAxYQQvxTk">创建成功</td><td data-page-node-id="71h2MiaS94AbC3VAE7TQnX">常见于 POST 新建资源</td></tr>
+    <tr data-page-node-id="TanAm04saCbrGWKLY0wduM"><td data-page-node-id="8gxlQrldtA43BDlcdmXILB"><code data-page-node-id="zPzVz5VCqgCZ5zf91tcpXU">400</code></td><td data-page-node-id="r2JPBA7Bo2J4MjTXItqha6">参数错误</td><td data-page-node-id="jjCj6gP1CBZB3jLwYzLuIT">参数校验类用例的期望值</td></tr>
+    <tr data-page-node-id="0GQnPwCjsT6BXtndUpMkNv"><td data-page-node-id="AhFlkykSczzyRzEBlgILsz"><code data-page-node-id="IughUF0iEV14sp9r1yO9JF">401</code></td><td data-page-node-id="WoV3ZIgLLj1MSHw145Kyti">未认证</td><td data-page-node-id="xpaos4MV56iAMYVnT6ZBnC">token 缺失/失效场景</td></tr>
+    <tr data-page-node-id="PXWaFc2UFKmAGH3PDfF5Vo"><td data-page-node-id="ejZHLHdNQjyBOBJekdEcvA"><code data-page-node-id="JnprFtrPa8f9HsSbG1D1Zu">403</code></td><td data-page-node-id="M0te3nTnR785PRMWvHL1Gf">无权限</td><td data-page-node-id="AeDFwYJIOpwdVtaTpO4p5b">越权测试期望值</td></tr>
+    <tr data-page-node-id="xPAj8ObfsuxyODwDH3wm1Q"><td data-page-node-id="iFlKGAAMY3K0NmJwHUcpoZ"><code data-page-node-id="9aP99DMAJfELJpj98G3SMl">404</code></td><td data-page-node-id="DuHAizBehv0kglqK9gD1j3">资源不存在</td><td data-page-node-id="b6QcefkTDV90sG1Nwdp2VT">查不存在的 id 期望值</td></tr>
+    <tr data-page-node-id="bCHa83tFB0gZYJoZx5imDf"><td data-page-node-id="maKaUiyWr8p2Yi5f5HBBSF"><code data-page-node-id="RSUMEY4VoR6IGrDdXd8EPo">500</code></td><td data-page-node-id="grD7vxvS7quHcWUyaK9wbl">服务器内部错误</td><td data-page-node-id="uzDHVrZ3wOp1YOUbHLl2gY">非期望，出现即缺陷</td></tr>
+  </table>
+  <div class="kp" data-page-node-id="XmrJC1DBDQiqHPBIDmdx17"><b data-page-node-id="y8b8OczjZYWqY4zhWddX9P">🔑 知识点 · JSON：</b> 接口响应绝大多数是 JSON。形如 <code data-page-node-id="G9FtOvvOHmc1AvgB8qJDAE">{"code":0,"data":{"name":"Tom"}}</code>，用「点号路径」<code data-page-node-id="3G94AMAciwHmAYxwTVKVBi">data.name</code> 取值。Python 里对应 <code data-page-node-id="EeCdtbaa5JyccgSYij644B">dict</code>，嵌套取值用 <code data-page-node-id="KNTOEcccoWR16VSw7WBmcS">resp["data"]["name"]</code>。</div>
+  <div class="card tip" data-page-node-id="Pj1ubRDLxHTV8EGxfteJtb">
+    <strong data-page-node-id="HyL9C0mpxaMoUsb5JCHRJt">💡 提示：</strong> 拿到一个陌生接口，先用 <b data-page-node-id="FEbve9qPVLmfM88StqU3uE">Postman</b> 或浏览器 F12 手动调通一次，把 URL、参数、返回结构摸清楚，再写脚本。磨刀不误砍柴工。
+  </div>
+  <div class="card success" data-page-node-id="dAd0lLHA86s61OOrljV2Ab">
+    <strong data-page-node-id="y9Rh3iEVKpBOErIBUCyabe">✎ 实操练习</strong>
+    <ol data-page-node-id="ciVbt8LMDzyFDxAhZOuIxk">
+      <li data-page-node-id="Xb4zvEpb3pwAaGVg6zz8YM">访问免费测试接口 <code data-page-node-id="G2wrL6QT4ey72YMjFSET8h">https://httpbin.org/get</code>（浏览器直接打开即可），观察返回的 JSON 结构。</li>
+      <li data-page-node-id="kMKndX9dUs81CmaNSyDkHU">说出 <code data-page-node-id="GrkABHEAIKEHTDW3EuVxZ4">200 / 401 / 500</code> 三个状态码各自的含义与测试意义。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 4 章 requests ═══════════════ -->
+<section id="requests" data-page-node-id="H0bItx8HqlF4QdGd7QqCvp">
+  <h2 data-page-node-id="TfFabzv6bCB3mGbwDtfMZI"><span class="num" data-page-node-id="rnG9FmWKDMacsPsoyv2LPX">4</span> 第 4 章 🌐 requests 库：发出你的第一个请求</h2>
+  <p data-page-node-id="TCS1j2rpBtIK7aTZaVdb0z">requests 是 Python 最主流的 HTTP 库，接口自动化的核心就是它。下面逐个方法实操，每段代码都能直接运行。</p>
+  <h3 data-page-node-id="J8OBB1qiaDBjSYDM3eRhoo">4.1 🟢 GET 请求（查数据）</h3>
+  <div class="code-block" data-page-node-id="xzH1CTjcgvOpYXVskFzSCO">
+    <div class="header" data-page-node-id="TsFik7n55JHle9X9Eo1urF"><span class="lang lang-py" data-page-node-id="3jQiDXpi11t3p6vrOKdELx">Python</span><span class="fname" data-page-node-id="1SLstlSsHnFInTZLyrhdjD">01_get.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="7zYDOK44ZftxMUcSterZyC">📋 复制</button></div>
+    <pre data-page-node-id="8Yz3bOdnCLWyL4mScbNAYO"><code data-page-node-id="pGgeQLhTdgyvbA6WoJViWk"><span class="kw" data-page-node-id="kQrZ02erMoEXPyauSWWuhs">import</span> requests
+
+<span class="cmt" data-page-node-id="QWxpQWUFYIHmnYZcgOppB2"># params 会自动拼到 URL 后面变成 ?page=1&size=10</span>
+url = <span class="str" data-page-node-id="w8ohX1pzZfrSryEaA0eyEW">"https://httpbin.org/get"</span>
+params = {<span class="str" data-page-node-id="y0A6lbYekiwHiW3jEE7VtG">"page"</span>: <span class="num" data-page-node-id="7mIOfbcqJPWHhHHVPRrWD8">1</span>, <span class="str" data-page-node-id="tiIAmb0WAFR8bzkvbE58yy">"size"</span>: <span class="num" data-page-node-id="hYoYHnFDBJHSkBNHFYJaBp">10</span>}
+headers = {<span class="str" data-page-node-id="8waBbtUY9VJdYahFtV3sIB">"User-Agent"</span>: <span class="str" data-page-node-id="OMBqYpTXohyKkHnqLHvKSf">"test-client"</span>}
+
+resp = requests.get(url, params=params, headers=headers, timeout=<span class="num" data-page-node-id="vClJB2EWDoj5it6UNC0yRv">10</span>)
+
+<span class="builtin" data-page-node-id="P8WkVZXtpJk1Ja47KJJN8w">print</span>(<span class="str" data-page-node-id="pwUA6ylFDUJNwB5TtmNUpC">"状态码："</span>, resp.status_code)
+<span class="builtin" data-page-node-id="znbUfelPAGqI8vdw8xeUwu">print</span>(<span class="str" data-page-node-id="mfK1GDf3NDX9mEfdGiGdHY">"响应JSON："</span>, resp.json())</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="WsxANiwqGCr3Nc8vWELz0m"><b data-page-node-id="RtRkRzerXMQ08dK8izT3Wg">🔑 知识点 · resp.json()：</b> <code data-page-node-id="6zW3ak1NCImRB3hW6GTqH9">resp</code> 是 Response 对象。<code data-page-node-id="7CqsoiyutYFVkS4cbm7wdh">.status_code</code> 取状态码（int）；<code data-page-node-id="fEBw9CDsNOiC88hs2U9JGu">.json()</code> 把 JSON 响应体直接解析成 Python dict，比手动 <code data-page-node-id="SHgncTsgNmw4iqMjeNUrCa">json.loads(resp.text)</code> 更省事。</div>
+  <div class="kp" data-page-node-id="lxDzgiQ4WFwfmj3TDFN76d"><b data-page-node-id="HSyxTP3Iuj26pXDQtb4sRv">🔑 知识点 · timeout：</b> 单位秒。网络卡死时防止脚本无限等待，是<b data-page-node-id="jNkSX8keqwqpM0HZlXE4ER">生产脚本必加</b>参数。可写 <code data-page-node-id="fJOvX1nc9sfo4CmtIsCYDr">timeout=(3,10)</code> 表示「连接超时 3s，读取超时 10s」。</div>
+
+  <h3 data-page-node-id="1EFXebbHnfGpQXMCDLlHFO">4.2 🔵 POST 请求（提交 JSON 数据）</h3>
+  <div class="code-block" data-page-node-id="kJALvK5rlQaGRxGicAP94B">
+    <div class="header" data-page-node-id="P6bjRUi7d2v41moYlDV1q8"><span class="lang lang-py" data-page-node-id="vhYC9RlfUjLqdmqli6179u">Python</span><span class="fname" data-page-node-id="DoeFM7HeiXmkQfSeUA3vY1">02_post.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="qHX6RCcu2kuGgNEe0TuXZX">📋 复制</button></div>
+    <pre data-page-node-id="tmxIwZT8VUWDtKyeRQdo93"><code data-page-node-id="cHqeGNElhZX5YZLmp4pvQZ"><span class="kw" data-page-node-id="jeIJfbP534y3aWA6CaIj3M">import</span> requests
+
+url = <span class="str" data-page-node-id="UGUIQvwGv603EjQIbZyNDs">"https://httpbin.org/post"</span>
+data = {<span class="str" data-page-node-id="QwulCQxEkN3e7eDj7Lb6UU">"username"</span>: <span class="str" data-page-node-id="aAAPusHELWd7l18oOw1nM9">"tom"</span>, <span class="str" data-page-node-id="hLsd8BlQ8ZMhW4A4i1ZClE">"password"</span>: <span class="str" data-page-node-id="nogd6OIuX6dOb7bedhMGjC">"123456"</span>}
+
+<span class="cmt" data-page-node-id="Nj2UvZocvcWD9v4M6dwt8u"># json= 会自动把 dict 序列化为 JSON，并设置 Content-Type: application/json</span>
+resp = requests.post(url, json=data, timeout=<span class="num" data-page-node-id="IY4uQHLsfl916S3aoIsyxj">10</span>)
+<span class="builtin" data-page-node-id="rhGokPqZfoWhtjLo1GJwHS">print</span>(resp.status_code)
+<span class="builtin" data-page-node-id="pqnB7UtzNhHKuaDtrNsr59">print</span>(resp.json()[<span class="str" data-page-node-id="3gBUpu6FHr1RU96AbQ6tbo">"json"</span>])  <span class="cmt" data-page-node-id="Wj15TETh5fbdjBSu1tgyIm"># httpbin 会回显我们提交的 json</span></code></pre>
+  </div>
+  <div class="kp" data-page-node-id="1afJ0FenDwGFl4mK2MgERY"><b data-page-node-id="TUZHrnRvVV18YAAwTO0YUT">🔑 知识点 · json= vs data=：</b> <code data-page-node-id="rDKzIV3v997MPnezU21u8i">json=</code> 发 JSON 体（现代接口主流）；<code data-page-node-id="IFPi8R1TXDgC4RFWkAu4v5">data=</code> 发表单 <code data-page-node-id="LB5F9RV3ZLlLsHOt5BBYZS">application/x-www-form-urlencoded</code>。二者 Content-Type 不同，服务端解析方式也不同，传错会报「参数解析失败」。</div>
+
+  <h3 data-page-node-id="P98AU3eVSCACtt5VkQDcco">4.3 🟡 PUT / DELETE（改与删）</h3>
+  <div class="code-block" data-page-node-id="4Bn85D9v5FHTvLbuK3xLAa">
+    <div class="header" data-page-node-id="mGdASc3BrbLvYHYNujYIIu"><span class="lang lang-py" data-page-node-id="DV2926czMto7tbRYYUbVkL">Python</span><span class="fname" data-page-node-id="5fMWQZzdnOr60D05yHqSqn">03_put_delete.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="bYnkTD405yLgWJ34XfBcMk">📋 复制</button></div>
+    <pre data-page-node-id="ZRYRjCvr3OlVwybQn2a5qq"><code data-page-node-id="txCgXWqL57v3a0cjjUpVQx"><span class="kw" data-page-node-id="KIQIDjVf33wa9PXzu7XPpv">import</span> requests
+base = <span class="str" data-page-node-id="b9jfYOJYIXvi4p4i8c2HRC">"https://httpbin.org"</span>
+
+<span class="cmt" data-page-node-id="ACslgYHbre6A5MDvDgHYtb"># PUT 全量更新</span>
+r1 = requests.put(base+<span class="str" data-page-node-id="Ip76fhryopEc6vhSWyhnGi">"/put"</span>, json={<span class="str" data-page-node-id="Lq3aNwvd4Bw0IzL2nAw0Sy">"id"</span>:<span class="num" data-page-node-id="TZPravtSc3ddHuYvyKMiG4">1</span>,<span class="str" data-page-node-id="zGS82QN90CA4EfChEnb9FJ">"name"</span>:<span class="str" data-page-node-id="wUUTqLY60TfAKuF7Xf2dVM">"new"</span>}, timeout=<span class="num" data-page-node-id="Fz5gv86D1mpNV8B6hwfDiX">10</span>)
+<span class="builtin" data-page-node-id="IutnJpUrvH1o3GM58qaiXI">print</span>(<span class="str" data-page-node-id="AkRtm8FWOCQI4UIKBMV5V6">"PUT"</span>, r1.status_code)
+
+<span class="cmt" data-page-node-id="zpgOnWGCHDmvAR78pVTAIr"># DELETE 删除</span>
+r2 = requests.delete(base+<span class="str" data-page-node-id="vsBGP8EMEHvBTAlRuoLMUS">"/delete"</span>, params={<span class="str" data-page-node-id="0HZXatZgBSdjc3xvJi64Rr">"id"</span>:<span class="num" data-page-node-id="QkRLApsRt7gmY8VkabvhF1">1</span>}, timeout=<span class="num" data-page-node-id="bh8WZBK4eZcxY2bbUnOMLO">10</span>)
+<span class="builtin" data-page-node-id="hyy6jK0xoMci9rBPmAdrSg">print</span>(<span class="str" data-page-node-id="ftCTZRxv9gNFfTutfD6Hfn">"DELETE"</span>, r2.status_code)</code></pre>
+  </div>
+
+  <h3 data-page-node-id="5meW0DIOMASHjyaPwbuQvG">4.4 🔎 响应对象的常用属性</h3>
+  <table data-page-node-id="QgZO7iPq9R4n6846mLA2rP">
+    <tr data-page-node-id="p5ySlXex6dbrWFrqMO9n0P"><th data-page-node-id="np3pHQLbgCYIePbrRZWkOz">属性/方法</th><th data-page-node-id="7bIDkW6DADOZdrm6JJ68LB">作用</th><th data-page-node-id="13gAgwbNB5ExvzQJ5aRaEt">返回类型</th></tr>
+    <tr data-page-node-id="iSRDJHjD5RYccnKVcDmrCR"><td data-page-node-id="KVdHwxZpg84uFKC3YARQy3"><code data-page-node-id="uH7M4wlD9HDNehK8MM6yL9">resp.status_code</code></td><td data-page-node-id="Esgk9nPVMVjmpshWrL6Dks">HTTP 状态码</td><td data-page-node-id="pCXKQpzV1V1QWY32SGwifg">int</td></tr>
+    <tr data-page-node-id="BboRZXxkwagLAPw0JAqp9J"><td data-page-node-id="hDyPyCCHFo5oGAmMoOgaOC"><code data-page-node-id="ArWdIi4oe3uhFqvzcuS6HC">resp.json()</code></td><td data-page-node-id="uLYzMmXKncCx8YSD8HpDGv">解析 JSON 响应体</td><td data-page-node-id="4EEAKWk40azUbIDhiat0iE">dict / list</td></tr>
+    <tr data-page-node-id="GwFpog6B5bIuk8ABKgpcDT"><td data-page-node-id="vK0GabCupYQnHLVzOcqDct"><code data-page-node-id="LUDqFUjFnCToHUmtHbBxYz">resp.text</code></td><td data-page-node-id="81jy7H2iCA8ZL2QYj8pMWP">响应体文本（字符串）</td><td data-page-node-id="NFBgeDwGTumTyWebuP0LQj">str</td></tr>
+    <tr data-page-node-id="hTY1ZtdHoOdsgB7fB2lIMw"><td data-page-node-id="hkYdDumtdRPCErzelr3TCQ"><code data-page-node-id="4t0ULydgOYVPuqEcLM0QTD">resp.headers</code></td><td data-page-node-id="5hj3wCwcfVE7yyXlEOnDWJ">响应头字典</td><td data-page-node-id="YcHPLq39Z6r2UuwlgDKeSH">dict-like</td></tr>
+    <tr data-page-node-id="Vxj7FtcGyGW4PSdEVDbAT5"><td data-page-node-id="sp2GDDXl1HmNOMSPkdswiC"><code data-page-node-id="eZ7O0k9YvPHjSwWyb4jBe7">resp.url</code></td><td data-page-node-id="HJA2MZE9H7E347Xwa5HHin">最终请求 URL（含拼接后参数）</td><td data-page-node-id="rZoNGmZ02Cs7LYJWvnmFvX">str</td></tr>
+    <tr data-page-node-id="CBSIMZzCPZjwhuHTCfawvH"><td data-page-node-id="YX4OeisL33XurL8zJtCC8O"><code data-page-node-id="HIN7egpXw33ENgzZjcvCOT">resp.elapsed</code></td><td data-page-node-id="UXpAg155FFSiRSy2nSxcfw">响应耗时</td><td data-page-node-id="GMFXCFZGaVtDKZh3HRejJk">timedelta</td></tr>
+  </table>
+  <div class="card warning" data-page-node-id="RhqjeYDeA7s8eEPiQCREgr">
+    <b data-page-node-id="nVigBAVTxjIWnMHolM7hHV">⚠️【中文乱码】</b> 若 <code data-page-node-id="w67CKBLAn5G3txtujJMIvy">resp.text</code> 中文乱码，用 <code data-page-node-id="UcdAaOVkvoBZrCxYLw6iYV">resp.encoding = 'utf-8'</code> 指定编码后再取；或优先用 <code data-page-node-id="DcCwh668kqVlSYpWKqWWb1">resp.json()</code> 规避编码问题。
+  </div>
+  <div class="card success" data-page-node-id="wdZC0M6KOBj1dijmjBHtP9">
+    <strong data-page-node-id="Cv7tEZwFbCPEt5GEiATHcq">✎ 实操练习</strong>
+    <ol data-page-node-id="YeMwyruRXSDNvvHnOsOAkG">
+      <li data-page-node-id="t6o5gQNPDx5KFSHJk4Qw55">用 <code data-page-node-id="Zpscl124cXeCtlRU3cf0a3">requests.get</code> 请求 <code data-page-node-id="XRR2nyYMuohm7L6rfzABS6">https://httpbin.org/get?name=lisa</code>，打印状态码和返回的 <code data-page-node-id="kerUuHA6lY8Vv8dXQuuojy">args</code> 字段。</li>
+      <li data-page-node-id="2IeicebMR8jfPxH1ayptz5">用 <code data-page-node-id="6s7VJ9NEiulir3VtPxl6Zk">requests.post</code> 向 <code data-page-node-id="C8oUkQblqC9StW0toEFzA8">https://httpbin.org/post</code> 提交 <code data-page-node-id="Pa5BqyixoAubYA2pcKkHJS">{"book":"Python"}</code>，打印服务端回显的 <code data-page-node-id="xSar7PPrAbmwg5URjm8qza">json</code>。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 5 章 接口关联 ═══════════════ -->
+<section id="chain" data-page-node-id="ahKJP3nDlYFQsC5ztEd0Rn">
+  <h2 data-page-node-id="oDyKgtMMvVxuLksFv4sk6R"><span class="num" data-page-node-id="NZY7nkEYJprs66QTpdjLcl">5</span> 第 5 章 🔗 接口关联：把上一个接口的结果传给下一个</h2>
+  <p data-page-node-id="MYPCky88G90BETdJUYSDiz">真实业务里，接口是有<b data-page-node-id="giCq3EvxtqwiCxb0GqkoFK">依赖</b>的：先登录拿 token，再带着 token 去查用户信息。这种「前一个接口的返回值喂给后一个接口」就叫<b data-page-node-id="lFJxwXxTh4qLVHjK0ceT5C">接口关联</b>。</p>
+  <h3 data-page-node-id="yib4bVpeIARME7SNZBfoVy">5.1 🔄 关联的典型链路</h3>
+  <div class="flow" data-page-node-id="VNYldtFMfdUrf5pPiOxRCD">
+    <div class="flow-box accent" data-page-node-id="l1JFIQDhyPaA43j4buDgps">① 登录接口</div>
+    <span class="flow-arrow" data-page-node-id="Az0hybIwUMCvmdVZ2I0ozi">→</span>
+    <div class="flow-box" data-page-node-id="lXyq0iJW62WOHY8vJvwitm">取出 token</div>
+    <span class="flow-arrow" data-page-node-id="fAwgECabZfzL5H8XvNaaqZ">→</span>
+    <div class="flow-box" data-page-node-id="xq2coULtS7H285QiV6pzfB">② 带 token 查用户</div>
+    <span class="flow-arrow" data-page-node-id="IWIudkFyH9d16QThFxMde9">→</span>
+    <div class="flow-box accent" data-page-node-id="JFpPkx0pdCw2XlR2XUB5Md">③ 校验用户信息</div>
+  </div>
+  <h3 data-page-node-id="myy5xTHNEWhOT0FsfUGV22">5.2 🧪 用 Session 保持会话（推荐）</h3>
+  <div class="code-block" data-page-node-id="4XvjCBleAmAJrsEYmK0Y3O">
+    <div class="header" data-page-node-id="3ZBafez08clOqF8c4IOdel"><span class="lang lang-py" data-page-node-id="HCJeL8gTnz2aShDEhiO5Xy">Python</span><span class="fname" data-page-node-id="x3Sd0RpDqmExHYHUmiPGGe">chain_login.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="bzklFOMA3sE2HHD8jBL8pC">📋 复制</button></div>
+    <pre data-page-node-id="epFteyzEx4CyPlsEbmKbbo"><code data-page-node-id="nABZe0gE42UucNxe3eEbSK"><span class="kw" data-page-node-id="vCSKB700K1wL5p1P0WWl1w">import</span> requests
+
+<span class="cmt" data-page-node-id="KQRuIc8SAZUQyFiRbFRzoM"># Session 会自动保存 cookie，适合需要维持登录态的场景</span>
+session = requests.Session()
+base = <span class="str" data-page-node-id="lGsKnE7dfgwPLeeVZDyblP">"https://httpbin.org"</span>
+
+<span class="cmt" data-page-node-id="hg55rzJzdsK8W5CDhJX5al"># ① 登录（httpbin 用 cookies 模拟）</span>
+login = session.post(base+<span class="str" data-page-node-id="VES53HZYnaZqDTzzzS5sFd">"/cookies/set"</span>,
+                     params={<span class="str" data-page-node-id="UVevEgrcq4tzmPPqWK8GEu">"token"</span>: <span class="str" data-page-node-id="rgK9DI0mB33tWfatDdHKJH">"abc123"</span>}, timeout=<span class="num" data-page-node-id="uhqHChtf5ZT2Mh1hJSh0eg">10</span>)
+<span class="builtin" data-page-node-id="MnXeY71ZN9dFomnfFPsBni">print</span>(<span class="str" data-page-node-id="P3iS1PeLa7Ei663grDPKIA">"登录："</span>, login.status_code)
+
+<span class="cmt" data-page-node-id="P9qjAP6NmfNbKRrWjlKlK1"># ② 同一个 session 发请求，cookie 自动带上</span>
+info = session.get(base+<span class="str" data-page-node-id="p71RiRAYCCMm4zlfa3Vm2B">"/cookies"</span>, timeout=<span class="num" data-page-node-id="7T5dFFkmicJuEuBpZAEGNO">10</span>)
+<span class="builtin" data-page-node-id="NmA95QLUc6ENekhrSTl4oB">print</span>(<span class="str" data-page-node-id="CpCm0d7CpMl85vzwj1Uffl">"服务端收到的 cookie："</span>, info.json())</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="TRL7aZTQVTJ67CQKNC9jx7"><b data-page-node-id="bpvvQwWwxQDwLC7Jn03ohF">🔑 知识点 · requests.Session()：</b> Session 是一个「会话对象」，会在多次请求间<b data-page-node-id="FwcFJaCPkFVszEoodr5fsi">自动保存 cookie</b> 和公共配置（如 headers、base_url）。登录态、鉴权类接口用它最省心，不用每次手动拼 token。</div>
+
+  <h3 data-page-node-id="BlKOrrdCLBse2mJK4nDag1">5.3 🧰 提取返回值并传递（变量关联）</h3>
+  <div class="code-block" data-page-node-id="oDBFQIEGMQWTCr9QUar3g1">
+    <div class="header" data-page-node-id="ZvFLNv2Wz7wNEWO2jKnqnU"><span class="lang lang-py" data-page-node-id="g5JkvEksBPa8TBVUB4OnZh">Python</span><span class="fname" data-page-node-id="UGT5k7eBvQBWhPdVvfrbpP">chain_extract.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="voPCKHHF3obZcqd7vrcI2Y">📋 复制</button></div>
+    <pre data-page-node-id="0jDKMlDDdRJFupfyDfq6MG"><code data-page-node-id="MBHVCaPVdfGdhpYEhIUFuL"><span class="kw" data-page-node-id="HbNO89nb5RPTE6xaDsB3bo">import</span> requests
+
+<span class="cmt" data-page-node-id="gc9msbIACgmGd6fVtXcVrd"># ① 登录拿 token（这里用 httpbin 回显模拟真实返回）</span>
+r1 = requests.post(<span class="str" data-page-node-id="nFpBeWGEkDjH4Ap860c2cC">"https://httpbin.org/post"</span>,
+                 json={<span class="str" data-page-node-id="T0WCrnY9oBrEK1GmzDpbpQ">"user"</span>:<span class="str" data-page-node-id="8XAspCNpoidRJMIjHIu3tv">"tom"</span>}, timeout=<span class="num" data-page-node-id="tdxubScKCIVjeYBVi44mzJ">10</span>)
+token = <span class="str" data-page-node-id="6ttEssata9U9AXptQk1Wbd">"fake-token-"</span> + r1.json()[<span class="str" data-page-node-id="PPqoL8yBoVJx8EuyUovDGW">"json"</span>][<span class="str" data-page-node-id="JB7A5gd9fzL4nEJKpAHhAj">"user"</span>]  <span class="cmt" data-page-node-id="oZTWYF2AQTSrJheBiKLPru"># 从响应里取字段</span>
+
+<span class="cmt" data-page-node-id="XJlV8auWZqBTKQVmpRUK2n"># ② 把 token 放进请求头，去查受保护资源</span>
+headers = {<span class="str" data-page-node-id="GynXiD5WjVHkwdrbJIOT9f">"Authorization"</span>: <span class="str" data-page-node-id="xHYb7G9zxUgKqE5f52CdqG">"Bearer "</span> + token}
+r2 = requests.get(<span class="str" data-page-node-id="eQHIqZpz9t1kZEqxdDzHeP">"https://httpbin.org/get"</span>, headers=headers, timeout=<span class="num" data-page-node-id="B9eVhESQRHbLqv14q1LP9r">10</span>)
+<span class="builtin" data-page-node-id="xBF0aKNgZLlG6oNaU1YI0S">print</span>(<span class="str" data-page-node-id="fPS5C2Ildbp2m99ULXHV9Y">"带 token 请求成功："</span>, r2.status_code)</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="GjRN9ma1YuJdr4PHCSmERH"><b data-page-node-id="mHQT4X7qSrwPcTcynefApH">🔑 知识点 · 变量关联：</b> 本质就是「把 <code data-page-node-id="tadmOHgr2B3ZcC5FocjMZD">r1</code> 里解析出的值，存进 Python 变量，再拼进 <code data-page-node-id="UU0Towq9kq7O0kutAMXqe7">r2</code> 的请求」。后续在 pytest 里会用 <code data-page-node-id="2KBJUUPG0TC6M2EvSv594M">conftest.py</code> + fixture 把这套关联自动化、可复用。</div>
+  <div class="card warning" data-page-node-id="YgBY9d5llU5JtfGqgbor0Z">
+    <b data-page-node-id="yp8G6hg50RnTwwv25POxvW">⚠️【关联失败排查】</b>
+    <ul data-page-node-id="Exxum10gJU9LHiBT0U7GVA">
+      <li data-page-node-id="4nDfibAnyUhOkVVBQQ3mtC">取字段报 <code data-page-node-id="UZsSVJzDqfQuGN8hxlS9F6">KeyError</code> → 先 <code data-page-node-id="ZQgl0XVlcBTDNs9fJQUFXH">print(r1.json())</code> 看真实结构，字段名大小写/层级对不对。</li>
+      <li data-page-node-id="TtOAVy2S7r7S5uC60Ec9DN">token 传了仍 401 → 确认请求头格式（<code data-page-node-id="CUhmxY6DTEzbaKrjzFnCwO">Bearer xxx</code> 还是裸 token），对照接口文档。</li>
+    </ul>
+  </div>
+  <div class="card success" data-page-node-id="ZR8Al24xQu8iGy3uTYeiw0">
+    <strong data-page-node-id="pOjW2PQcA7oumuJr79uHS2">✎ 实操练习</strong>
+    <ol data-page-node-id="1YDLE0eFWEihaHkTyeNaaU">
+      <li data-page-node-id="dUbjBogDhmer89t4wEd5bE">用 Session 完成 <code data-page-node-id="QnAkNUGFpK5kta744DRqdX">/cookies/set</code> → <code data-page-node-id="eiDLpbu7SCup0Zvh4whsW7">/cookies</code> 的关联，验证第二次能读到设置的 cookie。</li>
+      <li data-page-node-id="qVkQwCSNEnWtt9Gau9BlTF">改造 5.3 代码：从 <code data-page-node-id="fWiJcFvV73oiGL2fd830cZ">r1</code> 的返回里取一个字段，打印出来再拼进 <code data-page-node-id="RpThht2z4DLQgxkhAdt3kl">r2</code>。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 6 章 pytest ═══════════════ -->
+<section id="pytest" data-page-node-id="4qSxe4MD8YOgdcevBVsBIR">
+  <h2 data-page-node-id="v5HWywEAVeFB4amHccANdW"><span class="num" data-page-node-id="Z4vY8oZn8P2ibbXSJC2qhG">6</span> 第 6 章 🧪 pytest：把脚本组织成用例</h2>
+  <p data-page-node-id="fXs4Jt6S3GQHR4DvVeekif">零散脚本不好管理。pytest 是 Python 最流行的测试框架，用<b data-page-node-id="hDC4OdcUr3tH3tCXfRuO47">约定</b>自动发现用例、组织执行、输出报告。</p>
+  <h3 data-page-node-id="uEkZiXFomfl9d5I7OaHyt1">6.1 📐 用例的命名约定</h3>
+  <ul data-page-node-id="nCigFCCTesI5kaEE7WwPbz">
+    <li data-page-node-id="3lHOsOUH3r7BDRTI26I0EU">测试文件必须以 <code data-page-node-id="0IE4Zr9cxdyBaDWirt7BO7">test_</code> 开头（或 <code data-page-node-id="ViwiXWyzH8ugBCeuCDtS0A">_test</code> 结尾）。</li>
+    <li data-page-node-id="1jgncK6gRYTntEr0a3F0Ub">测试函数必须以 <code data-page-node-id="E7GDQ3jCfsqC2VUIfAxoZC">test_</code> 开头。</li>
+    <li data-page-node-id="kLazW6EwXKYvmcz3ge9e2f">pytest 会自动扫描并执行符合约定的函数。</li>
+  </ul>
+  <h3 data-page-node-id="Hsvm9mpaI5n589CjtiA6xv">6.2 ✅ 第一个 pytest 用例</h3>
+  <div class="code-block" data-page-node-id="Tdw8FH5KtdpnhFuLqGvU7k">
+    <div class="header" data-page-node-id="Y36QBnYlWQDGTqSyBE7W1W"><span class="lang lang-py" data-page-node-id="5OoAwGHgoZSTYC8tVBaaLf">Python</span><span class="fname" data-page-node-id="IWtfPmXTGGqSIIJdb7aKvi">test_demo.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="6Vkkm0UftzdbP4VpCrJPm3">📋 复制</button></div>
+    <pre data-page-node-id="lfLMRKJ4sURNMsfYIkljYG"><code data-page-node-id="oVGhIx5o4fExDS7bwNn8jp"><span class="kw" data-page-node-id="XvB0ko598VcwDYMAVmD2RK">import</span> requests
+
+<span class="kw" data-page-node-id="RObgHttO9COBD7cXgBE7Eh">def</span> <span class="fn" data-page-node-id="qPjDBwWVo0sVgXa9soC120">test_httpbin_get</span>():
+    <span class="str" data-page-node-id="H8HKpDdyUJBrWq9pb7d2VQ">"""用例：验证 get 接口返回 200"""</span>
+    r = requests.get(<span class="str" data-page-node-id="u3y3osvkEtL3vNLWSyBf1G">"https://httpbin.org/get"</span>, timeout=<span class="num" data-page-node-id="5tEKzyQsPBy5wH56v0ZrFF">10</span>)
+    <span class="kw" data-page-node-id="bSBtufDakQZvJ2zSTGJs0K">assert</span> r.status_code == <span class="num" data-page-node-id="c2ggO04G2r7VnsBGbdKSXX">200</span>          <span class="cmt" data-page-node-id="sqJhC0KgTU3KSTJaJhf4g5"># 断言：不成立则用例失败</span>
+
+<span class="kw" data-page-node-id="cKA2SPzjDh1pNeXqHQ7Io6">def</span> <span class="fn" data-page-node-id="c8YZgX9ZxKSFF0fqOS9j8h">test_httpbin_post</span>():
+    <span class="str" data-page-node-id="ByOWcViZmnRaD9B7FtifjH">"""用例：验证 post 能回显数据"""</span>
+    r = requests.post(<span class="str" data-page-node-id="Tgc8D9HcNDOIs56V2KoibF">"https://httpbin.org/post"</span>, json={<span class="str" data-page-node-id="dYtoxqeb40dDtbBeMlD8Yr">"a"</span>:<span class="num" data-page-node-id="JS0HqPViw60Zbq4Twlt5fr">1</span>}, timeout=<span class="num" data-page-node-id="Nus74P3JnbuWjmseuyqzRC">10</span>)
+    <span class="kw" data-page-node-id="ovuV2QlsUY3ao3tUsGCNMG">assert</span> r.json()[<span class="str" data-page-node-id="mDmX6JiaAsSWEpiI5L70Er">"json"</span>][<span class="str" data-page-node-id="pSUeWLZm4Z0JSx8TOOOGh5">"a"</span>] == <span class="num" data-page-node-id="vJjHtlTtxICDc4XANuGOgN">1</span></code></pre>
+  </div>
+  <div class="kp" data-page-node-id="WLcIF6cfCOBHaPi6PjeeHp"><b data-page-node-id="bjSwb3QENXigyG9yosH9zD">🔑 知识点 · assert：</b> Python 原生断言。pytest 会捕获 <code data-page-node-id="u2tdu1TlYFM4cuY0DslYaF">assert</code> 失败并标记该用例为 <b data-page-node-id="Z7xeEWuGX2kGqkWhX3GSMO">FAILED</b>，同时记录期望值与实际值，比 <code data-page-node-id="1l8KkDF1T9cgbQIEsDiWuI">if...print</code> 手动判断专业得多。</div>
+
+  <h3 data-page-node-id="FcgoL8ulk9GgTVv5LtpgdI">6.3 ▶️ 运行与常用命令</h3>
+  <div class="code-block" data-page-node-id="gXG9QhDDCpsaHvyrwDV98P">
+    <div class="header" data-page-node-id="0khG245V7GCadPzuGD6zYH"><span class="lang lang-shell" data-page-node-id="szbyzXySXkg1yl8nHyReis">Shell</span><span class="fname" data-page-node-id="85dsUx4hARCmRp1MY8fs2a">命令行</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="sEOqHcHX03RQS4QL9SBrcZ">📋 复制</button></div>
+    <pre data-page-node-id="xOfVwLeMXg5TGYBcfUg3yL"><code data-page-node-id="XaMe5h1wWuUnvR5T5jC28z"><span class="cmt" data-page-node-id="QSYFH1s6jKpZW98f2JJnRI"># 运行当前目录所有用例，-v 显示详情，-s 显示 print</span>
+pytest -v -s
+
+<span class="cmt" data-page-node-id="NwMOu6qGJYu7RRYJxtmJHg"># 运行指定文件</span>
+pytest test_demo.py -v
+
+<span class="cmt" data-page-node-id="yysOYkwSnq4QkE6cL5XOsj"># 运行指定用例（按函数名）</span>
+pytest test_demo.py::test_httpbin_get -v
+
+<span class="cmt" data-page-node-id="fEdaqfGlvGvESCNkA7xNLO"># 按关键字匹配用例名（模糊运行）</span>
+pytest -v -k <span class="str" data-page-node-id="2uKmD3QNRg15LZSZ2wPaYn">"get"</span>
+
+<span class="cmt" data-page-node-id="YzIKZIsmVLelPw48VlljNu"># 生成 HTML 报告（需装 pytest-html）</span>
+pytest -v --html=report.html --self-contained-html</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="CyIQrpZARR0TzF9Y3VyB8j"><b data-page-node-id="VDoy4mLDUQBrPzwEI1Ltvq">🔑 知识点 · -v / -s：</b> <code data-page-node-id="Jq5WldofNTBG9VfI7CkKBW">-v</code>（verbose）显示每条用例名与结果；<code data-page-node-id="WMxFfdloOEJJqkNpFUsDzH">-s</code> 关闭输出捕获，让 <code data-page-node-id="6rQy7dUwq8qN0v01xIlqIx">print</code> 内容显示出来，调试时必用。</div>
+
+  <h3 data-page-node-id="AabUUmAoirXraVWwsNNc2R">6.4 🩹 setup / teardown（前后置）</h3>
+  <div class="code-block" data-page-node-id="eQh5btdqM4T9FU6lrFrY9T">
+    <div class="header" data-page-node-id="UYijBbbNOVonRekoL8Vdeo"><span class="lang lang-py" data-page-node-id="KPE92R659CfsCRCUH9RfzK">Python</span><span class="fname" data-page-node-id="FAlBfLQT8Lj2uMteaMbPkr">test_with_fixture.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="C2lXp3CdNj4i3wYfcAq8Wa">📋 复制</button></div>
+    <pre data-page-node-id="givtjGnNYCFio8lSturmqC"><code data-page-node-id="C4zOFr765CPFrkJjbRFy2t"><span class="kw" data-page-node-id="21xjJdOpbgd7NHPxdRCxEZ">import</span> pytest, requests
+
+<span class="cmt" data-page-node-id="7ImAhAn9olZrR9KMjgLrgX"># 前置：每条用例前准备一个干净的 session</span>
+<span class="dec" data-page-node-id="RwH0dx0X2WIfLRwX0AsL7Q">@pytest.fixture</span>
+<span class="kw" data-page-node-id="jD5S8f0dSyvmxkzN3Cfjcb">def</span> <span class="fn" data-page-node-id="4Iz1Qro1avDnCwSxte04MB">session</span>():
+    s = requests.Session()
+    s.headers.update({<span class="str" data-page-node-id="Dox0jybXhlx7hTzvTl7ULO">"User-Agent"</span>: <span class="str" data-page-node-id="BaZLKIMEv937BUH7pk2Nd5">"pytest-client"</span>})
+    <span class="kw" data-page-node-id="IzgFvinuz1YCYUQZs6DoI0">yield</span> s                 <span class="cmt" data-page-node-id="l9Hj5bFO25kCMdgBWAWnuY"># yield 之前=前置，之后=后置</span>
+    s.close()               <span class="cmt" data-page-node-id="9KhUx96CGHVPy1FZQhVwT0"># 用例结束后关闭会话</span>
+
+<span class="kw" data-page-node-id="cajQ7FFnYlrbJCaYPUIoDj">def</span> <span class="fn" data-page-node-id="Tts6SH4tCfE6l6ey8YbWCY">test_get</span>(session):     <span class="cmt" data-page-node-id="0wXGiuSnzRbAojIBQw0VYW"># 参数名对应 fixture 名，自动注入</span>
+    r = session.get(<span class="str" data-page-node-id="GOEEqhzJsPCvxPIDXmw5Ef">"https://httpbin.org/get"</span>, timeout=<span class="num" data-page-node-id="goo1arv4peehjTKCFBmGEM">10</span>)
+    <span class="kw" data-page-node-id="PEcRb1gqW3CtABkJguBhrN">assert</span> r.status_code == <span class="num" data-page-node-id="rHNFceE2jTwnGatObZQ6zT">200</span></code></pre>
+  </div>
+  <div class="kp" data-page-node-id="eVrjlIrjRwCh8a0bcwrK2V"><b data-page-node-id="PA6w4ibnjzlKfbBXl7mjV2">🔑 知识点 · @pytest.fixture：</b> fixture 是 pytest 的<b data-page-node-id="QMnMVlPWSlBK519rFDcEvF">依赖注入</b>机制。用 <code data-page-node-id="ER6rCuFqNJBv2Qcig7SlFO">@pytest.fixture</code> 装饰一个函数，把「公共准备逻辑」（如建 session、登录拿 token）抽出来，用例通过<b data-page-node-id="wkTRCm0OQMeDTsA47C383W">参数名</b>就能拿到。<code data-page-node-id="NU9LKEm6OEZmSOiCTnFM5C">yield</code> 前是前置、后是后置清理。这是框架化的<b data-page-node-id="q5fM7jBuTTjMRPQTCEUc5p">核心</b>。</div>
+  <div class="card tip" data-page-node-id="oYSd7je4XHRCHkZe12aWCz">
+    <strong data-page-node-id="Oc7T53pcTk2pveyDEtqzMi">💡 fixture 的威力：</strong> 登录 token、数据库连接、测试账号这类「多条用例共用」的东西，全部抽成 fixture。改一处，处处生效，避免每个用例重复写登录代码。
+  </div>
+  <div class="card success" data-page-node-id="RfFGjP5JMcxGNG4l8KLWnq">
+    <strong data-page-node-id="gX6ncYdlzXeA08Nt0Hv6YZ">✎ 实操练习</strong>
+    <ol data-page-node-id="9CVMki0rUon30hzCSWTIci">
+      <li data-page-node-id="ZDc7xEFJoxlV3HK0ntzAFZ">写一个 <code data-page-node-id="IQswXisvEvnXVzGydsl9UI">test_</code> 文件，包含 2 条用例，分别断言 get 返回 200、post 能回显。</li>
+      <li data-page-node-id="Z2RtjIGXLMe2Xx7yaECrbo">用 <code data-page-node-id="RQpDiMCI2i118OLx4laUKz">pytest -v -s</code> 运行，观察 PASSED/FAILED 输出。</li>
+      <li data-page-node-id="nk051fdhpImS45RF2OG5AG">把 session 抽成一个 fixture，让两条用例共用。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 7 章 数据驱动 ═══════════════ -->
+<section id="ddt" data-page-node-id="IRbCKgCJs88but5vgIYz5P">
+  <h2 data-page-node-id="LABEOpV6X4eEmtrOnaH3CA"><span class="num" data-page-node-id="3w91omMo48v5yxm92gO3BC">7</span> 第 7 章 📊 数据驱动：一份代码跑多组数据</h2>
+  <p data-page-node-id="TsZ3NbwxDo8P95yyzzxY9v">同一个接口，要用几十组不同参数和期望去验证。若每组都写一个函数，代码会爆炸。<b data-page-node-id="7eyE7EjdspQufkPeIJbrJf">数据驱动</b>让「逻辑只写一次，数据来自外部」，是框架可维护的关键。</p>
+  <h3 data-page-node-id="c5RFbZmCKAI35B9Hi5EPwG">7.1 🐣 @pytest.mark.parametrize（内置参数化）</h3>
+  <div class="code-block" data-page-node-id="drEaVtqWzGNxQKlPGY4Brv">
+    <div class="header" data-page-node-id="wg5ZdkMWAHTV8x7bh3h9P5"><span class="lang lang-py" data-page-node-id="rEmGu1029p7zEFBgL7kULp">Python</span><span class="fname" data-page-node-id="cqoV54MFL1Q5sWkNOXracA">test_param.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="LfAqwsHDexCYe5kvbOb0vK">📋 复制</button></div>
+    <pre data-page-node-id="y62qcZthLJc4dSjK16nH0o"><code data-page-node-id="Gg1e7DzHiS1A6aJnkIvMxH"><span class="kw" data-page-node-id="aUAEl2HADFdB69s5BI6ZJA">import</span> pytest, requests
+
+<span class="cmt" data-page-node-id="8tuBLRV2MVRE5NL2oljfEQ"># 一组参数 = 一次独立执行；pytest 会自动展开成 3 条用例</span>
+<span class="dec" data-page-node-id="5UNUHvgfFyYUJUVCtIY1o5">@pytest.mark.parametrize</span>(<span class="str" data-page-node-id="DJMXzQ0XepO5uUKJX435rH">"user,expect_code"</span>, [
+    (<span class="str" data-page-node-id="jQLtjDhu81M13OeN2DSYMD">"tom"</span>, <span class="num" data-page-node-id="2vS3T1OSfhJpm3nGag0GHG">200</span>),
+    (<span class="str" data-page-node-id="NFqIzP3py0afExy3cnKF8t">"jerry"</span>, <span class="num" data-page-node-id="POxM7EGTQySAEWWAGTHeHb">200</span>),
+    (<span class="str" data-page-node-id="1RZEJJImVDZwTjupHjmlnO">""</span>, <span class="num" data-page-node-id="1exuFlquqBBvBALqYUBjGj">400</span>),          <span class="cmt" data-page-node-id="nMjQJ2h0Sus4slDOpowpLE"># 空用户名期望 400</span>
+])
+<span class="kw" data-page-node-id="BjOdPTbs0OgDGHzBMZJjYC">def</span> <span class="fn" data-page-node-id="CZtkLnUEqvRPsxG2bk6PoC">test_login</span>(user, expect_code):
+    r = requests.post(<span class="str" data-page-node-id="e8mZxAWFCAvF3QwPnZSPF7">"https://httpbin.org/post"</span>,
+                     json={<span class="str" data-page-node-id="oyMDedT9EkvlPn79O30t23">"user"</span>: user}, timeout=<span class="num" data-page-node-id="lKoe6BsPIOA4064iucteSe">10</span>)
+    <span class="cmt" data-page-node-id="G4clCrXWZkWkImDYZ4JOUw"># httpbin 对合法请求回 200；这里仅演示参数化机制</span>
+    <span class="kw" data-page-node-id="mXkau1wrxy03z0fLJKALsj">assert</span> r.status_code == expect_code <span class="kw" data-page-node-id="57BeyB43Ya71kxc0ztK1LW">if</span> user <span class="kw" data-page-node-id="GID31boym2HmurZX7Ehxn9">else</span> r.status_code != <span class="num" data-page-node-id="DhFe2f10PxQMSnV1VZYUeq">200</span></code></pre>
+  </div>
+  <div class="kp" data-page-node-id="YXj7iEhH41hK99VvYXKvGe"><b data-page-node-id="LWz42V17g0YGpqjMyVKNjk">🔑 知识点 · parametrize：</b> 第一个参数是<b data-page-node-id="H6JRzjEzBnO7VCFk8WHEyO">变量名字符串</b>，第二个是<b data-page-node-id="GMWWuGAAPKXt8OSAbzo5xx">数据列表</b>，列表里每个元组对应一次执行。加 <code data-page-node-id="THaRU1v0rMBod1caa2AQOT">-v</code> 运行时能看到 <code data-page-node-id="H3oByQW7LeV9KkamfNz9t5">[tom]</code>、<code data-page-node-id="k512kddw1h0Xa5nLl1Hu3s">[jerry]</code> 这样按数据命名的用例，失败时一眼定位是哪组数据。</div>
+
+  <h3 data-page-node-id="EngHEDfbkjxG6Xy2HbYhBd">7.2 📁 数据与代码分离（YAML/JSON）</h3>
+  <p data-page-node-id="X7IrCrsP2NEFSmwI7nHV0D">把数据写进代码不够优雅。真实项目里，测试数据放在 <code data-page-node-id="M0JRlU9tqGRmgCkyxaIIYM">data/</code> 目录的 YAML/JSON 文件里，非程序员也能维护。</p>
+  <div class="code-block" data-page-node-id="gCmdhfPvCLZj2fneuGwuAg">
+    <div class="header" data-page-node-id="xVohBnLVnYQkVmKEEPEuJG"><span class="lang lang-json" data-page-node-id="ie4BSDeVuqe6LfqhfP3uUa">YAML</span><span class="fname" data-page-node-id="9fs4DVAXphb0zBPRAf4zr3">data/login_cases.yaml</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="Fw7WLbHOwtlncwC2EMz5ZO">📋 复制</button></div>
+    <pre data-page-node-id="zsXxNamsw5CYUotvGfAc9b"><code data-page-node-id="tVh69ZRSGK886QBe8CHNu5">- case: 正常登录
+  user: tom
+  pwd: "123456"
+  expect_code: 200
+- case: 密码错误
+  user: tom
+  pwd: "wrong"
+  expect_code: 401
+- case: 用户名为空
+  user: ""
+  pwd: "123456"
+  expect_code: 400</code></pre>
+  </div>
+  <div class="code-block" data-page-node-id="XnemTFGY0iPoG6BF1EsjwP">
+    <div class="header" data-page-node-id="nk61AitlBLatCiD77SHiTL"><span class="lang lang-py" data-page-node-id="GMMC98Guw0RRZTlm4mPlmG">Python</span><span class="fname" data-page-node-id="V5qFfb5iOvzJC1CFI8vrvg">loader.py — 读取 YAML</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="mFDg0qD96ztdEc112dDwx7">📋 复制</button></div>
+    <pre data-page-node-id="i3Alld2eCHl2TMjG0grMev"><code data-page-node-id="IXQazzuz6xHpsWW4kYMD0z"><span class="kw" data-page-node-id="AXuVEFSu3asXS3AMTvoicO">import</span> yaml
+
+<span class="kw" data-page-node-id="Ew27VUBHixMTg4hOiO0bTv">def</span> <span class="fn" data-page-node-id="nylmfMhtEgFHs0tBrkVoRL">load_cases</span>(path):
+    <span class="str" data-page-node-id="4e2MmnK7em5caLLPpyzeMC">"""读取 YAML 测试数据，返回用例列表"""</span>
+    <span class="kw" data-page-node-id="ohiXtCFDZUR8skDSM0ltsp">with</span> open(path, encoding=<span class="str" data-page-node-id="LyagXRp7TQvHsd2gCjtovY">'utf-8'</span>) <span class="kw" data-page-node-id="kdEcSJCUjBK1XFmTs5aWnb">as</span> f:
+        <span class="kw" data-page-node-id="GzJOLlYSey3BpiU77Cevhd">return</span> yaml.safe_load(f)
+
+<span class="cmt" data-page-node-id="pdmoP4fX7skSfDdCU45mAJ"># 配合 parametrize 使用</span>
+cases = load_cases(<span class="str" data-page-node-id="A7dD3rKVXJ93AMpmRSpYEp">"data/login_cases.yaml"</span>)
+ids = [c[<span class="str" data-page-node-id="T4U7dT36O71LJEASne25AM">'case'</span>] <span class="kw" data-page-node-id="XNAXZ6svLKa8p2JOD6M0LD">for</span> c <span class="kw" data-page-node-id="14ZCqYhbn7mIaS0oLNuxiq">in</span> cases]   <span class="cmt" data-page-node-id="gS7M8jXVIZGqRf1ejlTdYl"># 用 case 名作为用例 ID</span></code></pre>
+  </div>
+  <div class="kp" data-page-node-id="LeRlfRKIoI1a8leA60ZXuv"><b data-page-node-id="koU6qQHpTT6hNLXTyNZynq">🔑 知识点 · yaml.safe_load：</b> 用 <code data-page-node-id="2kVKb0wNEELCPbI1JbWWZJ">safe_load</code> 而非 <code data-page-node-id="arTAtwglDhHQI8yQZY5eUi">load</code>，避免 YAML 中的恶意构造（安全最佳实践）。读文件务必指定 <code data-page-node-id="1yx87FTLhrAkjfFAXqgqld">encoding='utf-8'</code>，否则 Windows 下中文可能乱码。</div>
+
+  <h3 data-page-node-id="JGL06ur7KWfNuYYwyvxNAt">7.3 📂 推荐的工程目录结构</h3>
+  <div class="code-block" data-page-node-id="15OBbt4MLmtrweSH5G3Uea">
+    <div class="header" data-page-node-id="UHtzEuifzHzJRCNMHRuJeE"><span class="lang lang-shell" data-page-node-id="DyLzCGbArsFRDA5OaBNY7M">目录</span><span class="fname" data-page-node-id="uiGMwy7PIXQMyKrj027qIn">api_test/</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="VYBR6WD9fwHqDAeLM0C7Ng">📋 复制</button></div>
+    <pre data-page-node-id="6DjfXhecylswE8rzIpzwzr"><code data-page-node-id="VLSsbtThaAtRpzXeCZ7fxf">api_test/
+├── conftest.py          <span class="cmt" data-page-node-id="95kl9QSA34iQqbBHm6UJB9"># 全局 fixture（登录 token、session）</span>
+├── pytest.ini           <span class="cmt" data-page-node-id="BVlNhg4gOwQiQu3ycYjIcU"># pytest 配置</span>
+├── data/                <span class="cmt" data-page-node-id="1iMqmcpT3FduN6c9GnPsSW"># 测试数据（YAML/JSON）</span>
+│   └── login_cases.yaml
+├── common/              <span class="cmt" data-page-node-id="3b7JbkfpApY7gGi7gwJZ5h"># 公共封装（请求封装、断言工具）</span>
+│   └── request_util.py
+├── testcases/           <span class="cmt" data-page-node-id="RKDa40xftY8E9XFx8uWSND"># 用例目录</span>
+│   ├── test_login.py
+│   └── test_user.py
+└── reports/             <span class="cmt" data-page-node-id="pk9WZBSmDOJDyX7azVQbLq"># 报告输出</span></code></pre>
+  </div>
+  <div class="card tip" data-page-node-id="j4BIlNAdvhcaj5X2yhGc8m">
+    <strong data-page-node-id="pCuWDWScpGj6kdPPxcOttw">💡 分层思想：</strong> <code data-page-node-id="9TZeKVd1BjohiJa1xdhHad">common/</code> 放封装、<code data-page-node-id="Vs5TXZ8WuzEyI7a4ylfqUA">data/</code> 放数据、<code data-page-node-id="Xr9RnfJgYodtYBqSu94AIe">testcases/</code> 放用例。<b data-page-node-id="5WPuhzvbGTJLvrI19IBcs5">改动隔离</b>——接口地址变了只改封装，数据变了只改 YAML，用例逻辑几乎不用动。
+  </div>
+  <div class="card success" data-page-node-id="WQYeqCtgFmHUXgkYIUADdP">
+    <strong data-page-node-id="OJgLTMZxxXeFJdQeH9NhjT">✎ 实操练习</strong>
+    <ol data-page-node-id="zSigHws8nTuDiWdYICkwhh">
+      <li data-page-node-id="vHZFQwQMnk9wygfpHBuZUo">用 <code data-page-node-id="CODEhU5GN6nPyohqXQYvbB">parametrize</code> 给一个接口写 3 组参数化用例。</li>
+      <li data-page-node-id="I35B8BPPncymNxdmKHfGT7">新建 <code data-page-node-id="WWANn4oyzXNaMBMbxahTcm">data/</code> 目录，写一个含 3 条数据的 YAML 文件，用 <code data-page-node-id="Afy4WOWGJJTrkokmZcuvqP">yaml.safe_load</code> 读出来并打印。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 8 章 断言 ═══════════════ -->
+<section id="assert" data-page-node-id="BW7lv9WMiwIGwz28YvHS6T">
+  <h2 data-page-node-id="2l4RjQU62i3hHnQFqWTV75"><span class="num" data-page-node-id="OtnN2jqASnZ86iBcPfeeoF">8</span> 第 8 章 🎯 断言与校验：判断接口「对不对」</h2>
+  <p data-page-node-id="CgvaxAOwdolVmKByi5DstK">发请求只是第一步，<b data-page-node-id="GL7kTcoBjB4fdGCwAt0YtW">判断返回是否符合预期</b>才是测试的价值所在。断言越精准，缺陷越难漏网。</p>
+  <h3 data-page-node-id="IZslIkhkH0ByHtGDRDlZff">8.1 ✅ 断言的三个层次</h3>
+  <table data-page-node-id="3i3SCL7ap9BQIWZjcDeeXo">
+    <tr data-page-node-id="W27Kedga4G4o9VQG2eomgu"><th data-page-node-id="womw9IWNcNAwEVE7zys26F">层次</th><th data-page-node-id="2HSS0dkFRkyz9kQYb8FQs9">校验什么</th><th data-page-node-id="rixBRz5BjFCLGAZqm8FaXT">示例</th></tr>
+    <tr data-page-node-id="Beh9CuAGsOOSMkGf3ChUFr"><td data-page-node-id="mH7PSv4WsdmSIzyTIx1l3x">状态码</td><td data-page-node-id="whw5xglkdSw20fUckL1Wbo">HTTP 层是否成功</td><td data-page-node-id="vGeEL6kpYDGgXZygJANuei"><code data-page-node-id="UlSAfRXa2voxwlYX0gdgPV">assert r.status_code==200</code></td></tr>
+    <tr data-page-node-id="Bj60j7lFfKwPxDALy35Ce1"><td data-page-node-id="tVDgpOyCQHIfXhrhcLTS8E">业务码</td><td data-page-node-id="uJrC6UahqnNGvrlCx6WBBK">业务是否成功（code 字段）</td><td data-page-node-id="bHVDCAlbHKDEQ7aFyq9byQ"><code data-page-node-id="5x2ZoEn1mVuhliJrzfScxf">assert r.json()["code"]==0</code></td></tr>
+    <tr data-page-node-id="2bqzoJjdkWVNEZSdGb8DrV"><td data-page-node-id="UzcsmVv5fYGu86CGx7khz3">数据内容</td><td data-page-node-id="yoSuXbOKgq3slnLsuajxPj">关键字段值是否正确</td><td data-page-node-id="0FGI08utlXeXaWV8ZA9qnW"><code data-page-node-id="uRu77bAHK7ceHeaFDqw2zv">assert r.json()["data"]["name"]=="Tom"</code></td></tr>
+  </table>
+  <div class="kp" data-page-node-id="pkyJX7GQMq19ri07dLq3eD"><b data-page-node-id="7te0pkqlLP0zGFzRsLVqkI">🔑 知识点 · 业务码 vs 状态码：</b> 很多接口即使业务失败也返回 HTTP 200，用 body 里的 <code data-page-node-id="bHjaRanwvSiDGBv5sWfpg5">code</code> 字段区分成败（如 <code data-page-node-id="MABs3ZaA5jRrWLus8Lhf77">{"code":10001,"msg":"密码错误"}</code>）。所以<b data-page-node-id="P951JX5BCf4VwoO8c8deta">只断言状态码是不够的</b>，必须断言业务码和关键字段。</div>
+
+  <h3 data-page-node-id="3QnnD7BuMDS225hN2Le6Qz">8.2 🧰 封装通用断言工具</h3>
+  <div class="code-block" data-page-node-id="OKVZWmgYLDIrUHivSxjkCA">
+    <div class="header" data-page-node-id="dIRbrBCwuOeSLIfOKZhSgD"><span class="lang lang-py" data-page-node-id="wQbrdmvDHmgE4GLlHCE14o">Python</span><span class="fname" data-page-node-id="z1ItcomEJmYHW8Pg46fzJp">common/assert_util.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="hLhjseZGcNMrZs5tIUPwyk">📋 复制</button></div>
+    <pre data-page-node-id="pn5nbyONjE5WbMilpDIvfW"><code data-page-node-id="Vu86FjJM6Tx5lfbRLmmKXw"><span class="kw" data-page-node-id="1rC4UR8YHfISL9vaazTiau">def</span> <span class="fn" data-page-node-id="D2MfaztTnfywSK0LwKzzAB">assert_status</span>(resp, code=<span class="num" data-page-node-id="aic43nGkdEGxOVZxCM45do">200</span>):
+    <span class="str" data-page-node-id="iqxtTwEhyHVT9g1OhmIazT">"""断言 HTTP 状态码"""</span>
+    <span class="kw" data-page-node-id="iMFncaquY0l6xk8bl8vn1u">assert</span> resp.status_code == code, \
+        <span class="str" data-page-node-id="euRYMa76jg6SEbpqao66JU">"状态码不符：期望 "</span>+str(code)+<span class="str" data-page-node-id="NbC7tw34uhpkuQBOgJXmi8">"，实际 "</span>+str(resp.status_code)
+
+<span class="kw" data-page-node-id="TOGmhoGRyXSKCBwo8Gz5QT">def</span> <span class="fn" data-page-node-id="OmRzUcxGLSG1gGOL6Ates8">assert_biz_code</span>(resp, biz_code=<span class="num" data-page-node-id="4gH9FbBLevmmt6s2TvHmCC">0</span>):
+    <span class="str" data-page-node-id="pBuE7dUVlTu1cuh3XCtAaY">"""断言业务码，并打印 msg 便于排查"""</span>
+    body = resp.json()
+    <span class="kw" data-page-node-id="Ia1FblTS332LJ0ZAD754lF">assert</span> body.get(<span class="str" data-page-node-id="qTomthTFV7oKEkme3VYRo9">"code"</span>) == biz_code, \
+        <span class="str" data-page-node-id="j9b0FcDcrKVoCGabKBnIIi">"业务码不符：期望 "</span>+str(biz_code)+<span class="str" data-page-node-id="alElFjnqn9DpylIQJQnkVp">"，实际 "</span>+str(body.get(<span class="str" data-page-node-id="RBEIhcuF5EculXcc5lwzOG">"code"</span>))+<span class="str" data-page-node-id="S3JE5lJW8C5igq0eACF17f">"，msg="</span>+str(body.get(<span class="str" data-page-node-id="wBAx6hbm3CfuFMC88ImTVE">"msg"</span>))
+
+<span class="kw" data-page-node-id="FrBeZ2hRGqB2QeJeTYkdWE">def</span> <span class="fn" data-page-node-id="0tYpTyLdYI1GOh9aQGaJr5">assert_field</span>(resp, field, expect):
+    <span class="str" data-page-node-id="aq0aA8h8ukD0CyV16FJ2Kl">"""断言某个字段值"""</span>
+    actual = resp.json().get(field)
+    <span class="kw" data-page-node-id="JQ2MHEAaKNQlvdcQ9OG07m">assert</span> actual == expect, \
+        <span class="str" data-page-node-id="fcsbxsH2GGbg5XEp57u7gc">"字段 "</span>+field+<span class="str" data-page-node-id="Y1Z0flAd2DPZZAkKZe8ecV">" 不符：期望 "</span>+str(expect)+<span class="str" data-page-node-id="iaGBMCo4ycyDAA9kEcDSLl">"，实际 "</span>+str(actual)</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="iIELCeqAidgLCL0M1JbjjT"><b data-page-node-id="YY4qBNMBawmfl8Tor5wsDA">🔑 知识点 · 断言信息：</b> <code data-page-node-id="zKdtskdOQkdDovANdjc1Hi">assert 条件, "提示信息"</code> 的第二个参数在失败时会显示。写清「期望 vs 实际」，能让失败原因<b data-page-node-id="qGFHlsPBpy8zFDQLByvWuF">自我解释</b>，不用每次翻代码猜。这是专业与业余的分水岭。</div>
+
+  <h3 data-page-node-id="uTZTz2ci7J5O7EYuzLXj3K">8.3 🧪 在用例中组合断言</h3>
+  <div class="code-block" data-page-node-id="nauijGhyvqUkrEEX13fqRN">
+    <div class="header" data-page-node-id="efAKsNmdHdSso0ZGe84QPC"><span class="lang lang-py" data-page-node-id="EMmpE1xve2mVSHjEut2krQ">Python</span><span class="fname" data-page-node-id="B4gE705szQ0BMsIHfhWBKn">test_login_assert.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="YJSEzzEOIltxghPeDdki7y">📋 复制</button></div>
+    <pre data-page-node-id="MfhvjeLcZGMdQfjVrSCwXz"><code data-page-node-id="rpwGUu3wYJbjG3E9l5YSbC"><span class="kw" data-page-node-id="5qyB5wPBs7ni0SdnyGtQMf">from</span> common.assert_util <span class="kw" data-page-node-id="yeFlJk1N12hzPdkscDqqj2">import</span> assert_status, assert_biz_code, assert_field
+<span class="kw" data-page-node-id="vn8rlsMA7FFpTC7QSDkWGi">import</span> requests
+
+<span class="kw" data-page-node-id="hO5kdSiIo9n3rRYLJUhTcF">def</span> <span class="fn" data-page-node-id="2H7N3MVsq3lXXd6Uow92gv">test_login_ok</span>():
+    r = requests.post(<span class="str" data-page-node-id="N9Epu2vrJO5eogd7IfLmRw">"https://httpbin.org/post"</span>,
+                     json={<span class="str" data-page-node-id="gMQA66700Gs0ex18tZak1w">"user"</span>:<span class="str" data-page-node-id="quNVOMmvIwCUwAy7FQKg3J">"tom"</span>}, timeout=<span class="num" data-page-node-id="rMR5XqA3OfTvqym7fKCiki">10</span>)
+    assert_status(r)                 <span class="cmt" data-page-node-id="QlBnjsPtJtoTGXHybHOAGz"># ① 状态码</span>
+    <span class="cmt" data-page-node-id="fUMkVlfeisLTjRdpGo8Foe"># httpbin 无业务码，这里演示字段断言</span>
+    assert_field(r, <span class="str" data-page-node-id="lsFFKdSCCTVib1BtqOS8S7">"json.user"</span> <span class="kw" data-page-node-id="I0VEEfuTygWWw91m0xhnsd">if</span> <span class="num" data-page-node-id="eogaIFutOu3IgtFTP1HZVO">0</span> <span class="kw" data-page-node-id="1YFmPptpatkvUhAA7NtB20">else</span> <span class="str" data-page-node-id="9ZI9SLMoMaLppz34O3AA5v">"json"</span>, <span class="str" data-page-node-id="pEGRUny0jujeDEc0OHtN7F">"tom"</span>)</code></pre>
+  </div>
+  <div class="card warning" data-page-node-id="KDfcNsC6sM3Bbuhp1zoqFD">
+    <b data-page-node-id="5U4CY74RT9fDe5oIk7OR7H">⚠️【断言陷阱】</b>
+    <ul data-page-node-id="WeQP0WIB8YxxYf1GvYJ7KU">
+      <li data-page-node-id="ikLP9sHZbAqDtraAYK2C5w">不要断言整个响应体相等——响应里常有时间戳、随机 id，会导致「假失败」。只断言<b data-page-node-id="ewBw40RwboZeurNk1ZHGfV">关键稳定字段</b>。</li>
+      <li data-page-node-id="kR94Pvw5aSwg5Be3fLDgFB">嵌套字段取值前先确认层级，用 <code data-page-node-id="JgnPBJx6NgvJKFEXiW3G7B">.get()</code> 比 <code data-page-node-id="M5pIEcrJaASbJEMMKq8TCW">[]</code> 更安全（取不到返回 None 而非抛 KeyError）。</li>
+    </ul>
+  </div>
+  <div class="card success" data-page-node-id="gcDuFGQRKk3CkDiKh5VgKn">
+    <strong data-page-node-id="I0QttqXP2Bf7EHwfUeWGBC">✎ 实操练习</strong>
+    <ol data-page-node-id="6gNpwJg4GwjfKlNmI6Z5Dx">
+      <li data-page-node-id="MM4iniiGjGPNHdGJvnrlVk">封装一个 <code data-page-node-id="HaSMV8gAR0GAzaVAfmF66L">assert_status</code> 函数，对 httpbin 的 get 接口断言状态码 200。</li>
+      <li data-page-node-id="wExKvbtQawzYxCfjSu3aGw">写一条用例，同时断言「状态码 200 + 某字段值正确」两层。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 9 章 工程化 ═══════════════ -->
+<section id="project" data-page-node-id="S4tHXBOFNdh5pob77nbXaz">
+  <h2 data-page-node-id="ZhzxiZt8JjTotMTaKIOYOF"><span class="num" data-page-node-id="MA8d8iw0tLBWvqgvnWI9yf">9</span> 第 9 章 🏗️ 工程化：配置、日志与报告</h2>
+  <p data-page-node-id="pTQPdsf4OusAwkUWGTyE9T">脚本能跑只是起点。要放进团队流水线长期维护，还需要<b data-page-node-id="cVJzOsFb4zSAh9N414fP9E">配置管理、日志记录、可视化报告</b>三件套。</p>
+  <h3 data-page-node-id="WnPHV3n9YpEPHsGRhrWA5h">9.1 ⚙️ pytest.ini 配置文件</h3>
+  <div class="code-block" data-page-node-id="qAhbLj0IVLusepCBNqB1pD">
+    <div class="header" data-page-node-id="WXLMcrqF6jRUOqbI0vPDdY"><span class="lang lang-shell" data-page-node-id="73aN0OxRVOmknvrLnCs4ze">INI</span><span class="fname" data-page-node-id="lwsmrN6npUykXE1sabeDI3">pytest.ini</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="8OI4eMzcb6IKsTzCBDw8HL">📋 复制</button></div>
+    <pre data-page-node-id="Dt0tOBrjGG71NYya3OykT2"><code data-page-node-id="WRwJwCPb94GmcAUnoAez8Q">[pytest]
+<span class="cmt" data-page-node-id="Hk4cAaXWhsbHhtADQPVJSC"># 用例搜索路径</span>
+testpaths = testcases
+<span class="cmt" data-page-node-id="73VNEULplBZ8JE6ubmKJBR"># 默认运行参数</span>
+addopts = -v -s --tb=short
+<span class="cmt" data-page-node-id="bbGnuHMlPx43h6dwj0JaDs"># 自定义标记（可按模块/优先级筛选用例）</span>
+markers =
+    smoke: 冒烟测试
+    regression: 回归测试
+    P0: 最高优先级</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="YyEOvgVOUxc2GSB5u1iuX6"><b data-page-node-id="w7VdtaVtleA7ty8dhNVDzR">🔑 知识点 · marker 标记：</b> 给用例打标签后，可用 <code data-page-node-id="Z9dSTnLleOUu4F7NhXNd6Z">pytest -m smoke</code> 只跑冒烟、<code data-page-node-id="b91h0jp760yoSpSVy9PUFx">pytest -m "P0"</code> 只跑高优先级。配合 <code data-page-node-id="6m0yxuEFjzEnbmFKDHPDuK">@pytest.mark.smoke</code> 装饰器使用，实现<b data-page-node-id="tEr0CmTUtKZtIwRDxjQ5op">按优先级/模块分批执行</b>。</div>
+
+  <h3 data-page-node-id="pk8ObakFwhZ7ctK2AoIdYC">9.2 📝 日志记录（logging）</h3>
+  <div class="code-block" data-page-node-id="csYkBr4HdEyd7BX02TDwVY">
+    <div class="header" data-page-node-id="zFFWjC2GyXR2P7HWUoXVOM"><span class="lang lang-py" data-page-node-id="UuSeDLE4QTy16gG9xCtVYc">Python</span><span class="fname" data-page-node-id="ZxYZOJTwXdIfoPMHW9ZGou">common/logger.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="pHF4rQFLnP0VAdiGcC6UDK">📋 复制</button></div>
+    <pre data-page-node-id="tj9z7TOrPuFTzpyErZSync"><code data-page-node-id="KUuZZ4C7oThyS20RzOV4M4"><span class="kw" data-page-node-id="G5hwQorU9IFBnmyVQBf8UJ">import</span> logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=<span class="str" data-page-node-id="Fi2m3vAHcWXNdy0sxPZWIy">"%(asctime)s [%(levelname)s] %(message)s"</span>,
+    handlers=[
+        logging.FileHandler(<span class="str" data-page-node-id="m2BC0fybFnuR0eEEMtC43z">"reports/test.log"</span>, encoding=<span class="str" data-page-node-id="vkRI4WKjkJExBPQHW34tuI">"utf-8"</span>),
+        logging.StreamHandler(),
+    ],
+)
+log = logging.getLogger(__name__)</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="pFTJQWoKrOME0nK2RgArsQ"><b data-page-node-id="OCozQBtOvoPXmwf3pfGQYV">🔑 知识点 · logging vs print：</b> <code data-page-node-id="Li1ZlC6DGG463yrx3aBi6Q">logging</code> 能分级（DEBUG/INFO/WARNING/ERROR）、同时输出到文件和控制台、带时间戳，便于事后追溯。<code data-page-node-id="w3VMMOEddWmlBV7N8lxOEI">print</code> 调试图省事，正式框架请用 logging。</div>
+
+  <h3 data-page-node-id="KQjthaOChPmCrqjNpxiQ21">9.3 📊 Allure 可视化报告</h3>
+  <div class="code-block" data-page-node-id="VZDB8tlHKp9OG9gAV9ZAZi">
+    <div class="header" data-page-node-id="GYomro5nPovloZU6MZCpCe"><span class="lang lang-shell" data-page-node-id="AzT2dVAc9LAGVxY26XBmId">Shell</span><span class="fname" data-page-node-id="48am7PqAuvgfNlWzOo4vyn">生成并查看 Allure 报告</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="AkyA1CQe7pQwhUQCN6G2sA">📋 复制</button></div>
+    <pre data-page-node-id="T9FO6fHXr1xB1SntnYkWoJ"><code data-page-node-id="j6fDELDCD7RHG6JIe30l4o"><span class="cmt" data-page-node-id="daWZkG3XFBxaQPr2K92quj"># 运行并生成 allure 数据</span>
+pytest -v --alluredir=reports/allure-results
+
+<span class="cmt" data-page-node-id="qMTQr6ayH1Idx6BhsVE0tc"># 本地起服务查看报告（需装 allure 命令行工具）</span>
+allure serve reports/allure-results</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="8fSaMipCshug60vG156CdA"><b data-page-node-id="CuOBvH6Y7wovXjgUfli8Ye">🔑 知识点 · Allure：</b> 比 pytest-html 更强大的报告，能看通过率趋势、失败用例、步骤详情、附件截图。是团队汇报和缺陷定位的利器。<code data-page-node-id="hVYlrYBRiGiVLCB7AtbZSA">--alluredir</code> 指定数据目录，<code data-page-node-id="ofUxDLF2YtyvToW4aOa4tP">allure serve</code> 起本地服务实时预览。</div>
+
+  <h3 data-page-node-id="Sz3J6sCRByxDVqSw8MYrCG">9.4 🔀 冒烟与回归的分层执行</h3>
+  <table data-page-node-id="u3wytAs3JeRG1kEuUG61gC">
+    <tr data-page-node-id="4iJe2rVoJECwi1cP3x7yqF"><th data-page-node-id="z15F5zdKh5C6JBWXCDUL4j">类型</th><th data-page-node-id="wxv6FlovGwpTccjraLbX9j">范围</th><th data-page-node-id="ZD1oEiK1tFHn8GR52TKF0L">频率</th><th data-page-node-id="FvhEOMAt3BtHDMy0O6pgN2">命令</th></tr>
+    <tr data-page-node-id="xdMt6uuwO2eGBy0NmgdBxA"><td data-page-node-id="DJCwKQiaVlSLu2EhcCXdxw">冒烟测试 smoke</td><td data-page-node-id="Lu9HAZaXmyMreEiLSsaFk9">核心主流程，少量</td><td data-page-node-id="FGWb5niuNGCmh8OxgSnNzn">每次提交</td><td data-page-node-id="FO4xtXw7CSHme97C5MGwwF"><code data-page-node-id="KZ9SgPsqKIYFspH1chCogt">pytest -m smoke</code></td></tr>
+    <tr data-page-node-id="3GHXAYaUr0BFQJJ1qNRxbr"><td data-page-node-id="b5CgoH2rJee9lhiSL6BKnH">回归测试 regression</td><td data-page-node-id="SiFny201lAyktEngMjELJ0">全量用例</td><td data-page-node-id="NNj9LhtORFuPAJXqFhuP7B">每日/发版前</td><td data-page-node-id="kZCLi4MTpBvJPsDXV92Mf5"><code data-page-node-id="JrcpQCgD2aXIETlfPoWthM">pytest -m regression</code></td></tr>
+  </table>
+  <div class="card tip" data-page-node-id="xSkG6oJ17e80Nkg5ARAhDz">
+    <strong data-page-node-id="yMroJWN8GGAhuV0ZrOGHk9">💡 落地建议：</strong> 把冒烟挂到 Git 提交钩子或 CI，每次改动秒级反馈核心功能；全量回归每晚定时跑一次。这样既快又全，是接口自动化最实用的价值。
+  </div>
+  <div class="card success" data-page-node-id="fOvJQfIbmQMlziDGrrUGmW">
+    <strong data-page-node-id="bJWPlZK2I9tW1fkgx96EuZ">✎ 实操练习</strong>
+    <ol data-page-node-id="b4vgA1lIrA8FcE4st7fca2">
+      <li data-page-node-id="Wu1N6zuS7uoPfTBvfVq6MQ">写一个 <code data-page-node-id="lhQbgOGrjD3iR9NgePbAag">pytest.ini</code>，配置 <code data-page-node-id="VOhoRUZqDqSF3JBbeFESXE">testpaths=testcases</code> 和一个 <code data-page-node-id="vPyzwCdFyfABiW5JvtQnCO">smoke</code> 标记。</li>
+      <li data-page-node-id="BeAAZv7WGfBUQzYNBwaBtP">给一条用例加 <code data-page-node-id="y0TRqdH8nGiYliEr8S93xc">@pytest.mark.smoke</code>，用 <code data-page-node-id="rZ6ytvjA6agau8MIHNav8A">pytest -m smoke</code> 只跑它。</li>
+      <li data-page-node-id="gVNXzw5s58huxKLvZMIBzC">接入 logging，让用例执行时往 <code data-page-node-id="3gHbtQ30SDLj3T5a050UcD">reports/test.log</code> 写日志。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 10 章 完整实战 ═══════════════ -->
+<section id="practice" data-page-node-id="QadrWSP6Bl4Kavped5qG7y">
+  <h2 data-page-node-id="SlP8xYdKsjqHm7PB6C1z7Q"><span class="num" data-page-node-id="SFRzH5BbBS63ba9KUkXHW1">10</span> 第 10 章 🚀 完整实战：搭一个可运行的框架</h2>
+  <h3 data-page-node-id="RMZzfFQFFV56XBjbweZXn0">10.1 📋 目标场景</h3>
+  <p data-page-node-id="7RzCJum3ZzSWH75K9jjF6v">以免费测试接口 httpbin 为对象，从零搭一个「登录→关联 token→查用户→断言」的完整链路，覆盖封装、fixture、数据驱动、断言、报告，跑通即可作为你项目的骨架。</p>
+
+  <h3 data-page-node-id="kJfN0qqoInkpN5S89Xzrw1">10.2 🧱 步骤一：封装请求工具</h3>
+  <div class="code-block" data-page-node-id="dx2cuN5PDKrAPOCUgGNip8">
+    <div class="header" data-page-node-id="VQbYuMG9YG1EzBJQozSqyO"><span class="lang lang-py" data-page-node-id="4tIVbCjxJQuVdEghspHPKi">Python</span><span class="fname" data-page-node-id="iG48UHOXRRcwnicX8Z28EU">common/request_util.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="JZmE7VgiJDmJ922QTmZ6iP">📋 复制</button></div>
+    <pre data-page-node-id="pxh9OLAZcdrYR94OPRXHUm"><code data-page-node-id="GUDhVUCkliLjT2BAAUrkBL"><span class="kw" data-page-node-id="PfVPxmdNTAW9B6bIl8Y4oZ">import</span> requests
+
+<span class="kw" data-page-node-id="BP1dJy4mCsmH53jgCHxSpE">class</span> <span class="fn" data-page-node-id="yaYUOi3T3YBsfBHUCRHFOY">RequestUtil</span>:
+    <span class="str" data-page-node-id="ogBEK5Kj4nb3D4BNMR8Po6">"""统一请求封装：集中管理 base_url、超时、日志"""</span>
+    <span class="kw" data-page-node-id="S206z7Yp71287TDJyt1SNt">def</span> <span class="fn" data-page-node-id="UUttbqu0pCeOXVBqwf9NU6">__init__</span>(self, base_url):
+        self.base_url = base_url
+        self.session = requests.Session()
+        self.session.headers.update({<span class="str" data-page-node-id="I7DcaMQUpuKK4xeZMxqMzr">"Content-Type"</span>: <span class="str" data-page-node-id="sFvrt7kERzbwGKhiN1yNGq">"application/json"</span>})
+
+    <span class="kw" data-page-node-id="l8ux74TM7VRJru0Lfwh9EP">def</span> <span class="fn" data-page-node-id="NqAEqBKX9Fq7ILvx9Vhlfz">_full_url</span>(self, path):
+        <span class="kw" data-page-node-id="1vapFXHrPiRlZbF6e1OHFi">return</span> self.base_url + path
+
+    <span class="kw" data-page-node-id="M1ek4ZWH0Nr3wlIPRG5ggc">def</span> <span class="fn" data-page-node-id="m2CnhYrXJFQMxzMfzGurSx">get</span>(self, path, params=<span class="kw" data-page-node-id="IhKoNMr0bUIQGpYtlDMxtH">None</span>):
+        <span class="kw" data-page-node-id="bVN49d8l6horfaLV30POAs">return</span> self.session.get(self._full_url(path), params=params, timeout=<span class="num" data-page-node-id="5Vjxvig465WtfllOhHvwjc">10</span>)
+
+    <span class="kw" data-page-node-id="iYcR1MwM52Kx13G4nnIl2q">def</span> <span class="fn" data-page-node-id="Vx74mKDOuOFJpHhYhANeQH">post</span>(self, path, json=<span class="kw" data-page-node-id="Ch3I8TkgR4FmDgmXHKKZqz">None</span>):
+        <span class="kw" data-page-node-id="rT0MxrnIpupmnhyDeQ0ume">return</span> self.session.post(self._full_url(path), json=json, timeout=<span class="num" data-page-node-id="oekk7h9HtfLWNY4ZgLWjxe">10</span>)
+
+    <span class="kw" data-page-node-id="avpJggyhNlIXsRage7MHgX">def</span> <span class="fn" data-page-node-id="fw3lXopNWFGI9tMhGfA3E3">close</span>(self):
+        self.session.close()</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="rh88MRlBNGIhJPNUXbSAtO"><b data-page-node-id="T57hkcWu5TSrTEzXMuUftz">🔑 知识点 · class 封装：</b> 用类把「base_url、超时、公共头」集中管理，用例只调 <code data-page-node-id="NEVWYZ8nKQktRnA5rk1bJH">self.ru.post(...)</code>，不用每次写域名和 timeout。接口地址变更时只改 <code data-page-node-id="rA0Giizf6xoJlebooZnEPk">base_url</code> 一处。<code data-page-node-id="VQOLcMIig4tGU36hAbdFlE">__init__</code> 是构造方法，<code data-page-node-id="gdF4R3h7PZvEaFYE39HHAe">self</code> 代表实例本身。</div>
+
+  <h3 data-page-node-id="5J6OzUc8TfB37UNbyTr52t">10.3 🩹 步骤二：全局 fixture（conftest.py）</h3>
+  <div class="code-block" data-page-node-id="8zntXqwL1nRnfaGvhuUAaK">
+    <div class="header" data-page-node-id="KHwo58nYC01ZGqccYXRDg6"><span class="lang lang-py" data-page-node-id="bjsrO1vL5ZPSd0aB7dFc4E">Python</span><span class="fname" data-page-node-id="NGtwvWM3dAeXIB99eXoSDM">conftest.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="z6rMQZEEwkN97HVdJmjDPk">📋 复制</button></div>
+    <pre data-page-node-id="x4zRgOvNih5B3zo8d4ZqT8"><code data-page-node-id="Ll0cZ28G7AaudbFoL59JTI"><span class="kw" data-page-node-id="0MFN3UC5z3EfjXfhk0Kgsr">import</span> pytest
+<span class="kw" data-page-node-id="PDL2JsKlxRzx1yBzCzioVK">from</span> common.request_util <span class="kw" data-page-node-id="xYmqRU1Phw4cezXYfgKUWi">import</span> RequestUtil
+
+BASE = <span class="str" data-page-node-id="p1JlhSWTKFdkcHnYwKVWt2">"https://httpbin.org"</span>
+
+<span class="dec" data-page-node-id="et2yxiu7PMI3tjEtA6OYBY">@pytest.fixture</span>(scope=<span class="str" data-page-node-id="4juXNYtWn4ZKn4mxdoCxm4">"session"</span>)
+<span class="kw" data-page-node-id="1gRqEmG5G1Tc3ZeiaHECV6">def</span> <span class="fn" data-page-node-id="xQ0jFxVmKpUWxJPF7jwGIC">ru</span>():
+    <span class="str" data-page-node-id="3DkDeqxFQmCyvoWraoMxTg">"""全局请求工具，整个测试会话复用"""</span>
+    r = RequestUtil(BASE)
+    <span class="kw" data-page-node-id="2vILDwGw4OrKuM1TtvNf4h">yield</span> r
+    r.close()
+
+<span class="dec" data-page-node-id="tutcmKPceSFcDPqAv873RE">@pytest.fixture</span>(scope=<span class="str" data-page-node-id="Mp8gCSJmgiQBsnJ0VvAnFl">"session"</span>)
+<span class="kw" data-page-node-id="6NzPtG7jYFtFtyq9A4wzHN">def</span> <span class="fn" data-page-node-id="NAW2yvnjJPm5UKXXhuXgcY">token</span>(ru):
+    <span class="str" data-page-node-id="EmJkXRUSO5TAYKHL5Ayn51">"""模拟登录，拿到 token 供后续用例使用"""</span>
+    r = ru.post(<span class="str" data-page-node-id="taRrlNZSzK2vlPEuuyPoSH">"/post"</span>, json={<span class="str" data-page-node-id="1Uy0GDfuhk31Bt7BFKMwKX">"user"</span>: <span class="str" data-page-node-id="qJ2vVp7p60Q77EX4BaWPI2">"tom"</span>})
+    <span class="kw" data-page-node-id="qY2wtPfvjwAyTNICbApC4x">return</span> <span class="str" data-page-node-id="A0voGR5Q69sL3ctUAZkQFC">"fake-token-"</span> + r.json()[<span class="str" data-page-node-id="fdwiSL4CNQLZYNoCGnLRMc">"json"</span>][<span class="str" data-page-node-id="t7AEDYxLTKDfmP6UVDgpcC">"user"</span>]</code></pre>
+  </div>
+  <div class="kp" data-page-node-id="otTIbf2d7fYcd50VCnBaBp"><b data-page-node-id="AznB4dLlSoXEziC7DkMjO3">🔑 知识点 · scope：</b> fixture 的 <code data-page-node-id="QSXQTkPDZk28rJ50gDWvGd">scope="session"</code> 表示整个测试会话只执行一次（登录拿 token 只需一次）；默认 <code data-page-node-id="pcOqbnUMiUYDJ4Rv3DQH1a">scope="function"</code> 是每条用例都执行。登录这类昂贵操作务必用 session 级，避免重复请求。</div>
+
+  <h3 data-page-node-id="13cetqCcfhUGrFIVUZqS1T">10.4 🧪 步骤三：编写用例</h3>
+  <div class="code-block" data-page-node-id="YE36BjgZDMHyyyICPCMMRp">
+    <div class="header" data-page-node-id="z8r5SLiX4eJz49ExKTcL0k"><span class="lang lang-py" data-page-node-id="RDAmyP9LOsWSY7kSnsvzEd">Python</span><span class="fname" data-page-node-id="PgsmABQTBEfBoNQXrSuwHu">testcases/test_user.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="MMaERHftvOxCqYECMZCbtP">📋 复制</button></div>
+    <pre data-page-node-id="ELK5G228a1UyZZuPm3yAGw"><code data-page-node-id="0LiKSfKDofxsVzliXCSaXa"><span class="kw" data-page-node-id="UJRBnjIAnJ2yYajHrlVXNh">import</span> pytest
+<span class="kw" data-page-node-id="OJqXcYeQtesIt3tlROicTL">from</span> common.assert_util <span class="kw" data-page-node-id="IxMX8q2yprNCoQtDYcPcAJ">import</span> assert_status, assert_biz_code
+
+<span class="dec" data-page-node-id="HbuxOIDIhXs7WBjfl0sgRa">@pytest.mark.smoke</span>
+<span class="kw" data-page-node-id="5p28WJlf6ZpIJUWw2PEobT">def</span> <span class="fn" data-page-node-id="KqloGyEyH36cKXphHy2dEA">test_get_with_token</span>(ru, token):
+    <span class="str" data-page-node-id="rdyo0jxABK1p2oBt5a4YHl">"""用例：带 token 请求受保护接口，验证链路打通"""</span>
+    headers = {<span class="str" data-page-node-id="4fFWE1TaY75ZVUylPELsgw">"Authorization"</span>: <span class="str" data-page-node-id="M0y6hj2ah8AThnIcwDRiiD">"Bearer "</span> + token}
+    r = ru.session.get(ru.base_url + <span class="str" data-page-node-id="6fU1GdEcS8T95rGMsLBLuI">"/get"</span>, headers=headers, timeout=<span class="num" data-page-node-id="4VJXxMKG4O7nkaFIJLoZjI">10</span>)
+    assert_status(r)
+    <span class="builtin" data-page-node-id="kfhlOEoUSlv3vlX3CSEGVS">print</span>(<span class="str" data-page-node-id="Nk5I7GMYdOvMhGlSUDNi7H">"链路打通，token="</span>, token)
+
+<span class="dec" data-page-node-id="LFvoagDHvMD62Au2y8B7Kl">@pytest.mark.parametrize</span>(<span class="str" data-page-node-id="yG9IKD1R36j53hkY5h4FHn">"page,expect"</span>, [
+    (<span class="num" data-page-node-id="aZUJTf88XA76wTYVRsgbG8">1</span>, <span class="num" data-page-node-id="AMNzY3XGwvIb5USjVv0EMQ">200</span>),
+    (<span class="num" data-page-node-id="seRBlzH5bFJFBuox2aIz5D">2</span>, <span class="num" data-page-node-id="TFUvYtDNYQuH7FbeTIP40J">200</span>),
+])
+<span class="kw" data-page-node-id="lsokQRrpztyjIpGQzZFG1P">def</span> <span class="fn" data-page-node-id="BG8Hxga8xDZUenrZEP0CqR">test_get_paging</span>(ru, page, expect):
+    <span class="str" data-page-node-id="uMthM8zfS92HojNPpRbdGp">"""用例：分页参数化"""</span>
+    r = ru.get(<span class="str" data-page-node-id="IXjUOqphtRW636rXwfM77H">"/get"</span>, params={<span class="str" data-page-node-id="DGikNl25cH4N6jmJCAxr7W">"page"</span>: page})
+    assert_status(r, expect)</code></pre>
+  </div>
+
+  <h3 data-page-node-id="iBf0kSgHfslz1Eyol63Ofh">10.5 ▶️ 步骤四：运行与出报告</h3>
+  <div class="code-block" data-page-node-id="sQaztLc5fkEwNswumqNAVZ">
+    <div class="header" data-page-node-id="IUOILQLNfZTFDEYmHsbYo6"><span class="lang lang-shell" data-page-node-id="2cmRZJ5KFjHeE3yijUxqrZ">Shell</span><span class="fname" data-page-node-id="80kjxiZT0taF12MJrgDsKd">命令行</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="i7wBzcwKzqj9X71LWt4Klw">📋 复制</button></div>
+    <pre data-page-node-id="RudmTfYwciPUDwplLBXkg6"><code data-page-node-id="pXTuXjaD4BI6UZObFv1Dgn"><span class="cmt" data-page-node-id="HylsrwI4c58DEEpegCa3gE"># 跑冒烟</span>
+pytest -m smoke -v
+
+<span class="cmt" data-page-node-id="s7blFC5EwoDiBbaAC5ASsf"># 全量 + HTML 报告</span>
+pytest -v --html=reports/report.html --self-contained-html
+
+<span class="cmt" data-page-node-id="JSF9FJBTCnwdhQZS7HCgnN"># 全量 + Allure 报告</span>
+pytest -v --alluredir=reports/allure-results
+allure serve reports/allure-results</code></pre>
+  </div>
+
+  <h3 data-page-node-id="Xn5tmQzPUjMveOMhhLqL2P">10.6 🔄 完整执行流程回顾</h3>
+  <div class="flow" data-page-node-id="C4vUc6DbHWSu8TlT8oQHxP">
+    <div class="flow-box accent" data-page-node-id="VnIDsvThxnKDTYo8Kdner4">conftest 登录拿 token</div>
+    <span class="flow-arrow" data-page-node-id="tShCN4FmZETepzg1RD2Z6P">→</span>
+    <div class="flow-box" data-page-node-id="Gm6mmIKOuX3zMHRU1HxLo9">用例注入 ru/token</div>
+    <span class="flow-arrow" data-page-node-id="vKRKl9Vpt5A0odWnQOGqBf">→</span>
+    <div class="flow-box" data-page-node-id="QW5eXxkrN07SNCqHF3FpUt">发请求</div>
+    <span class="flow-arrow" data-page-node-id="diqIB4oLArAWbygU3EiQqX">→</span>
+    <div class="flow-box" data-page-node-id="f7JI5DcgtEZGOoplydBWJw">断言状态码/业务码/字段</div>
+    <span class="flow-arrow" data-page-node-id="lFXrogLlueetx1u1RqGVCr">→</span>
+    <div class="flow-box accent" data-page-node-id="NPaGENMMMs0SwzCVOy4wbY">生成报告</div>
+  </div>
+  <div class="card success" data-page-node-id="tl7tGdtXkBNfEHTn1jscQo">
+    <strong data-page-node-id="fWaEO1N0ggv0tAWyhAQiAX">✎ 实操练习（毕业项目）</strong>
+    <ol data-page-node-id="uGbyIaysJQW9hVkZ9wvmxK">
+      <li data-page-node-id="azXFyBjrYs6diK5ucG3Kzo">按 10.2~10.4 完整敲一遍，确保 <code data-page-node-id="8BfimYYFXrJAfFS9hqBFuJ">pytest</code> 全绿（PASSED）。</li>
+      <li data-page-node-id="t2xrrUfd89odXeQiz7ZSd9">新增一条参数化用例，验证不同 page 参数。</li>
+      <li data-page-node-id="htE8WLEHA7eEqAFe7WtslB">生成一份 HTML 报告并打开查看通过率。</li>
+      <li data-page-node-id="DQuYdpoznQbGbiKOfHGOcj">把 httpbin 换成你公司真实测试环境域名，框架即可复用。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════════ 第 11 章 知识点速查 ═══════════════ -->
+<section id="cheatsheet" data-page-node-id="0HnhiPAuya6blujNDddlno">
+  <h2 data-page-node-id="nTioE1c0S4KzMCkuyEBhJ4"><span class="num" data-page-node-id="oku26lhqFFsPcXD50i4udK">11</span> 第 11 章 ⚡ 知识点汇总速查</h2>
+  <p data-page-node-id="TkYrQycJ6YzGhGZNOY5aVm">全篇知识点浓缩成速查表，考前/写代码时快速回顾。</p>
+
+  <h3 data-page-node-id="FQNXVMLj7iD1xwFKbxxi5T">11.1 🌐 requests 速查</h3>
+  <table data-page-node-id="CKdLLJaOBef9WDGGgwnKhr">
+    <tr data-page-node-id="6Xin6ITI7B3tqozDoM8R2k"><th data-page-node-id="YJzK0Ba5QLXbuUqyUmRFFA">知识点</th><th data-page-node-id="7aIPeECWqR5TRuHuR0Eane">要点速记</th></tr>
+    <tr data-page-node-id="b8AhZMiGAUntRtgR3AVCWh"><td data-page-node-id="26DpuqkheeLIiKgfi5RLxZ">GET 传参</td><td data-page-node-id="P0hKSVi5UBEeGpTbaSrxew"><code data-page-node-id="sYZiG472TfqohIe7rzdtq1">requests.get(url, params=dict)</code>，自动拼到 URL</td></tr>
+    <tr data-page-node-id="FFH4xTZbHJFL9HLnAooTJT"><td data-page-node-id="vZ0PnT7dycIdIO3ZBwBMCH">POST JSON</td><td data-page-node-id="YHqTu5mBCO9iGNjbEdaRCu"><code data-page-node-id="W37SxKR9VeMpKSvnUDBfOO">requests.post(url, json=dict)</code>，自动序列化+设 Content-Type</td></tr>
+    <tr data-page-node-id="hApDeblWvNOLCVH2m3GITd"><td data-page-node-id="bfrvHwIEoVhLEA0lHZzXaD">POST 表单</td><td data-page-node-id="DcUGgNFf9L2tjR4QFFgpUj"><code data-page-node-id="ORlTE9y4PJhIxJWencD52s">requests.post(url, data=dict)</code>，application/x-www-form-urlencoded</td></tr>
+    <tr data-page-node-id="x7Zs9kpFhwfxOLO8QuQW45"><td data-page-node-id="UGTQWzZ6XJnFZb20YTLSn6">超时</td><td data-page-node-id="yqae8FEvb59xnOkFBl5UuK"><code data-page-node-id="KpTAnAmG8iPv0yYtL7JAjb">timeout=10</code> 或 <code data-page-node-id="vbVFkqOP3sIWzDoDl0Lafa">timeout=(3,10)</code>（连接,读取）</td></tr>
+    <tr data-page-node-id="0zjGI6FCRrTCjTf6CnBLsg"><td data-page-node-id="peN6EanMI8BuYnNSn3DGrN">Session</td><td data-page-node-id="XzG9RS8BuD4mv3lMQVzAqp"><code data-page-node-id="9DEpl6pXdPKqAkKp2JFV1C">requests.Session()</code> 自动保存 cookie、复用配置</td></tr>
+    <tr data-page-node-id="l4b0pkmLBkNCSX6piGCAne"><td data-page-node-id="dMB4C2YwbnTgol6zPLHjyb">取状态码</td><td data-page-node-id="DN79KHXOigYa0iVkE4TZfF"><code data-page-node-id="9vBk258zyvUjNB0ygAPRpt">resp.status_code</code>（int）</td></tr>
+    <tr data-page-node-id="EdJTbDoCjNcYuetV4TWFou"><td data-page-node-id="SEcvXWDo8Uihepu7RIONRv">解析 JSON</td><td data-page-node-id="vRN8AUx4JmJoKA7MUBc3g1"><code data-page-node-id="xIWuNIpGseSUys6836OgMA">resp.json()</code> → dict</td></tr>
+    <tr data-page-node-id="LkiWZljmxxtrGmm5NDQYgG"><td data-page-node-id="WCJfm02L5vBlt2EC6pX0fx">响应文本</td><td data-page-node-id="7wZRUXiAmObfczKdGEszB6"><code data-page-node-id="9AcEmZHkmQK6ud3X2diCFu">resp.text</code>（str），乱码时设 <code data-page-node-id="67cnpfg7nWdBYqsjBrWQ5F">resp.encoding</code></td></tr>
+    <tr data-page-node-id="CSpBf6iPRe9LsBql72uVd7"><td data-page-node-id="dL2CFypkEa5vG9CiEgLX5c">响应头</td><td data-page-node-id="i0pIQGV6s2a1BIePyaHGdr"><code data-page-node-id="wfVt8BtJQNTWNYeoWMauck">resp.headers</code></td></tr>
+    <tr data-page-node-id="OHwQGhhp08d6ElDEMvC5W3"><td data-page-node-id="ouimxrxJujRNQznMaDd469">耗时</td><td data-page-node-id="fteTm7WaCYWGzvtqxaODbx"><code data-page-node-id="Oqac4arcFhA8Ah1gXwWkPg">resp.elapsed</code></td></tr>
+  </table>
+
+  <h3 data-page-node-id="DUAd44DItDkLCPIJG9fcDn">11.2 🧪 pytest 速查</h3>
+  <table data-page-node-id="0YG7wOgDM4wv7sQPhuI0i5">
+    <tr data-page-node-id="ixrQxdCbooa3BRrN0AB12X"><th data-page-node-id="OC7EwjK63Km16kLWyZBKt6">命令/概念</th><th data-page-node-id="x9Yl0j9O9LtnBj1OMQoX2H">作用</th></tr>
+    <tr data-page-node-id="wp6j31s9od6DCA0PTfJJx4"><td data-page-node-id="pMK17b1HidxDMzsgXALfn3"><code data-page-node-id="t9UlCkpf7XTBndFiGMKMFG">pytest -v -s</code></td><td data-page-node-id="ydN8N9PonAMGlbqOjJxqQ2">详细输出 + 显示 print</td></tr>
+    <tr data-page-node-id="Go9xReHxPRoP3SFTsjkNKs"><td data-page-node-id="fAWkSdvzDeRIWIiyjzcYIi"><code data-page-node-id="sOzMrNoSLBOCSMolHLZg0B">pytest -k "关键字"</code></td><td data-page-node-id="2NKajMnMmBO4G5wMi7T4Zw">按用例名模糊匹配运行</td></tr>
+    <tr data-page-node-id="MeJQRkQpMiHbHxyBb939no"><td data-page-node-id="uesfdgBMBIMxj0T7GwP3Xu"><code data-page-node-id="YTTIdqTdv1FDSEwvt6LSv2">pytest -m smoke</code></td><td data-page-node-id="qVKpZYGcyQKHCqlSYaI9Pn">按 marker 标记筛选运行</td></tr>
+    <tr data-page-node-id="FXe6pcNjYuHEL06wcSMrGD"><td data-page-node-id="GIRSA6tB0YfrbP5XepCCAp"><code data-page-node-id="tHLMABGvlxe5KwTSO3uceQ">pytest file::func</code></td><td data-page-node-id="9AeCJgU9iTIlvTk0ARd2BZ">运行指定用例</td></tr>
+    <tr data-page-node-id="AOQnkA0H0PryjvXHu0I3yg"><td data-page-node-id="84pyBisTAgcsxxpQNoz4sU"><code data-page-node-id="YfOR8JpPzn4z6eaaFVU8Z6">--tb=short</code></td><td data-page-node-id="GDeOGonEcou4NlABy96TUP">精简失败回溯</td></tr>
+    <tr data-page-node-id="orIM5teB64iz6WFzTHcBZs"><td data-page-node-id="XddC30OUyB9w3fSxVUhFcu"><code data-page-node-id="7Ng93BgoNFa2qQJmSGPkoo">@pytest.fixture</code></td><td data-page-node-id="SCNpPk012qiUy3AU1cA4VQ">定义前置/后置，依赖注入</td></tr>
+    <tr data-page-node-id="mQwhnDPFkfzPabTyJ0O1Vl"><td data-page-node-id="JbfLnv5SgnUbpsJkH2kpWB"><code data-page-node-id="pBD5YbhXdwEv2PJWZTiaH5">yield</code></td><td data-page-node-id="D3ctHkAv2jqQumRZeJYV7H">fixture 中：前=前置，后=后置清理</td></tr>
+    <tr data-page-node-id="Jv4wfXUTBJbvHFkJABClgN"><td data-page-node-id="ZQq1kkacdLgBLmDiXx3Qty"><code data-page-node-id="jhYcKyjGvbYW5CRQDfY7xJ">scope="session"</code></td><td data-page-node-id="843HwxkmG92vUjSKvjei48">fixture 整场只跑一次</td></tr>
+    <tr data-page-node-id="x2StHgEEx1UUdVkhbYgwq1"><td data-page-node-id="fAwh5GrPzDAlq11PIK0eVE"><code data-page-node-id="IdpFtfzGQDjDyfQKYwjr2s">@pytest.mark.parametrize</code></td><td data-page-node-id="rjJrzJKyr743VBU5Aum9eu">数据驱动，一份代码多组数据</td></tr>
+    <tr data-page-node-id="iGUidbrptKpgwNwpFkYcdG"><td data-page-node-id="7C7R2vfSgyJrmn58GDR2td"><code data-page-node-id="8FwFT5wgXyEfmn2ZTpCfj0">conftest.py</code></td><td data-page-node-id="TcjQFrJm7tJMrYNc7LU73S">共享 fixture 文件，同目录用例自动可用</td></tr>
+  </table>
+
+  <h3 data-page-node-id="ArdZhrhZoXg9k7c8unXVTF">11.3 📬 HTTP 状态码速查</h3>
+  <table data-page-node-id="8zi3yjqqdEX0imGqnhlpbk">
+    <tr data-page-node-id="DQv0CBtC90JiLPeJLhDuIt"><th data-page-node-id="kvevfxtCr4Dj4Yl6r0gRJb">状态码</th><th data-page-node-id="j5dJVTeuFaUhaRGhKPyPMH">含义</th><th data-page-node-id="O4x99oYWZdB2kDaYxS57jL">测试意义</th></tr>
+    <tr data-page-node-id="ZVY3VJEYpuYrrREFyR0BAW"><td data-page-node-id="ApyGlgatCfOCW5akTHx2aK">200</td><td data-page-node-id="Ugtn4s8J8XMQrG9B5r3act">成功</td><td data-page-node-id="BeFkipHPqTPTZMWhEc3ZD5">正常</td></tr>
+    <tr data-page-node-id="DEm9BSsIrT5fFNlZ7LW3I6"><td data-page-node-id="NQkDExK9zQCShVJjG76SJb">201</td><td data-page-node-id="PrqkBJSG65AaYqJOqvoPTY">创建成功</td><td data-page-node-id="wpvQ6kHzDT0uBKovBeZG5x">POST 新建</td></tr>
+    <tr data-page-node-id="7FZHMUiUtd0nEsfVCVuueK"><td data-page-node-id="ne24tD9eEhtijwBQ865kE8">301/302</td><td data-page-node-id="GaZ6AQusGNcuv2TmoWxyKz">重定向</td><td data-page-node-id="6aplnTj3xwF2aDGksxzJIs">跳转类</td></tr>
+    <tr data-page-node-id="NwrNfvLHkQsspfkmi8Eb3A"><td data-page-node-id="KO9Ou7DkjRWAlKanQLqCiG">400</td><td data-page-node-id="M3IHmSO5WOT8jFIX8LfdS1">参数错误</td><td data-page-node-id="6hLWAEhxJMyiY4AtKPSB9f">参数校验期望</td></tr>
+    <tr data-page-node-id="sgcY7rt7aXv59urT22r3BZ"><td data-page-node-id="JveNY8j1vyDSyBkQXjyAyz">401</td><td data-page-node-id="BucMlB4TIrkN7Zhn6ZGEc0">未认证</td><td data-page-node-id="ehvVQlVCWKJqCPuty82Uu4">token 失效场景</td></tr>
+    <tr data-page-node-id="Rtd3GwaMnoQhQZPvbMwMFg"><td data-page-node-id="roX7F7a1CS11qRSczspVCQ">403</td><td data-page-node-id="EyU9YXTaaUxzaFdEQEeDij">无权限</td><td data-page-node-id="YFqeM8spytxvm6fW7IBd5E">越权测试期望</td></tr>
+    <tr data-page-node-id="DZzqOYtzTXZBdQPLfN17Go"><td data-page-node-id="Mo41wNeia2wdSvK4KbHUt2">404</td><td data-page-node-id="W4hPGwfNBXD1ugAXYG5aTS">不存在</td><td data-page-node-id="ViFRGJu7bSDZ22HdPBYMjs">查无此资源</td></tr>
+    <tr data-page-node-id="Wi0uCgcxenque613ErkIgK"><td data-page-node-id="sZJRqABMRyxwQFC1Zs3cPB">405</td><td data-page-node-id="x3j7LweJanYa3B91i6SJD3">方法不允许</td><td data-page-node-id="FXeABzQDjotqaHdqxhRYFl">用错 Method</td></tr>
+    <tr data-page-node-id="fg6cq8Zdjq8HRjH7yy4sjC"><td data-page-node-id="wiMAGbml81xYpsz1pO13uF">500</td><td data-page-node-id="smL8x7L0K5qC7nqB1ssowS">服务器错误</td><td data-page-node-id="HmlWPIBxjFtp0lB4vxWDRu">非期望，即缺陷</td></tr>
+  </table>
+
+  <h3 data-page-node-id="wfYCjGTXMFcl6JZX1Gg6AW">11.4 🔑 核心概念一句话速记</h3>
+  <div class="card info" data-page-node-id="oFKOqfAwXr2Tj3ypzjuQtu">
+    <ul data-page-node-id="eEQCRyhvrw5xTtNrBZEBGo">
+      <li data-page-node-id="nqY8AI2vEpi7M998nFtMB5"><b data-page-node-id="VNQ0jYhrJIQCmP0CwUtNkh">接口关联：</b> 上一个接口的返回值（token/id）存变量，传给下一个接口。</li>
+      <li data-page-node-id="SjVlVOCwi0009KB3dOCamJ"><b data-page-node-id="jiYBXfoDHY3nwkcsUWjTZV">Session：</b> 自动管 cookie 的会话对象，登录态用它。</li>
+      <li data-page-node-id="8bWsKkkGuOsh1FbKSc2H63"><b data-page-node-id="5lAPBysF6Y4U0F0TTcpBru">fixture：</b> pytest 的依赖注入，抽公共准备逻辑，用例按参数名取用。</li>
+      <li data-page-node-id="vq15E0Q3UYKjEJEW3GyhMl"><b data-page-node-id="A84mnRrWKuHKho0K68d7Bf">parametrize：</b> 变量名+数据列表，一份逻辑跑多组数据。</li>
+      <li data-page-node-id="1V9Ejg7huFBBOTS2cWpoG8"><b data-page-node-id="L1nGaZANEv1RxcmYMGTNfD">断言三层：</b> 状态码 → 业务码 → 关键字段值。</li>
+      <li data-page-node-id="AnOKQxGs5BChkXrSE54YyX"><b data-page-node-id="zE5a82eBRAJsoMkJSCY8cz">数据分离：</b> 数据放 YAML/JSON，代码只读不写死。</li>
+      <li data-page-node-id="1o8CUTrlroX6aBTBJHtme1"><b data-page-node-id="VZwHIkVlOwXBvNBLqQwRtJ">分层目录：</b> common 封装 / data 数据 / testcases 用例。</li>
+      <li data-page-node-id="rp8liPYP2ChoK5b6OkzbyR"><b data-page-node-id="HDnqhHGv5qXS4R7LVe3F3z">冒烟 vs 回归：</b> 冒烟跑核心少量、每次提交；回归跑全量、每日/发版前。</li>
+    </ul>
+  </div>
+
+  <h3 data-page-node-id="37iNTtYqiuZoDns5WQDVg9">11.5 ⚠️ 高频踩坑速查</h3>
+  <table data-page-node-id="0kGzEy58EKJgdZz05A663n">
+    <tr data-page-node-id="x8JuQhC00huAlc66XBcdlH"><th data-page-node-id="uItTeEFH0LMc1K0IFyfaeI">现象</th><th data-page-node-id="zQAq8NjO6xGA0lakiCUGFN">原因</th><th data-page-node-id="yd5U9ENAxU0PXV8nqs8HCM">解决</th></tr>
+    <tr data-page-node-id="e8f1KBoBX9Ve2diJF5v3ku"><td data-page-node-id="bkDkfJCSmPK0MLHLUToh4V">ModuleNotFoundError</td><td data-page-node-id="k4TJDhAuj8bIRPAYHfRPqK">没激活 venv / 没装库</td><td data-page-node-id="d5dOCVSKQgNr3gOrtYPA2x">激活虚拟环境后重装</td></tr>
+    <tr data-page-node-id="QEt6xaYGcurjlfcvVzCIm1"><td data-page-node-id="uPAOk0O7FaXRe1KBKpT81R">KeyError 取字段</td><td data-page-node-id="7EzqHxDImZFEyCCKJRq1Rk">字段名/层级错</td><td data-page-node-id="0PP5F2zLIWYfYRw4Ds3YUN">先 print(resp.json()) 看结构，用 .get()</td></tr>
+    <tr data-page-node-id="lHgWRKxEDURNLYjg2qmZfe"><td data-page-node-id="HtiC5mBp7IDJdQrqhfGTZG">中文乱码</td><td data-page-node-id="lGhfPpgRuTeeibwEJ5PBgx">编码非 utf-8</td><td data-page-node-id="XU1qV8apQ8xPI1ufnqTffm">resp.encoding='utf-8' / 读文件指定编码</td></tr>
+    <tr data-page-node-id="RDNBPqI9hRCD9m6spng4kx"><td data-page-node-id="Wdf0puXxudHQvgCo6Z3aR2">请求卡死</td><td data-page-node-id="YsQTFnrKLj4gdQ3PB3W3YK">没设 timeout</td><td data-page-node-id="l3vJjnTt7AVkEqG55BER7l">一律加 timeout</td></tr>
+    <tr data-page-node-id="GICndtmTgGi2HODChcqm2O"><td data-page-node-id="F2xp14zulwzbEzy1tXo1XB">断言总失败</td><td data-page-node-id="5QD690a80bRnyHKZMgHG6s">断言了时间戳等动态字段</td><td data-page-node-id="OOOqGR4zgKJMHQkExNhXjU">只断言关键稳定字段</td></tr>
+    <tr data-page-node-id="YYgka1onRkkTNh2nUDNalC"><td data-page-node-id="H4FgkDRApiDGmDpTzz9FKH">401 传了 token 仍失败</td><td data-page-node-id="4QuQaZVcgOWBEZXHzuJOfK">头格式错</td><td data-page-node-id="KNAMvkgvuas2a3SOXAUiA6">核对 Bearer 前缀/文档</td></tr>
+  </table>
+</section>
+
+<!-- ═══════════════ 第 12 章 面试考核 ═══════════════ -->
+<section id="interview" data-page-node-id="aWzEjoA7SKp7qwRVoDPrD1">
+  <h2 data-page-node-id="GG52QcXuq7jwvqVs66jbsH"><span class="num" data-page-node-id="ixPwmIfXJAyEQWyA9VbMdp">12</span> 第 12 章 💼 面试考核（30+ 题）</h2>
+  <p data-page-node-id="XDOQLKWIvqhNL2LsnqR7CQ">点击每道题展开，含 <b data-page-node-id="WypJLLT0X7G2u9K2pRHXmn">题目内容 / 回答要点 / 参考答案 / 回答红线</b> 四部分。「回答红线」是面试中<b data-page-node-id="tQjVbW4uWJKIcpwcMCHdCm">不能说错或踩的坑</b>，务必牢记。建议先自己作答再对照。</p>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="o1JmMQPp2Rt4KMAxvSrSqA">
+    <div class="q" data-page-node-id="7lKsEF5s5Yo50wgo2tmfrB"><span class="qno" data-page-node-id="VbZpkZAXhEQPyaFG3S5iN4">1</span><span data-page-node-id="7Ou0IknsDCLmKHnC6hMh58">什么是接口自动化测试？它和 UI 自动化有什么区别？</span><span class="qtag" data-page-node-id="skxq4MOzQgyB5n85NZfOD5">基础</span></div>
+    <div class="a" data-page-node-id="zFnlcbmvRrjltvpyfd16zD">
+      <div class="row" data-page-node-id="fzSA7xzwRfbEFpW1gCbJR0"><span class="lab key" data-page-node-id="5Ntkb1E6PRcFjM8GDrVKlK">回答要点</span><div data-page-node-id="RhaH1cvGfJZHRAeWlT8R2Z">定义 + 测试金字塔位置 + 与 UI 的稳定性/速度/维护成本对比。</div></div>
+      <div class="row" data-page-node-id="Ecw0526vhUbV4jEZF8azgH"><span class="lab ans" data-page-node-id="xFoX6w3Yos5fj22AXBIoeb">参考答案</span><div class="ans-text" data-page-node-id="ofEucy2MaGWBkdKTvQqbC2">接口自动化是用代码模拟客户端请求并自动断言响应，位于测试金字塔中层。相比 UI 自动化：更稳定（不依赖页面渲染）、更快（毫秒级）、维护成本更低、能直接覆盖后端业务逻辑。UI 自动化测交互体验，接口自动化测逻辑正确性，二者互补。</div></div>
+      <div class="row" data-page-node-id="bHUM4OpHmM7jFMLFY15HuX"><span class="lab line" data-page-node-id="GngW52jRbYHnCZQEp2Fb4B">回答红线</span><div class="line-text" data-page-node-id="bgWCKvTGrygdPXIFALIxUk">不能说「接口自动化能完全替代 UI 自动化」——二者覆盖层面不同，是互补关系。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="m5Oh19wHEz9yyWUrUbeNs9">
+    <div class="q" data-page-node-id="IlbHWBlA8jmnrY9IzGkmKv"><span class="qno" data-page-node-id="Q32eNUQ8PU1E7U3KTOp68h">2</span><span data-page-node-id="778tLSIlFs4ZL4LlibwUNB">HTTP 常见的请求方法有哪些？GET 和 POST 的区别？</span><span class="qtag" data-page-node-id="Ea83SCQNAJm43KIl6XX0H6">基础</span></div>
+    <div class="a" data-page-node-id="Psei1CCeTkOx63lVcFC6ok">
+      <div class="row" data-page-node-id="To2IReXok8KueOrL5avdRU"><span class="lab key" data-page-node-id="NjrgB4AaEZhux384nP36qv">回答要点</span><div data-page-node-id="nhEYN7SddhRXI2efGojNII">列出方法 + GET/POST 在参数位置、长度限制、幂等性、安全性上的差异。</div></div>
+      <div class="row" data-page-node-id="Gv9rYkDDjCDfkTN25zZEwb"><span class="lab ans" data-page-node-id="iVL04uvQZtF7nqN3ClCUKq">参考答案</span><div class="ans-text" data-page-node-id="vRJI5twCKuwVmDZ9yYA4sq">常见方法：GET/POST/PUT/DELETE/PATCH/HEAD/OPTIONS。GET 参数在 URL 上、有长度限制、幂等、可被缓存；POST 参数在请求体、无长度限制、非幂等、相对更安全。PUT 全量更新、PATCH 部分更新、DELETE 删除。</div></div>
+      <div class="row" data-page-node-id="0CyUYccJt5JsdV5BLqt90A"><span class="lab line" data-page-node-id="zZrxaoq0NP7VdNjqqd9C6S">回答红线</span><div class="line-text" data-page-node-id="pP0RZnkAiTmcj57XUETqdE">不要说「POST 比 GET 安全所以敏感数据一定用 POST」——POST 数据仍明文可见，真正安全要靠 HTTPS 加密传输。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="2Cb38nHaduga8DPIc6bo24">
+    <div class="q" data-page-node-id="aCSEJ94pcQsEKUITH0WMWG"><span class="qno" data-page-node-id="JAXjkLpjxlWlflFgsxfOUO">3</span><span data-page-node-id="RaHBrs11NBgU27p0tml6AZ">状态码 200、401、403、404、500 分别代表什么？</span><span class="qtag" data-page-node-id="cYj9KWxZbyUjDcXWDYTgmD">基础</span></div>
+    <div class="a" data-page-node-id="lQh7IhObNNnbqc9Lsg6C3P">
+      <div class="row" data-page-node-id="B6WtS5CvgLIM3rkxSG8BMz"><span class="lab key" data-page-node-id="eJiLd74KlFhjmoYaVX12as">回答要点</span><div data-page-node-id="kRTRX3KuFCbrxbd1z6SYjB">逐个说含义，并补充测试场景中的意义。</div></div>
+      <div class="row" data-page-node-id="4u5f3hdfc3Wo1IPyDkMSQR"><span class="lab ans" data-page-node-id="oxAsG4diAVWBDjD2T1NeOy">参考答案</span><div class="ans-text" data-page-node-id="trrIZz7incfQCnH2rmWUde">200 成功；401 未认证（token 缺失/失效）；403 已认证但无权限（越权）；404 资源不存在；500 服务器内部错误。测试中 4xx 常是参数/权限类用例的期望值，500 通常是非预期缺陷。</div></div>
+      <div class="row" data-page-node-id="geVMlHztN481WHP9BG32Y2"><span class="lab line" data-page-node-id="Qh2y2YCopIs3xo5sUV0bfZ">回答红线</span><div class="line-text" data-page-node-id="rljNzssWJa1l7i8cBF5Xht">不要混淆 401 和 403：401 是「没登录/身份不明」，403 是「登录了但没权限」。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="84bfxjGXQqTFFq7G0i5V5v">
+    <div class="q" data-page-node-id="Eb5gxH477g5vtdLEn1FtbF"><span class="qno" data-page-node-id="YtrkwXQ4LOLA7kfLkNXh61">4</span><span data-page-node-id="JUmx7tVusYzZqjgboQ3ut0">requests 里 json= 和 data= 有什么区别？</span><span class="qtag" data-page-node-id="VyMH21x0XFnAazxLTMDt9p">库</span></div>
+    <div class="a" data-page-node-id="d1eUmcqjB4Mcad2HZM2q7L">
+      <div class="row" data-page-node-id="DB7P1sT9dNT9VRj7404nHo"><span class="lab key" data-page-node-id="TjTQaKzLD6sDXKwOtnDlxc">回答要点</span><div data-page-node-id="fq22NL8Adv8DMuRFpAm83z">Content-Type 差异 + 服务端解析方式 + 各自适用场景。</div></div>
+      <div class="row" data-page-node-id="pyT0NEiF55JWUOPwKOTVtS"><span class="lab ans" data-page-node-id="GS0s9LofEepCQbGr3uDRV3">参考答案</span><div class="ans-text" data-page-node-id="CUuODh5HHSUkEvS5dMXjyL">json= 会把 dict 序列化为 JSON 并设置 Content-Type: application/json；data= 发送 application/x-www-form-urlencoded 表单。现代接口多用 JSON，传错会导致服务端解析不到参数。</div></div>
+      <div class="row" data-page-node-id="jjuL3Q3n7SRfkPFz0n47Kf"><span class="lab line" data-page-node-id="LjrNPqxXpT4tKuDyk8wbcH">回答红线</span><div class="line-text" data-page-node-id="UKP3GUBx1WfayynQsxpXlF">不能说「两者没区别，随便用」——Content-Type 不同，服务端解析逻辑不同，用错直接 400。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="UkuObW8ek3S3clTQh4xmqM">
+    <div class="q" data-page-node-id="1tpMSoaPmG76I4218M2Ejh"><span class="qno" data-page-node-id="rTCstGTINFYwzzIfXifXuC">5</span><span data-page-node-id="KlGZdgGrljWj8IBG4gGIFZ">为什么生产脚本一定要加 timeout？</span><span class="qtag" data-page-node-id="GrycTbCjtswnLEterj0myF">库</span></div>
+    <div class="a" data-page-node-id="aOCkRBGsQhRuVDADnxmymK">
+      <div class="row" data-page-node-id="I6wJNCqGIMBWJBuOWd4uKS"><span class="lab key" data-page-node-id="zNXaTShBZ94TOslEkiUGFN">回答要点</span><div data-page-node-id="R8GVRdyYMDEQPDtWyOId2E">不加会无限阻塞 + 拖垮整批用例 + CI 卡死。</div></div>
+      <div class="row" data-page-node-id="5MRH1pfCIObL0sVm0AOvKt"><span class="lab ans" data-page-node-id="CC8VD0emCtx4PQHLIxCCEI">参考答案</span><div class="ans-text" data-page-node-id="5uR7W9XANgkAxv7r9n8xPS">默认 requests 无超时，网络异常时会一直等待，导致脚本挂死、CI 流水线卡住。加 timeout 可设定连接/读取超时上限，异常时快速失败。可写 timeout=(连接超时, 读取超时)。</div></div>
+      <div class="row" data-page-node-id="03CAraD2kJPVRD4QHRvjyf"><span class="lab line" data-page-node-id="XZ1YyPFChUC5rziZAH1RmN">回答红线</span><div class="line-text" data-page-node-id="q6uUBGReSnonvg1gvqCqKW">不要认为「本地能跑就不用加」——本地网络好不代表测试环境/CI 稳定。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="FJyT6CraSZ1lZQ7q4PFAyM">
+    <div class="q" data-page-node-id="U3xry8V4Wo4VPweTC8GCXM"><span class="qno" data-page-node-id="MWpvrUwiQJRQgXFkvy0VGl">6</span><span data-page-node-id="2c9CZ5q1Esq1s6B0wTooMJ">什么是接口关联？怎么实现？</span><span class="qtag" data-page-node-id="4GQUf0PtKtORN8qzmtLbrP">进阶</span></div>
+    <div class="a" data-page-node-id="3Sl1GlRAY0Ax4IrA29638V">
+      <div class="row" data-page-node-id="aIzB287X9TUjRuTj6dF97V"><span class="lab key" data-page-node-id="1PiuzpR5q0kvkvq9AknDcp">回答要点</span><div data-page-node-id="NL6g3yGGXEZCIRcF5ZkMnR">定义 + 提取上一步返回值存变量 + 传给下一步 + Session/变量两种方式。</div></div>
+      <div class="row" data-page-node-id="wNJUr87iPL28LxCPyLJp1P"><span class="lab ans" data-page-node-id="CEGmYLFl85AyvZagdC9u3K">参考答案</span><div class="ans-text" data-page-node-id="VHQzmLIMDbSuQ7WYYnXsaW">接口关联指前一个接口的返回值（如 token、订单 id）作为后一个接口的入参。实现：用 resp.json() 解析出字段存入 Python 变量，再拼进下一个请求；维持登录态可用 requests.Session 自动带 cookie。</div></div>
+      <div class="row" data-page-node-id="YNDg6omke7Jhb39V1kGL7B"><span class="lab line" data-page-node-id="oy40zFSKF3dhxHqzdt44FN">回答红线</span><div class="line-text" data-page-node-id="saHbkHsHFzJguOSYYSnpGs">不要说「每个接口独立调用即可」——有依赖的接口不关联会 401/查不到数据。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="YDHkSPYYMVc5A5MenxbByv">
+    <div class="q" data-page-node-id="Xvxh3E3QdtiAT2BRsqxM26"><span class="qno" data-page-node-id="tO4brwRRHPmEgqOtTwpZY9">7</span><span data-page-node-id="Zt6TFncYUG4B0IHRvzAXb3">requests.Session 的作用是什么？</span><span class="qtag" data-page-node-id="EtH11EQIyU7b6SfEDoF5eU">库</span></div>
+    <div class="a" data-page-node-id="MHwbHN98M7FRZBM8vH1g24">
+      <div class="row" data-page-node-id="6tlVUEINDl8TAGhtFsTagG"><span class="lab key" data-page-node-id="zwWcDH49prXEnVhSXqVLwa">回答要点</span><div data-page-node-id="gLd10EzsHk1ICbBjyRKidG">保持 cookie + 复用公共配置 + 连接复用。</div></div>
+      <div class="row" data-page-node-id="sM5hbMT0RAOGT5f4s7Dmad"><span class="lab ans" data-page-node-id="NSnN13ueZ71PEHg7tCgOL7">参考答案</span><div class="ans-text" data-page-node-id="P9mAAAU1mpt5C7ZK9ARIPv">Session 是会话对象，能在多次请求间自动保存 cookie、复用 headers/base_url 等公共配置，并底层复用 TCP 连接提升性能。适合需要维持登录态的连续请求场景。</div></div>
+      <div class="row" data-page-node-id="E26XbukGlhlGDFvr7JKFU4"><span class="lab line" data-page-node-id="L5xcBdZrOwIklQwuDvr97a">回答红线</span><div class="line-text" data-page-node-id="Wd8n4Hz9LTPoIABGmbKkdS">不要每次请求都 new 一个 Session 又指望保持登录态——要复用同一个实例。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="BmyI8yKuGYHsLzxz2Gt6UA">
+    <div class="q" data-page-node-id="O3L43dgkqTS7ltIitzcyvC"><span class="qno" data-page-node-id="XaOm1za9b9zpvu9FfrhBMQ">8</span><span data-page-node-id="j2IMOCRjaARrJVQXes1oUG">pytest 的 fixture 是什么？有什么好处？</span><span class="qtag" data-page-node-id="AZzwTmGLZFVS9lFGRbHfkY">框架</span></div>
+    <div class="a" data-page-node-id="K9eAvQ7ecdBmBCKqYdDSt5">
+      <div class="row" data-page-node-id="6AZ0XYBpmmeRrm5OTsNMbK"><span class="lab key" data-page-node-id="jwUvIhUHDpnVBJDrmmC14C">回答要点</span><div data-page-node-id="DQzBxd1ER4pRXvbg0LD4iI">依赖注入 + 抽公共逻辑 + 前置/后置 + 作用域。</div></div>
+      <div class="row" data-page-node-id="x83y2DKHEBEHAleijD8C55"><span class="lab ans" data-page-node-id="EOg0YtJTp0zUqKVGcd5eYM">参考答案</span><div class="ans-text" data-page-node-id="MGkNfv7tsvWYCvdlAjvIOh">fixture 是 pytest 的依赖注入机制，用 @pytest.fixture 定义，把登录、建连接等公共准备逻辑抽出来，用例通过参数名注入使用。yield 前是前置、后是后置清理。好处是避免重复代码、改一处生效多处、支持 session/class/function 作用域。</div></div>
+      <div class="row" data-page-node-id="GkfGVCkXHDWYKfDzb8v1oy"><span class="lab line" data-page-node-id="1yjoDitM9AnmOyGZAAS0Bn">回答红线</span><div class="line-text" data-page-node-id="pdBBEQEHdHUmxPCZ3Jp4gN">不要把它和 setup/teardown 混为一谈——fixture 更灵活，支持参数化注入和跨用例共享。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="An2r3esc7IqOREV1FCqllI">
+    <div class="q" data-page-node-id="IW5sUESdtYM1M0whlP0ydd"><span class="qno" data-page-node-id="UQkgwiMgcpsOfvI2XXJKn3">9</span><span data-page-node-id="vXjtjT9S7K9uJsrrBESsLX">pytest 用例的命名规则是什么？</span><span class="qtag" data-page-node-id="gdfGr6K48UdRgBS0FeCkk2">框架</span></div>
+    <div class="a" data-page-node-id="WfCAuPRTKB8zr2ke6VhHzW">
+      <div class="row" data-page-node-id="WhkXMcsepVONdd9w2rkWYM"><span class="lab key" data-page-node-id="ljugRgTORCUbNIczk9MEFV">回答要点</span><div data-page-node-id="d2gZfXx6opO6B109bN8HuS">文件 test_ 前缀 + 函数 test_ 前缀。</div></div>
+      <div class="row" data-page-node-id="BHkKhTsuKbGqfDmYFHsDhx"><span class="lab ans" data-page-node-id="eaShZQtHM4SK9nGkEFr3RY">参考答案</span><div class="ans-text" data-page-node-id="72ktKijWTCtNYJGiEjR2DY">测试文件须以 test_ 开头或 _test 结尾，测试函数/方法须以 test_ 开头，pytest 据此自动发现并执行用例。</div></div>
+      <div class="row" data-page-node-id="7FmtQjyYcNclfuFK59hoRg"><span class="lab line" data-page-node-id="TJODYuDkYE3B8MoaDXMvhZ">回答红线</span><div class="line-text" data-page-node-id="JJHFyhLkWFtzwxQUID3yl4">不要忘记下划线前缀——命名不符 pytest 不会收集该用例。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="nPHJd0T2xUevZ7HpvD1gxY">
+    <div class="q" data-page-node-id="zBMnBdCvA8cpZxKcrbRKnf"><span class="qno" data-page-node-id="fCMl2jdW4Bwms9tXcTdW4f">10</span><span data-page-node-id="LuqCBBmbNRGtpdVZK986qv">什么是数据驱动？pytest 怎么实现？</span><span class="qtag" data-page-node-id="pyvhpvHERsrFKVCVYe0hC7">进阶</span></div>
+    <div class="a" data-page-node-id="gjBz2Wc3peqZpadQyVsCXw">
+      <div class="row" data-page-node-id="6DpPpv68jwuf0iq8VL3ovW"><span class="lab key" data-page-node-id="BeKv96sqR97jbxuyEuiqJs">回答要点</span><div data-page-node-id="FEWUsgcyy9XKlHosXlBkuk">一份逻辑多组数据 + @pytest.mark.parametrize + 数据外置 YAML。</div></div>
+      <div class="row" data-page-node-id="bLo6UO1vu4tLF9iDdpEpBn"><span class="lab ans" data-page-node-id="SbPgMUWTkLjxEaF0bf3iDd">参考答案</span><div class="ans-text" data-page-node-id="0yYB54BLhEj1nEZZ78tAgo">数据驱动指测试逻辑只写一次，数据来自外部。pytest 用 @pytest.mark.parametrize(变量名, 数据列表) 实现，每个元组执行一次；更规范的做法是把数据放 YAML/JSON，用 loader 读入再参数化。</div></div>
+      <div class="row" data-page-node-id="W3HCd1sX0j3edd5Wv410TI"><span class="lab line" data-page-node-id="gFIDpLqGPuJ9DZqdUE1ZBj">回答红线</span><div class="line-text" data-page-node-id="ruqccAquBPX2iYg5pPfZ3I">不要为每组数据复制一份用例代码——那是反模式，维护灾难。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="mmRRIBRWBodOkNFltzwmGt">
+    <div class="q" data-page-node-id="CdrBBkdkVf74k0mIqMvIfp"><span class="qno" data-page-node-id="2PqTlCcjJJWObLm17snpj5">11</span><span data-page-node-id="xKnP926Ai00ataYkbV9skR">接口测试的断言一般断哪些内容？</span><span class="qtag" data-page-node-id="cTrgTnba6aGKLE11YdLBRn">进阶</span></div>
+    <div class="a" data-page-node-id="ZCwLCRFWyKc3JhS9iSAmNm">
+      <div class="row" data-page-node-id="hMayMFZgBp0uhmTwIa7GWX"><span class="lab key" data-page-node-id="A5DIAD1BmaVdS6jqdj87Dd">回答要点</span><div data-page-node-id="K31LP8R8L9ZnhBG648V3cG">三层：状态码 → 业务码 → 关键字段值。</div></div>
+      <div class="row" data-page-node-id="b9ZvcfPPW2CxlndgytQrlP"><span class="lab ans" data-page-node-id="qqwfjbk1YLr9xkLOtsb7FU">参考答案</span><div class="ans-text" data-page-node-id="Qy4hy4MmGb82yZDSxrvHu1">① HTTP 状态码；② 业务码 code（很多接口业务失败也返回 200）；③ 关键响应字段的值。只断状态码不够，必须断业务码和核心数据字段。</div></div>
+      <div class="row" data-page-node-id="sM523MIhVkgsuBVIU3bBwX"><span class="lab line" data-page-node-id="TGQtfb0vOiJd0IOElgzrQV">回答红线</span><div class="line-text" data-page-node-id="NoibFFhg2n9gOBiWBrYLNv">不要断言整个响应体相等——响应含时间戳、随机 id 等动态字段，会假失败。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="pnQMfzy5IZdhlQMOudcqoo">
+    <div class="q" data-page-node-id="zAAMbPtp5oif2P9LzWJK9N"><span class="qno" data-page-node-id="sRyHnBKgXgMJvyW2HXPYG7">12</span><span data-page-node-id="IUGszux7pi68LSDJVKyAp9">为什么很多接口业务失败也返回 200？你怎么处理？</span><span class="qtag" data-page-node-id="CBbRAA3TPcsdN2DYRCk10Y">进阶</span></div>
+    <div class="a" data-page-node-id="v85bLqX9MYDXj9SpU9HGAP">
+      <div class="row" data-page-node-id="yrmUePP5j8RE9C9zuH2PnQ"><span class="lab key" data-page-node-id="3wnp9xhgrQOaTpwCTgm3uA">回答要点</span><div data-page-node-id="wAPxfvAB5W0dbVsGVZOulq">RESTful 不严格 + 业务码机制 + 断言业务码。</div></div>
+      <div class="row" data-page-node-id="cHxzysMgINOHM8EnTOzJkH"><span class="lab ans" data-page-node-id="fztUnaNq8qV2ypl1BSJ3WX">参考答案</span><div class="ans-text" data-page-node-id="kaPkbI0Gv1sw67y7RDet1x">部分后端未严格遵循 RESTful，HTTP 层统一 200，用 body 里的 code/msg 表达业务成败。处理：断言时必须检查业务码 code 字段，不能只看 HTTP 状态码，否则缺陷会漏网。</div></div>
+      <div class="row" data-page-node-id="gtxkGODFuc4iMRl8IhGSZb"><span class="lab line" data-page-node-id="1CS71IWH1TPVZcUQW8Lhu5">回答红线</span><div class="line-text" data-page-node-id="2CnRXKODLuuYuu6mRugRgu">不能说「返回 200 就是成功」——这是新手最常踩的坑。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="OoMW1qjSqCJeD9qj15EW1u">
+    <div class="q" data-page-node-id="wmM2ULOlyHKVGwvFV0wrrE"><span class="qno" data-page-node-id="ssPxXXJ7sKH0MUldUlw7T5">13</span><span data-page-node-id="1uMTQJSyA0umYkLaK2F5RR">conftest.py 的作用是什么？</span><span class="qtag" data-page-node-id="UCxpZ08VLlWPnDC6ZWk3Sk">框架</span></div>
+    <div class="a" data-page-node-id="2Xq2shnZ49ZMecW7sUhUfm">
+      <div class="row" data-page-node-id="M0pJPmaxW5tapRwNYjUTQj"><span class="lab key" data-page-node-id="yihZOx2rMFiLlRPIwgrOBo">回答要点</span><div data-page-node-id="AmR6Aur0TYy7bU1iqK8zir">共享 fixture 文件 + 同目录自动生效 + 分层放置。</div></div>
+      <div class="row" data-page-node-id="HTHt7lRFmXQTUGrwJC2L9c"><span class="lab ans" data-page-node-id="0B6uOBGogzMI9fovGRf3bT">参考答案</span><div class="ans-text" data-page-node-id="y3Mn1CZm4sIak1TpJorn9A">conftest.py 是 pytest 的特殊文件，里面定义的 fixture 无需 import，同目录及子目录下的用例可直接按参数名使用。常用来放全局登录 token、session 等共享资源，可分层放置实现就近覆盖。</div></div>
+      <div class="row" data-page-node-id="2DVtXAM4gg5DqRmovVPIdK"><span class="lab line" data-page-node-id="fPubXOyxA3oEacL4C9CFOD">回答红线</span><div class="line-text" data-page-node-id="zzTZwetZN6d5bgdmwDYBnb">不要在每个用例文件里重复 import 登录逻辑——应放 conftest 共享。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="C6KA27TKNKZGKs4YeeTTm8">
+    <div class="q" data-page-node-id="WneOPTQj6A2cPNiV4x2GDb"><span class="qno" data-page-node-id="IxkyPa6KcayMY6iO5V7Mb1">14</span><span data-page-node-id="GTl22lHNIyTw6MN8cSlAyV">pytest 的 scope 有哪几种？区别是什么？</span><span class="qtag" data-page-node-id="Bew3EM3HvaGBqsF5krk2ly">框架</span></div>
+    <div class="a" data-page-node-id="eEbUbo9P27MGqZ408nIGH3">
+      <div class="row" data-page-node-id="ruiG0QUbr4jO3mUGE3NgIu"><span class="lab key" data-page-node-id="M7QFTbSwSceusvD2NfkWbm">回答要点</span><div data-page-node-id="1vYpyCGmKql8jXNfv53uab">function/class/module/session + 执行频次。</div></div>
+      <div class="row" data-page-node-id="Y7u0ETtAL62ue4f1Gbdflj"><span class="lab ans" data-page-node-id="AeWhal8fKJap0idugVYm0z">参考答案</span><div class="ans-text" data-page-node-id="xL8zDvqhz5RlMz1PeFAOqS">scope 控制 fixture 生命周期：function（默认，每条用例执行）、class（每个测试类一次）、module（每个文件一次）、session（整个测试会话一次）。登录拿 token 这类昂贵操作应用 session 级避免重复请求。</div></div>
+      <div class="row" data-page-node-id="0vTWSRQOxbWQ0ZtQQuQoKj"><span class="lab line" data-page-node-id="pf5wQhwT3umprRiFnKWfIs">回答红线</span><div class="line-text" data-page-node-id="5Y0zU5Unsc48i5aRhsqWQD">不要把登录 fixture 设成 function 级——每条用例都登录，浪费资源还可能触发限流。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="rccU2wS9FzoDB9gaVL4XCD">
+    <div class="q" data-page-node-id="0QHHAvvD3I2IODoSzmGhI7"><span class="qno" data-page-node-id="ybvadoAhXmx08oCoOVADk1">15</span><span data-page-node-id="O0tebPTumZrkGdeDEeYUmq">如何生成 pytest 测试报告？</span><span class="qtag" data-page-node-id="bOLMuXFVEvfvwv6KyMFtiy">工程</span></div>
+    <div class="a" data-page-node-id="H5CkdGxRTMA5LV4FPcmyUN">
+      <div class="row" data-page-node-id="4FBvpiQ6M3dz17JbZJgM25"><span class="lab key" data-page-node-id="B3jCZKI5ZCdPe2nr3OtgM7">回答要点</span><div data-page-node-id="B37y5NA333qAZGiLiL0mRX">pytest-html 快速出报告 + Allure 更强大。</div></div>
+      <div class="row" data-page-node-id="LnwFapN5P50fGVbnlYSg0P"><span class="lab ans" data-page-node-id="mSDwpuLc1w8lXKl1PXCfjs">参考答案</span><div class="ans-text" data-page-node-id="1WkzORMrf79BPI9iMEZEeV">轻量用 pytest-html：<code data-page-node-id="NaDJn7LtF4BgWtwD6syWSr">pytest --html=report.html --self-contained-html</code>。更专业用 Allure：<code data-page-node-id="QCWjtz9nyqhlrp2AJwPWqc">pytest --alluredir=reports/allure-results</code> 再 <code data-page-node-id="NWgM1z1diSkW3L9GfBcNum">allure serve</code> 预览，支持趋势、步骤、附件。</div></div>
+      <div class="row" data-page-node-id="2AiBMCASaBHAC7DhJtauNM"><span class="lab line" data-page-node-id="qDlO5j2DNoX36TOPhAdAUa">回答红线</span><div class="line-text" data-page-node-id="8HaLG0e5IGqy4sErjgDFRJ">不要只靠 print 判断结果——要有可视化报告便于团队查看和追溯。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="z8pQ65zNbPQXjTxdi4F73O">
+    <div class="q" data-page-node-id="OvtS1S1euC8lpGJIZWSvCd"><span class="qno" data-page-node-id="33i4KVBsPwctLdLChLrlsX">16</span><span data-page-node-id="krGT45TBvhjYHPnknxCXao">什么是冒烟测试和回归测试？</span><span class="qtag" data-page-node-id="DDqg0aQzqeiq0c16zyuVha">工程</span></div>
+    <div class="a" data-page-node-id="TJHj8GTioTTCaXjxzakmKl">
+      <div class="row" data-page-node-id="8XmHj1BcCIBudEcTutGtPV"><span class="lab key" data-page-node-id="Fo82Xyf9wcBQGRLFiYXADM">回答要点</span><div data-page-node-id="gILm4NOP9gb04b8YXE6IE2">范围 + 频率 + 用 marker 区分。</div></div>
+      <div class="row" data-page-node-id="TbHbXjVR7Gp9Q1qSdeApEb"><span class="lab ans" data-page-node-id="wyDdjPq24vALLyAmbeL9D6">参考答案</span><div class="ans-text" data-page-node-id="W3quEg6Kro3LxsE7nKCV73">冒烟测试是覆盖核心主流程的少量用例，每次提交都跑，快速反馈；回归测试是全量用例，每日或发版前跑，防止改动引入新问题。可用 pytest marker（-m smoke）区分执行。</div></div>
+      <div class="row" data-page-node-id="F26ZL6pH3cpjDKnoYyrxbW"><span class="lab line" data-page-node-id="a8yEgsr3mcubX5OPjhDcuf">回答红线</span><div class="line-text" data-page-node-id="2vcHxeLwMm0FmbmtDsXc4F">不要每次提交都跑全量回归——太慢，应分层，冒烟前置、回归定时。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="LV37yh1dUhJ70XFb6LDaF1">
+    <div class="q" data-page-node-id="VDWyHuuCZTxkaZs3ZeFGXU"><span class="qno" data-page-node-id="ALg8jQg5ziHTpY0ZIRJHmu">17</span><span data-page-node-id="9yhb8HLi1WGXW88Ck5QCi8">测试数据为什么要和代码分离？</span><span class="qtag" data-page-node-id="Gkh5hP4fguk4LXoeXV0IhR">工程</span></div>
+    <div class="a" data-page-node-id="iv4VrEgbaZ4P5wfhhaY9Me">
+      <div class="row" data-page-node-id="w6LuHDylVryUFF5BZ2dhLQ"><span class="lab key" data-page-node-id="hllHzkDtFLrdBQWYEuJeLr">回答要点</span><div data-page-node-id="Sui2HNtXsJAaiJRVyFrAkC">可维护 + 非程序员可改 + 避免硬编码。</div></div>
+      <div class="row" data-page-node-id="bUZtYs509M0x3QE3o41T0p"><span class="lab ans" data-page-node-id="dDMsRbsLbKyUNsUGcNnl5k">参考答案</span><div class="ans-text" data-page-node-id="dKS7RedbHISIZCLFHeNNaa">数据放 YAML/JSON 等外部文件，代码只负责读取，好处：数据变更不用改代码、非测试人员也能维护、同一逻辑复用多份数据、避免把账号/地址硬编码在代码里。</div></div>
+      <div class="row" data-page-node-id="8sUtnOSelgZPXDjGcB2LTI"><span class="lab line" data-page-node-id="dZHCLvOlaPWnwBRC88wTZy">回答红线</span><div class="line-text" data-page-node-id="9r86lgt41cIdD17YCUblXh">不要把测试账号、环境地址写死在代码里——环境切换时改到崩溃。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="GUJ8zhZRPlbxTKazdDdywC">
+    <div class="q" data-page-node-id="qalGagzzW4F9V3VjMhXnE5"><span class="qno" data-page-node-id="FiEkEJLbElAlJ9WpOkE4Mz">18</span><span data-page-node-id="5w7nFrKUgE9UaSJxEs9g9U">如何把一个接口自动化项目接入 CI？</span><span class="qtag" data-page-node-id="dcGdBCQz73sIy3PMvwwHDG">工程</span></div>
+    <div class="a" data-page-node-id="lqQANHQd1FoUr7DcG8Y7gy">
+      <div class="row" data-page-node-id="4sCJwzJijqDQCX5OPmgYn1"><span class="lab key" data-page-node-id="gaFzYUWyllHCc8WhLMwh0c">回答要点</span><div data-page-node-id="9dnCcMC9blUFAZ1yCz5GBs">命令行可运行 + 生成报告 + 定时/触发 + 结果通知。</div></div>
+      <div class="row" data-page-node-id="thg6BGUSZyDDdGzLPhkrOF"><span class="lab ans" data-page-node-id="Rk8l8wq9Et7guA0nKBhIRi">参考答案</span><div class="ans-text" data-page-node-id="23bs97NsMEurFxuaBTrR9w">确保 pytest 能命令行无交互运行并返回退出码，接入 Jenkins/GitHub Actions：代码提交触发冒烟、定时跑回归，生成 Allure 报告，失败时通过邮件/IM 通知。关键是脚本化、无人工干预。</div></div>
+      <div class="row" data-page-node-id="bzBTaM5UTEcmdAunmSZ3eH"><span class="lab line" data-page-node-id="Ls6YcALV8hpnDmi1vHdNJN">回答红线</span><div class="line-text" data-page-node-id="KLjoNJzzDa76FhGMfKXlPg">不要依赖本地 IDE 才能跑——CI 上是纯命令行环境。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="RWe4iF6Uj7e6y5DUjIB1QA">
+    <div class="q" data-page-node-id="R9vmjm8JyB8w9cb7R4kcbI"><span class="qno" data-page-node-id="KxXSRqcQDqMb7HniCkWQyu">19</span><span data-page-node-id="Gbl31yt4x3hkY0Gy6bJ7kI">遇到接口偶发性失败（flaky）你怎么处理？</span><span class="qtag" data-page-node-id="IYQpqriLv5JBi6b8hpYPtV">进阶</span></div>
+    <div class="a" data-page-node-id="FwazR6Xuz6nGRlIlGcUdvA">
+      <div class="row" data-page-node-id="QWhW14EsLHyxgdfOb4GPbD"><span class="lab key" data-page-node-id="DTLcK0hA9Vsq4i7nxABUYS">回答要点</span><div data-page-node-id="Q4J26IDmGtXUsEabw2aXt4">定位根因 + 重试机制 + 隔离数据 + 加等待/幂等。</div></div>
+      <div class="row" data-page-node-id="AjXxkAzcWBJDcI4pZQS7tK"><span class="lab ans" data-page-node-id="8l0CzchdCldAlCuCiuQmK3">参考答案</span><div class="ans-text" data-page-node-id="bgpHxtrZ7EGoEWu5fPVVQN">先区分是脚本问题还是环境问题：网络抖动可加有限重试（如 tenacity）；数据冲突要保证用例数据隔离/可清理；依赖异步的用接口轮询等待而非固定 sleep；若是后端不稳定则报缺陷而非让用例背锅。</div></div>
+      <div class="row" data-page-node-id="DdwcnsNDOf1W4lOoeClzap"><span class="lab line" data-page-node-id="VSxzrSBomS64UfQdFvWiH2">回答红线</span><div class="line-text" data-page-node-id="2c6s6zXohthgBotgvE2IUI">不要无脑加 retry 掩盖真实缺陷——重试要有限次且记录，不能把红用例刷成绿。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="ALb1xOMUtjAT5kLHg1wh3I">
+    <div class="q" data-page-node-id="wmr1NBjbxoczvhiHHtoKG6"><span class="qno" data-page-node-id="IApjBWFAvXFz3VM6CtTRKz">20</span><span data-page-node-id="Gx1KeNb5GBZ8Pnf9AS4qbW">GET 请求中文参数乱码/报错怎么办？</span><span class="qtag" data-page-node-id="rV2s9fVZeKplS9nb0YHh4L">库</span></div>
+    <div class="a" data-page-node-id="DoUoPJEWBv44i2ZtqTjhGC">
+      <div class="row" data-page-node-id="OyQ0hbW2CoUfchADqFnC9s"><span class="lab key" data-page-node-id="mfixpOxMTo6xfyqaPDWT4R">回答要点</span><div data-page-node-id="3zwkvjq53VVwvIluJLz8lF">requests 自动编码 + 手动 URL 编码。</div></div>
+      <div class="row" data-page-node-id="qrhBygEVKQw61KxKpRYHb5"><span class="lab ans" data-page-node-id="ZamDi9l5P9Q7cJGWXn9jtH">参考答案</span><div class="ans-text" data-page-node-id="ypn8xDGMPsI7c45VBiyX1Y">用 params 传参时 requests 会自动对中文做 URL 编码，一般无需手动处理。若手动拼 URL，需用 urllib.parse.quote 编码中文，否则可能报错或乱码。</div></div>
+      <div class="row" data-page-node-id="Hq3J2TOcpldX6Nflxaq4NX"><span class="lab line" data-page-node-id="7aACaaL74U6FVnyBnesQ67">回答红线</span><div class="line-text" data-page-node-id="hO4yMTFir5ew1gqmEGDick">不要直接字符串拼接中文到 URL 里——容易编码错误。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="RpduonGYUopfXPo4jE5qDO">
+    <div class="q" data-page-node-id="Y1OxZr4SLTYGNXZmkcxyTy"><span class="qno" data-page-node-id="wkHUEwh5ejwBDWdj01GhIu">21</span><span data-page-node-id="1XsCyCC7BFG2v92Z4PUWyn">如何测试一个接口的异常/边界场景？</span><span class="qtag" data-page-node-id="ExcAmiNQckWENwbhXSWJWm">进阶</span></div>
+    <div class="a" data-page-node-id="VNeyxPAHRtq3dfa0Hj16V7">
+      <div class="row" data-page-node-id="pz8C1o5tFj7mHnbkSHUxAM"><span class="lab key" data-page-node-id="yA3Z8EuGVozNxXJSfGULTg">回答要点</span><div data-page-node-id="tLzf7KErJeRz8INk2FHg7x">参数异常 + 越权 + 边界值 + 幂等 + 并发。</div></div>
+      <div class="row" data-page-node-id="Ib5Qfl4dD01v2u9TzygYDF"><span class="lab ans" data-page-node-id="o3Bam5AJXFltK6Ql3gOmPj">参考答案</span><div class="ans-text" data-page-node-id="HroWhtxGa7ndOcJ2nBtxEm">① 参数缺失/类型错/超长/特殊字符；② 未登录(401)、越权(403)；③ 边界值（最大最小、空、null）；④ 重复提交幂等性；⑤ 必要时并发压测。用参数化把这些场景批量覆盖。</div></div>
+      <div class="row" data-page-node-id="h1Wn4rSx1xF1nyuJ0FoXYB"><span class="lab line" data-page-node-id="CDDzuLV8JRXcQSwB8bddLB">回答红线</span><div class="line-text" data-page-node-id="LAxlkY8E4CBmEYx4DJBMCE">不要只测正常流程——异常和边界才是缺陷高发区。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="sLfzlFWB0dr875OvCnVyxP">
+    <div class="q" data-page-node-id="IqMVQagzlLWY5Q9oMC3JlE"><span class="qno" data-page-node-id="7Plfun7IzEeD5XLsm2GDxs">22</span><span data-page-node-id="GG0qhNAtHF5zUQhlP3z1X0">pytest 里 assert 失败和 raise 有什么区别？</span><span class="qtag" data-page-node-id="0SrCMunOcTiIIKuvbiVwRf">框架</span></div>
+    <div class="a" data-page-node-id="uPkaz26Udi4OUOXFiUOIWa">
+      <div class="row" data-page-node-id="FAqqMx4YLTFbdGX4E6mxoe"><span class="lab key" data-page-node-id="lnQDBzLZeA7O3w7tvTvwvs">回答要点</span><div data-page-node-id="EHUAAA58Giw1jZhFBRudFF">assert 被 pytest 捕获为用例失败 + raise 中断。</div></div>
+      <div class="row" data-page-node-id="ERghG5710Qg47kiPKHZ94F"><span class="lab ans" data-page-node-id="VImF4hG3x2fGkICIBPCUzs">参考答案</span><div class="ans-text" data-page-node-id="pXqNnL8DSMMVEVNFvKC270">assert 断言失败会被 pytest 捕获并标记该用例为 FAILED，继续跑其他用例；在 fixture 或关键前置中可用 pytest.raise 主动中断并给出原因。二者都会让用例失败，但 assert 更语义化、报告更友好。</div></div>
+      <div class="row" data-page-node-id="P8zqBMfIIdDHgvAjkQELHE"><span class="lab line" data-page-node-id="8NogJeebGYdAO9ZM8GIKEu">回答红线</span><div class="line-text" data-page-node-id="kzmAtWQNfYdWZCPiP7AD7v">不要用 print 判断成败代替 assert——pytest 无法识别为用例结果。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="2GrzvoOX0tp1se8NzJmjTn">
+    <div class="q" data-page-node-id="U6x35gbJv6UrELIQTHqSkg"><span class="qno" data-page-node-id="wB8VltTb2r6uZjNAKl60pl">23</span><span data-page-node-id="z4j5DY80mwVu2qkyvRYHOK">什么是幂等性？接口测试怎么验证？</span><span class="qtag" data-page-node-id="q4exfYjP8DguzJaACKWijO">进阶</span></div>
+    <div class="a" data-page-node-id="FEYM5nqauQm5hFZv9LkGZ9">
+      <div class="row" data-page-node-id="Gv7aZqfxLsOBjVMJiPzJPB"><span class="lab key" data-page-node-id="RZfAuXXX1FkGZ8Bp91x6Lu">回答要点</span><div data-page-node-id="TkwHRT5cmvVsCGwPOKEAtB">多次调用结果一致 + 重复提交不产生副作用。</div></div>
+      <div class="row" data-page-node-id="4ooAB7K3UrwMt7EcaG6BbN"><span class="lab ans" data-page-node-id="kDtq71WOMWLvGs90GaGlIu">参考答案</span><div class="ans-text" data-page-node-id="sPrQEhMRHZzxE3lcefQAYQ">幂等性指同一请求调用一次和多次，结果一致、不产生额外副作用（如重复下单）。GET/PUT/DELETE 应幂等，POST 通常不幂等。验证：连续调用两次，检查结果与数据状态是否一致。</div></div>
+      <div class="row" data-page-node-id="ZtPmAI8rY6gM8lyqYaQEo9"><span class="lab line" data-page-node-id="B0hJ6pX06LxN0dRTvWypQJ">回答红线</span><div class="line-text" data-page-node-id="7sIdR6w5p3yLfZ49trmEAx">不要认为「所有接口都幂等」——POST 创建类通常非幂等。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="RIvvKApEfYY8G0fG2SbG8P">
+    <div class="q" data-page-node-id="2yD7ZGi9AsU9anJ7wV2uk2"><span class="qno" data-page-node-id="EIcpSDcNitkOy1UY9osPDw">24</span><span data-page-node-id="6CyX3EmdOkwpDtqKAzUIzC">JSON 嵌套很深时怎么取值？</span><span class="qtag" data-page-node-id="pMQ9j2w8S0AJaQMac38BMJ">库</span></div>
+    <div class="a" data-page-node-id="zPszFfB5a1wkBEr3akI2JR">
+      <div class="row" data-page-node-id="708Ed6DmqaIHGYGNgzGlp2"><span class="lab key" data-page-node-id="AQQJkRxp6b2q1AilFZyAWB">回答要点</span><div data-page-node-id="xBZ8wJBO7I3hINDWZKA2k0">逐层索引 + .get 防错 + jsonpath 库。</div></div>
+      <div class="row" data-page-node-id="qrAAzNjff66p6zIBIp9bhj"><span class="lab ans" data-page-node-id="h0HaJARvUaFmOxW8q3CpgQ">参考答案</span><div class="ans-text" data-page-node-id="jLHFYEtOAQSlSuaKueMv8L">逐层用 [] 或 .get() 取值，如 resp.json()["data"]["list"][0]["name"]。深层或动态 key 可用 jsonpath-ng 库按路径表达式提取，更健壮。取不到时用 .get() 返回 None 而非抛 KeyError。</div></div>
+      <div class="row" data-page-node-id="Fu4RMLU7vGmdxCzSpevLi1"><span class="lab line" data-page-node-id="XbpoUn9YFaAf5bL2g4ZHCB">回答红线</span><div class="line-text" data-page-node-id="FpbBXzVI0joMo5KwYZ7INY">不要直接用 [] 取可能不存在的字段——层级错就 KeyError 中断用例。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="GYb8lSOLw6RC3YtsChfbB0">
+    <div class="q" data-page-node-id="tegZe65lmKdESqiAGlDXcP"><span class="qno" data-page-node-id="5NRviHnQ9lIzqRIFHlSxsU">25</span><span data-page-node-id="RxZJAwfU34EwsMJjFOxNkC">如何保证测试用例之间互不影响？</span><span class="qtag" data-page-node-id="N2232RWE57InHQwWCkCuFx">工程</span></div>
+    <div class="a" data-page-node-id="NABOyFOAQPVPxuiccMhh3S">
+      <div class="row" data-page-node-id="FU9QsnihxZxnVkU8Eheqyd"><span class="lab key" data-page-node-id="4nI35lzZzn7QA0Z4smTEfL">回答要点</span><div data-page-node-id="J8tquHAji7fcPrjaZwAl4b">数据隔离 + 前置清理 + 独立账号/事务回滚。</div></div>
+      <div class="row" data-page-node-id="EqrayAuNA6UuItH77A0Oie"><span class="lab ans" data-page-node-id="VVAdlcPzFHzZq4EgkBAD4G">参考答案</span><div class="ans-text" data-page-node-id="KLkIdQMwngLpUgKw3LJkbL">① 每条用例用独立测试数据（唯一用户名/订单号）；② 前置造数据、后置清理；③ 涉及数据库可用事务回滚；④ 不依赖其他用例的执行顺序。保证用例可独立、可重复执行。</div></div>
+      <div class="row" data-page-node-id="xtpnAFJGp9lW9E4JetIe0F"><span class="lab line" data-page-node-id="N7rUsgXGkw400QpRAH4AzL">回答红线</span><div class="line-text" data-page-node-id="qQrABvnbuAVPCveB3yV07k">不要让用例依赖固定执行顺序——顺序一变就集体失败。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="vb01dvLxS3j4F8fAvucMCf">
+    <div class="q" data-page-node-id="q4FhVT2pRGoJD2TSe2Hc1E"><span class="qno" data-page-node-id="8YHDjlZ6r3cHsrr7uZde8u">26</span><span data-page-node-id="9iKSTVI2medcLjqPI6TYfK">接口返回需要加密/签名，你怎么测？</span><span class="qtag" data-page-node-id="g36uOEAeliZgUX3vQEs9hC">进阶</span></div>
+    <div class="a" data-page-node-id="PO82AnaIP3a1PwLZTMKHR5">
+      <div class="row" data-page-node-id="mc2czaHvVXxa51WohnqeKb"><span class="lab key" data-page-node-id="Gm6sltojpDvRKwY90eXalB">回答要点</span><div data-page-node-id="YdihXuwkVis8wkBAGzIuVP">理解签名算法 + 脚本生成签名 + 抓包对照。</div></div>
+      <div class="row" data-page-node-id="RnAc8792TSPUkgrtvILZSq"><span class="lab ans" data-page-node-id="peNGglbpzEhQGeWYhFgAHL">参考答案</span><div class="ans-text" data-page-node-id="5OS7awgiFkuYaHCmK5NycK">先搞清签名规则（参数排序、加盐、MD5/HMAC 等），在脚本里用 hashlib/hmac 复现签名生成逻辑，动态算出 sign 放进请求。可先抓包拿到正确签名做对照验证算法实现是否正确。</div></div>
+      <div class="row" data-page-node-id="OzAIQD54GSmCLjwJctQx2j"><span class="lab line" data-page-node-id="gj7aRLpa2EYp8UKqxKvrRg">回答红线</span><div class="line-text" data-page-node-id="CD4l28HZaG8aVTh4inOFuw">不要硬编码一个抓来的 sign——签名通常含时间戳/随机数，会过期失效。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="6QyKvqE5cgkv2FnbhT8A23">
+    <div class="q" data-page-node-id="fs3BEqzOcY25qbIji3skvk"><span class="qno" data-page-node-id="sdZpFTerypC1QJohF52Y8o">27</span><span data-page-node-id="M82PynR2JBX08RvFF2IXF3">文件上传/下载接口怎么自动化？</span><span class="qtag" data-page-node-id="ebVf9dP2wtzEulLan3en3C">进阶</span></div>
+    <div class="a" data-page-node-id="4VqfIDCo2IKiLRCXfYtFt3">
+      <div class="row" data-page-node-id="M1aBXYA3NwP4VCrD6t49gt"><span class="lab key" data-page-node-id="VwUlYkZU628u7G81lJPBZO">回答要点</span><div data-page-node-id="Xk2NftXQNFxfAOCzcW7M03">上传用 files= + 下载用 stream 流式。</div></div>
+      <div class="row" data-page-node-id="RX8WscgEKv7198vfCGCWH5"><span class="lab ans" data-page-node-id="fMCBpc52eOoFMeFawG0aiF">参考答案</span><div class="ans-text" data-page-node-id="e5Cr5yv58kU8GTTTBmSfVd">上传用 requests 的 files= 参数传文件对象，注意 Content-Type 会被自动设为 multipart/form-data；下载大文件用 stream=True 分块写入，避免一次性载入内存，并断言状态码与文件大小/内容。</div></div>
+      <div class="row" data-page-node-id="kpyPPA383XXvyikjSNCzYR"><span class="lab line" data-page-node-id="AxeNnFGm7vUeZx8hAgf8Xh">回答红线</span><div class="line-text" data-page-node-id="mk6cVjXnT8j3WHHk2OtwOs">不要把大文件整个读进内存——用 stream 分块处理。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="H96IZt8bB4lwmdwwkWkGYI">
+    <div class="q" data-page-node-id="cbPpjPueVTJ6LwMDvO1bDS"><span class="qno" data-page-node-id="I01AL30NvQGWo5qT0gRX6U">28</span><span data-page-node-id="bVmAquDJaYW1Q39yNnBzwJ">如何对一个接口做简单的性能/并发测试？</span><span class="qtag" data-page-node-id="PGrHuhFhic0U1tPVyCa2st">进阶</span></div>
+    <div class="a" data-page-node-id="kTMMLipUSucUs635hL8Xv8">
+      <div class="row" data-page-node-id="C83S9IW8rI3ANfdXjZN2Cz"><span class="lab key" data-page-node-id="msggtyy43yVrLge5SBjfxA">回答要点</span><div data-page-node-id="2XOANBNSStn6QGygHIY8C6">并发发请求 + 统计响应时间 + 用 locust/线程池。</div></div>
+      <div class="row" data-page-node-id="YjIddPzc7k02FfIrSjhUHS"><span class="lab ans" data-page-node-id="QAIECmQPYC4FvMvH7KYDdZ">参考答案</span><div class="ans-text" data-page-node-id="nUxrq8YFqEmoUHAJqCblfy">接口自动化侧重功能正确性，性能测试可用 locust 或 threading/concurrent.futures 并发发请求，统计 QPS、平均/P95 响应时间、错误率。功能用例里也可记录 resp.elapsed 做响应时间监控。</div></div>
+      <div class="row" data-page-node-id="oPYtFM03nZBz57LExFb0Rj"><span class="lab line" data-page-node-id="jPci96YWX1OOOSNy2TU8qB">回答红线</span><div class="line-text" data-page-node-id="5obKSOg4Y1s8N9EHH1pmHa">不要拿功能测试脚本直接当压测跑——并发量、指标统计要专门设计。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="1EFTK6YQGVqCtyKnByH2KK">
+    <div class="q" data-page-node-id="CFv54Am5JsdgGEbWBNqWXA"><span class="qno" data-page-node-id="2L4R2ZME5GYEvHjaZdoGGy">29</span><span data-page-node-id="bvHjIfZaLFRMIxMlIp0jYt">你如何从零搭建一个接口自动化项目？</span><span class="qtag" data-page-node-id="iDJAfyDwlFPJUUu0v5BdLZ">综合</span></div>
+    <div class="a" data-page-node-id="dXaiZH1pT6DpntlPp99rKN">
+      <div class="row" data-page-node-id="EJQZ5JcLJFA8FHXEIukBsk"><span class="lab key" data-page-node-id="RfEbscVDMj7zqWPZbwIgnA">回答要点</span><div data-page-node-id="TJLA8OVwgTVgaTve6Ayubd">分层目录 + 封装 + fixture + 数据驱动 + 报告 + CI，成体系回答。</div></div>
+      <div class="row" data-page-node-id="rsYBMcIFBS3qtiFreeYFhF"><span class="lab ans" data-page-node-id="mJ8HAHvCFVkKalawhdS9jc">参考答案</span><div class="ans-text" data-page-node-id="zLjQCznKlOJoWt1Cyz47D5">① 建分层目录（common/data/testcases/reports）；② 封装请求工具统一 base_url/超时；③ conftest 放登录 token 等共享 fixture；④ 数据放 YAML 做参数化；⑤ 封装断言工具做三层断言；⑥ 接入 Allure 报告；⑦ 配 pytest.ini 分冒烟/回归；⑧ 接入 CI 定时/触发执行。</div></div>
+      <div class="row" data-page-node-id="deU87jNbvELvplz6aLoEGn"><span class="lab line" data-page-node-id="9sW3DjClUtTeBH7P6P9gPL">回答红线</span><div class="line-text" data-page-node-id="rMcjdaHhFM4d5BJIKbrnlr">不要只说「写一堆 test_ 文件」——要体现工程化分层思维，而非堆脚本。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="XJyhInWHszI1rnPpMKFdQa">
+    <div class="q" data-page-node-id="VQOTKcInWLtE8gRZqcav1M"><span class="qno" data-page-node-id="RPcsDJ9sXSfWnqmtLy0G9M">30</span><span data-page-node-id="JNAvFGjYctb6smIf26ft4T">接口自动化发现 bug 后，你怎么定位和提单？</span><span class="qtag" data-page-node-id="6Caz0KM6Fha0v9VD0iU2s4">综合</span></div>
+    <div class="a" data-page-node-id="fvrrDJEHcC1ML7vlN7zCiH">
+      <div class="row" data-page-node-id="FODsuUCQKXDLsX19lOqyLz"><span class="lab key" data-page-node-id="RiFiVUDbzFWCWH0I85o5fG">回答要点</span><div data-page-node-id="3uYAVRVUIdYh5IDqGFt5t2">复现 + 抓请求响应 + 对比预期 + 保留证据 + 明确步骤。</div></div>
+      <div class="row" data-page-node-id="z0t3a8MUzlrhXc7OAsjxLS"><span class="lab ans" data-page-node-id="C4EHhFLCBSVfNnWkF6DYk9">参考答案</span><div class="ans-text" data-page-node-id="AC7CTlHESDAJXEMhMPrB7G">先用脚本/Postman 稳定复现，记录完整请求（URL、头、体）和实际响应、期望结果，附上用例代码和日志/报告截图，在缺陷系统写清前置条件、复现步骤、实际/期望结果、严重等级。定位到是前端传参错还是后端逻辑错，便于开发处理。</div></div>
+      <div class="row" data-page-node-id="5OZCCtUw8ONaW1crArvHqL"><span class="lab line" data-page-node-id="EPIg7IT9y2UNP7qOE9AlQu">回答红线</span><div class="line-text" data-page-node-id="FeGVStwC9S2ttjDye960Cw">不要只丢一句「接口报错了」——缺请求详情和复现步骤的 bug 单会被退回。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="FC9iaS1Mh6NtwmvAzoLiIJ">
+    <div class="q" data-page-node-id="aCGhiTWtGC0mRRZ6WUQoIf"><span class="qno" data-page-node-id="8V19bk4sdxsbdmU3u3rHEe">31</span><span data-page-node-id="ZSlcdAcbB6EItEoMuPgpkU">requests 和 urllib 相比有什么优势？</span><span class="qtag" data-page-node-id="uECYRpupk4nId7vxqIWvMG">库</span></div>
+    <div class="a" data-page-node-id="ClBFpLIP4mwwNCQQLz3TLW">
+      <div class="row" data-page-node-id="x98lWwZjkgq8I4MtEfZGKM"><span class="lab key" data-page-node-id="fUbF2wajHkrATfi4sOi3Po">回答要点</span><div data-page-node-id="YwdQG1Sorg5JA2TbKJWMWY">API 简洁 + 自动编码 + Session + 生态丰富。</div></div>
+      <div class="row" data-page-node-id="fMrwIupMIHPSoZATuzzGU8"><span class="lab ans" data-page-node-id="HrYk7lt1MEuUmqMGbJswXG">参考答案</span><div class="ans-text" data-page-node-id="9nx4U0avnYVQlJAnHqVLxt">requests 是 urllib 的封装，API 更简洁直观，自动处理 URL 编码、cookie、重定向、SSL，支持 Session、连接池，生态丰富。urllib 是标准库但较繁琐，requests 让代码可读性和开发效率更高。</div></div>
+      <div class="row" data-page-node-id="bNyXsSWav2VEYvf0elAwz9"><span class="lab line" data-page-node-id="Llvcf3HE8v6UK6CiVWZDp6">回答红线</span><div class="line-text" data-page-node-id="RYcmpcTnCEKRYk1hEBcT2s">不要说「requests 功能比 urllib 强很多」——底层仍是 urllib，主要是更好用。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="BErzLuKsx1mwBXga9G6I0h">
+    <div class="q" data-page-node-id="4sdxF4tcC7Uijw37nQkTjX"><span class="qno" data-page-node-id="ZNZLyU5DiDwrrqzwMSdEPw">32</span><span data-page-node-id="CJ6cXqJ6QPMjjxx84QbjHr">什么是 RESTful API？对测试有什么影响？</span><span class="qtag" data-page-node-id="WoksKrIAsyXVZ8o7SWlmAi">基础</span></div>
+    <div class="a" data-page-node-id="TNLSVrujxnrC8xiSi3195V">
+      <div class="row" data-page-node-id="1ljy5gHGQSEB7xzLIC05fw"><span class="lab key" data-page-node-id="1eGliEs8nqHqiKOxMKlg5D">回答要点</span><div data-page-node-id="R4tZV65iHjMFnftRTVWy30">资源导向 + 用 Method 表语义 + 状态码规范。</div></div>
+      <div class="row" data-page-node-id="I25cuKx81BZCCEijZJRV9X"><span class="lab ans" data-page-node-id="xJcrzDikVaENgE8Y4sW74C">参考答案</span><div class="ans-text" data-page-node-id="1EuHX1niZ16pKaMyDz3q4x">RESTful 是用 HTTP 方法语义操作资源的风格：URL 表示资源，GET 查、POST 增、PUT 改、DELETE 删，状态码语义化。对测试：可用状态码判断操作结果，但现实中很多接口不规范，仍需断言业务码。</div></div>
+      <div class="row" data-page-node-id="ROqEDUIyBOfbpoihwXpA4K"><span class="lab line" data-page-node-id="m3Ev1nJRxMtd0v7uQ3BcDO">回答红线</span><div class="line-text" data-page-node-id="npELAHc6tuyhguByEYxAKO">不要假设被测接口一定严格 RESTful——实际项目常不严格，要按实际返回断言。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="J0b0m1rPltBoaLbPFx02y2">
+    <div class="q" data-page-node-id="NWErdeB7hQKjYKIH5KpBuc"><span class="qno" data-page-node-id="kge1tPyawvGYCSYXLDjGEG">33</span><span data-page-node-id="1qesBIvmF6RinmPYaYJ8rw">如何用 pytest 只运行失败的用例或指定优先级用例？</span><span class="qtag" data-page-node-id="qosbkT5BL3VEMeFjAvsjHY">框架</span></div>
+    <div class="a" data-page-node-id="g3382a1oS96IHUcBncZLe9">
+      <div class="row" data-page-node-id="czTqNP5MKKS3TmootO7BfG"><span class="lab key" data-page-node-id="Q1X1OxqODrwnpsb6RodxUJ">回答要点</span><div data-page-node-id="XeA7EXFO790QwPAqE8Bsj8">-m 按 marker + --lf 只跑上次失败 + -k 关键字。</div></div>
+      <div class="row" data-page-node-id="sAbyEDQJGCSepanSXqkB4p"><span class="lab ans" data-page-node-id="9Ac50yHCuyEYC5HgPa478B">参考答案</span><div class="ans-text" data-page-node-id="b3d7NPAMLpXytJES8cDZt8">按优先级用 marker：<code data-page-node-id="fL6VkaUiFEGT3pQm1ZdYuW">pytest -m P0</code>；只跑上次失败用 <code data-page-node-id="MdgtVImppetWhzliNf31Fh">pytest --lf</code>（需配合 --cache-dir）；按名字用 <code data-page-node-id="FFwUVSIra4IGbg8cDaAxR7">pytest -k 关键字</code>。合理组合能精准控制执行范围。</div></div>
+      <div class="row" data-page-node-id="AZxOx4pJsM3axAH6cqwLG0"><span class="lab line" data-page-node-id="PCBJGDhbEUnhDJrPsykQ31">回答红线</span><div class="line-text" data-page-node-id="kZhP2gVTBu7xKygxZvwi22">不要每次全量跑——善用 -m/--lf/-k 提升反馈速度。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="S1YRM74Yn6gK6dXSqwPK9W">
+    <div class="q" data-page-node-id="aFR6bw1NAU79IDvTn9GpKT"><span class="qno" data-page-node-id="3RgNsKKhvTAiCeUUYfT4PM">34</span><span data-page-node-id="87FQ7sfvHGfdJLHLCcYzHE">测试环境和生产环境的接口测试要注意什么？</span><span class="qtag" data-page-node-id="CYYpELvflVttj5vJwrGlel">工程</span></div>
+    <div class="a" data-page-node-id="w0SYFb7zCTgeEMGHNm8UxK">
+      <div class="row" data-page-node-id="xTVmT5N5NVFEwqUpKBITKH"><span class="lab key" data-page-node-id="vG8hsUpQOJ2H7QCGgjQRCG">回答要点</span><div data-page-node-id="NtE2qOZJWLuXjESMZl99mq">环境隔离 + base_url 切换 + 生产谨慎 + 数据脱敏。</div></div>
+      <div class="row" data-page-node-id="edmkPgnQBlZBDMtt4gUwsq"><span class="lab ans" data-page-node-id="InHxFRdi9tfSZAK28df9jT">参考答案</span><div class="ans-text" data-page-node-id="rGNM2zCLDsCKMAI72aAlUd">用配置区分环境（base_url 从配置读，不写死），测试环境可随意造数据。生产环境要极其谨慎：避免写操作污染真实数据、注意限流、数据脱敏、最好只读或走专门的测试账号。</div></div>
+      <div class="row" data-page-node-id="IDyCjYCvXGpxkW7Vju20np"><span class="lab line" data-page-node-id="uJchAeeM535Rxtd6nRKitP">回答红线</span><div class="line-text" data-page-node-id="oVMpoIWCuFrd3IwCNAAGHV">不要拿测试脚本直接怼生产环境跑写操作——可能污染真实业务数据。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="C3POBrqEBcm7boO3kcSRTG">
+    <div class="q" data-page-node-id="56bdAStF3RZO3h3jTUakr3"><span class="qno" data-page-node-id="PoK2nZK5ms7r8gUFQdBdfD">35</span><span data-page-node-id="lFLHq14FL4AwlMn39nsi5h">你如何保持接口自动化用例的长期可维护性？</span><span class="qtag" data-page-node-id="tDX61bsiNXaUHu1xztDGEO">综合</span></div>
+    <div class="a" data-page-node-id="9kswJMoLfRpAsStezU4nzC">
+      <div class="row" data-page-node-id="GNDKhu8JTOsDcYsno4RxkZ"><span class="lab key" data-page-node-id="zWS6xzY7XpYmga0RLMMSYI">回答要点</span><div data-page-node-id="DKs3BUYs3UbwYVsW6B2WHr">分层 + 数据分离 + 封装 + 命名规范 + 定期清理。</div></div>
+      <div class="row" data-page-node-id="UAoSSuDuMFoeazV42yqOfM"><span class="lab ans" data-page-node-id="3tiGl9JPFd6laR6LTzlcDn">参考答案</span><div class="ans-text" data-page-node-id="raMuo0t8bqvjDnXxHncxy4">① 分层解耦，接口变更只改封装；② 数据外置，改数据不动代码；③ 公共逻辑抽 fixture/工具；④ 用例命名清晰、一个用例验证一个点；⑤ 定期清理失效用例、修复 flaky；⑥ 加断言信息让失败自解释。</div></div>
+      <div class="row" data-page-node-id="TfHUHnQ8HIAYKgEcVc0I6G"><span class="lab line" data-page-node-id="tUkJxKsj8dHlVZD8wA08h2">回答红线</span><div class="line-text" data-page-node-id="q2yg0DtRQzXagjVuTbxF2X">不要为了赶进度堆砌重复代码——技术债会让后期维护成本指数上升。</div></div>
+    </div>
+  </div>
+
+  <div class="qa" onclick="toggleQA(this)" data-page-node-id="Ugj4cHwSKdDdMDRUWwu8aN">
+    <div class="q" data-page-node-id="CrPSasWWozapgSfFC2ziTX"><span class="qno" data-page-node-id="9Ye7tEg3RurTk10YvB3hUK">36</span><span data-page-node-id="Fb0cp1bpP3giWzTtpxdbH1">接口自动化能 100% 覆盖所有场景吗？为什么？</span><span class="qtag" data-page-node-id="SOePoaGT2VoSNPLrmD58ev">综合</span></div>
+    <div class="a" data-page-node-id="etSHrrGTFiHA45EemDw1Lf">
+      <div class="row" data-page-node-id="4AbCeR5Qdt55GziBjoxLKc"><span class="lab key" data-page-node-id="bYqk7NPGA9EGh0Jh18pPYp">回答要点</span><div data-page-node-id="JJ4OPU9x2LRGs0KiGbDSMw">不能 + 成本/收益 + 结合手工与其他层。</div></div>
+      <div class="row" data-page-node-id="Pdi5Ny6LHDd65FJx0jp7ii"><span class="lab ans" data-page-node-id="QxBJbQw38fZgLUfEgkuS5J">参考答案</span><div class="ans-text" data-page-node-id="3nIVqITdl6OQm9GOV9UFg2">不能。自动化适合回归核心逻辑和高频场景，但边界组合爆炸、UI 交互、体验类、探索性场景自动化成本高、收益低。应遵循测试金字塔，自动化覆盖稳定核心，手工测试聚焦复杂/易变场景，二者结合。</div></div>
+      <div class="row" data-page-node-id="BV0UR9ORyGggwwhruDG7B3"><span class="lab line" data-page-node-id="DfxdG1cjwE93H8RCKYBHAg">回答红线</span><div class="line-text" data-page-node-id="UJmQXrsJ5KNcBJbsKGcQSd">不要吹嘘「自动化能覆盖全部」——不切实际，面试官会认为你缺乏工程判断。</div></div>
+    </div>
+  </div>
+
+  <div class="card success" data-page-node-id="BnZd4BwFbCfyagXZsiZQo8">
+    <strong data-page-node-id="JavJRt1ED6DYOP3v1ASUve">✎ 面试冲刺建议</strong>
+    <ol data-page-node-id="Wi3r9JcOJS3PQwUSy3GzZz">
+      <li data-page-node-id="4qBabKSDZPKkBe8IqgTUpi">先把 36 题通读作答一遍，标记答不上的题回看对应章节。</li>
+      <li data-page-node-id="QhyFbEpZhGTJmWMQ5Vr09s">重点掌握「回答红线」——面试中踩红线往往直接扣分。</li>
+      <li data-page-node-id="8zJCxerOD85b9pp3rHS2K8">综合题（29/30/35/36）要能成体系地讲，体现工程化思维而非背零散知识点。</li>
+      <li data-page-node-id="nDtmGLwLAGb9KAgQ7u2u7G">结合自己做过的项目准备 1-2 个真实案例（如何定位 bug、如何搭框架）。</li>
+    </ol>
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<script>
+function switchTab(group, tab) {
+  document.querySelectorAll('[id^="'+group+'-"]').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById(group+'-'+tab).classList.add('active');
+  var btns = document.querySelectorAll('.tabs .tab-btn');
+  btns.forEach(function(b){
+    if (b.getAttribute('onclick').indexOf("'"+tab+"'") >= 0) b.classList.add('active');
+    else b.classList.remove('active');
+  });
+}
+function copyCode(btn) {
+  var pre = btn.closest('.code-block').querySelector('pre');
+  var text = pre.textContent;
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent = '✅ 已复制'; btn.classList.add('copied');
+    setTimeout(function(){ btn.textContent = '📋 复制'; btn.classList.remove('copied'); }, 2000);
+  }).catch(function(){
+    btn.textContent = '❌ 失败';
+    setTimeout(function(){ btn.textContent = '📋 复制'; }, 2000);
+  });
+}
+// 面试题折叠
+function toggleQA(el){ el.classList.toggle('open'); }
+// 导航高亮
+var sections = document.querySelectorAll('section[id]');
+var navLinks = document.querySelectorAll('.topnav a');
+window.addEventListener('scroll', function(){
+  var current = '';
+  sections.forEach(function(s){ if (window.scrollY >= s.offsetTop - 80) current = s.getAttribute('id'); });
+  navLinks.forEach(function(a){
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#'+current) a.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
