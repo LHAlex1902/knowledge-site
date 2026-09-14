@@ -65,6 +65,8 @@
   .kw { color: #ff7b72; } .fn { color: #d2a8ff; } .str { color: #a5d6a7; }
   .cmt { color: #8b949e; font-style: italic; } .num { color: #79c0ff; }
   .dec { color: #d2a8ff; } .builtin { color: #ffa657; }
+.ann { color:#6a9955; font-family:"SimSun","宋体","Noto Serif SC",serif; font-style:normal; font-weight:normal; font-size:12.5px; margin-left:6px; white-space:normal; }
+
   .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
   .tab-btn { padding: 8px 16px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px;
     border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
@@ -77,6 +79,8 @@
   .kp { background: rgba(88,166,255,0.06); border: 1px dashed rgba(88,166,255,0.35); border-radius: var(--radius);
     padding: 12px 16px; margin: 12px 0; font-size: 14px; }
   .kp b { color: var(--accent); }
+  /* 正文重点强调：红色加粗（优先级低于类规则，不误伤 .kp/.qa 等组件配色） */
+  strong, b { color: var(--accent-red); font-weight: 700; }
   .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 16px 0; justify-content: center; }
   .flow-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; text-align: center; font-size: 13px; }
   .flow-box.accent { border-color: var(--accent); background: rgba(88,166,255,0.06); }
@@ -246,28 +250,28 @@
   <div class="tab-content active" id="env-win">
     <div class="code-block">
       <div class="header"><span class="lang lang-shell">Shell</span><span class="fname">创建并激活虚拟环境</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-      <pre><code><span class="cmt"># 1. 建项目目录</span>
-mkdir ui_test &amp; cd ui_test
-<span class="cmt"># 2. 创建虚拟环境</span>
-python -m venv venv
-<span class="cmt"># 3. 激活</span>
-venv\Scripts\activate
-<span class="cmt"># 4. 安装核心库（Selenium 4 自带驱动管理器）</span>
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
-pip install selenium pytest pytest-html PyYAML</code></pre>
+      <pre><code><span class="cmt"># 1. 建项目目录</span><span class="ann">⟳ 建项目目录：新建 ui_test 文件夹。动机：让 UI 自动化工程独立成目录。</span>
+mkdir ui_test &amp; cd ui_test<span class="ann">⟳ mkdir … & cd …：建目录并进入。动机：一条命令完成「建好就进去」。</span>
+<span class="cmt"># 2. 创建虚拟环境</span><span class="ann">⟳ 注释：提示下一步创建虚拟环境。</span>
+python -m venv venv<span class="ann">⟳ python -m venv venv：建虚拟环境。动机：隔离本项目依赖，不污染全局。</span>
+<span class="cmt"># 3. 激活</span><span class="ann">⟳ 注释：提示下一步激活。</span>
+venv\Scripts\activate<span class="ann">⟳ venv\Scripts\activate：激活虚拟环境（Windows）。动机：激活后依赖才装进本项目。</span>
+<span class="cmt"># 4. 安装核心库（Selenium 4 自带驱动管理器）</span><span class="ann">⟳ 注释：说明 Selenium 4 自带驱动管理。动机：提示无需手动下载 chromedriver。</span>
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip<span class="ann">⟳ pip install -i 清华源 --upgrade pip：换镜像升级 pip。动机：加速、防超时。</span>
+pip install selenium pytest pytest-html PyYAML<span class="ann">⟳ pip install selenium pytest pytest-html PyYAML：安装核心库。动机：selenium 操控浏览器、pytest 组织用例、pytest-html 出报告、PyYAML 读数据。</span></code></pre>
     </div>
   </div>
   <div class="tab-content" id="env-mac">
     <div class="code-block">
       <div class="header"><span class="lang lang-shell">Shell</span><span class="fname">创建并激活虚拟环境</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-      <pre><code><span class="cmt"># 1. 建项目目录</span>
-mkdir ui_test &amp;&amp; cd ui_test
-<span class="cmt"># 2. 创建虚拟环境</span>
-python3 -m venv venv
-<span class="cmt"># 3. 激活</span>
-source venv/bin/activate
-<span class="cmt"># 4. 安装核心库</span>
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
+      <pre><code><span class="cmt"># 1. 建项目目录</span><span class="ann">⟳ 建项目目录：新建 ui_test 文件夹（mac/Linux 版）。</span>
+mkdir ui_test &amp;&amp; cd ui_test<span class="ann">⟳ mkdir … && cd …：建目录并进入。动机：mac/Linux 用 && 顺序执行。</span>
+<span class="cmt"># 2. 创建虚拟环境</span><span class="ann">⟳ 注释：提示创建虚拟环境。</span>
+python3 -m venv venv<span class="ann">⟳ python3 -m venv venv：用 Python3 建虚拟环境。动机：mac/Linux 上须显式用 python3。</span>
+<span class="cmt"># 3. 激活</span><span class="ann">⟳ source venv/bin/activate：激活（mac/Linux 写法）。动机：路径与 Windows 不同。</span>
+source venv/bin/activate<span class="ann">⟳ 注释：提示安装依赖。</span>
+<span class="cmt"># 4. 安装核心库</span><span class="ann">⟳ pip install -i 清华源 --upgrade pip：换镜像升级 pip。</span>
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip<span class="ann">⟳ pip install selenium pytest pytest-html PyYAML：安装核心库。动机：同 Windows 版。</span>
 pip install selenium pytest pytest-html PyYAML</code></pre>
     </div>
   </div>
@@ -275,15 +279,15 @@ pip install selenium pytest pytest-html PyYAML</code></pre>
   <h3>2.3 ✅ 验证安装：启动你的第一个浏览器</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">check.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium <span class="kw">import</span> webdriver
-<span class="kw">import</span> time
+    <pre><code><span class="kw">from</span> selenium <span class="kw">import</span> webdriver<span class="ann">⟳ from selenium import webdriver：导入浏览器驱动。动机：UI 自动化靠它启动和操控浏览器。</span>
+<span class="kw">import</span> time<span class="ann">⟳ import time：导入时间库。动机：下面用 sleep 让浏览器停留几秒便于观察。</span>
 
-<span class="cmt"># 启动 Chrome（首次会自动下载匹配的 chromedriver）</span>
-driver = webdriver.Chrome()
-driver.get(<span class="str">"https://www.baidu.com"</span>)
-<span class="builtin">print</span>(<span class="str">"页面标题："</span>, driver.title)
-time.sleep(<span class="num">3</span>)   <span class="cmt"># 看 3 秒再关，别一闪而过</span>
-driver.quit()</code></pre>
+<span class="cmt"># 启动 Chrome（首次会自动下载匹配的 chromedriver）</span><span class="ann">⟳ 注释：说明首次会自动下载驱动。动机：提示 Selenium 4 的驱动管理器会自匹配 chromedriver。</span>
+driver = webdriver.Chrome()<span class="ann">⟳ driver = webdriver.Chrome()：启动 Chrome。动机：创建浏览器实例，一切操作的起点。</span>
+driver.get(<span class="str">"https://www.baidu.com"</span>)<span class="ann">⟳ driver.get("https://www.baidu.com")：打开网址。动机：get 导航到目标页面，UI 测试第一步。</span>
+<span class="builtin">print</span>(<span class="str">"页面标题："</span>, driver.title)<span class="ann">⟳ print("页面标题：", driver.title)：打印标题。动机：读取标题可验证页面是否正确加载。</span>
+time.sleep(<span class="num">3</span>)   <span class="cmt"># 看 3 秒再关，别一闪而过</span><span class="ann">⟳ time.sleep(3)：强制等 3 秒。动机：别一闪而过，便于肉眼看到页面；仅调试用。</span>
+driver.quit()<span class="ann">⟳ driver.quit()：关闭浏览器。动机：用完即关，释放资源，避免残留进程。</span></code></pre>
   </div>
   <div class="card warning">
     <b>⚠️【启动失败排查】</b>
@@ -340,8 +344,8 @@ driver.quit()</code></pre>
   <p>网页由一个个 <b>HTML 元素</b>构成，它们组织成一棵 <b>DOM 树</b>。Selenium 就是在 DOM 树里<b>找到目标元素</b>再操作它。要定位元素，得先会看 HTML 结构——按 F12 打开开发者工具，用左上角箭头选中元素，就能看到它的标签、属性、层级。</p>
   <div class="code-block">
     <div class="header"><span class="lang lang-shell">HTML</span><span class="fname">一个输入框的 HTML 结构</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code>&lt;<span class="kw">input</span> <span class="fn">id</span>=<span class="str">"username"</span> <span class="fn">name</span>=<span class="str">"user"</span> <span class="fn">class</span>=<span class="str">"form-control"</span>
-       <span class="fn">type</span>=<span class="str">"text"</span> <span class="fn">placeholder</span>=<span class="str">"请输入用户名"</span> /&gt;</code></pre>
+    <pre><code>&lt;<span class="kw">input</span> <span class="fn">id</span>=<span class="str">"username"</span> <span class="fn">name</span>=<span class="str">"user"</span> <span class="fn">class</span>=<span class="str">"form-control"</span><span class="ann">⟳ <input id="username" …>：一个输入框标签。动机：演示真实页面里待定位的元素长什么样。</span>
+       <span class="fn">type</span>=<span class="str">"text"</span> <span class="fn">placeholder</span>=<span class="str">"请输入用户名"</span> /&gt;<span class="ann">⟳ type="text" placeholder="请输入用户名" />：输入框属性。动机：id/name/class 等属性正是后面定位的依据。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · 元素属性：</b> 定位元素靠它的「属性」——<code>id</code>（唯一标识，最优先）、<code>name</code>、<code>class</code>、<code>tag</code>（标签名）、以及它在页面中的位置。定位的本质就是「用哪个属性/路径能唯一找到它」。</div>
 
@@ -375,76 +379,76 @@ driver.quit()</code></pre>
   <h3>4.1 🆔 By.ID（最优先）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">by_id.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium <span class="kw">import</span> webdriver
-<span class="kw">from</span> selenium.webdriver.common.by <span class="kw">import</span> By
+    <pre><code><span class="kw">from</span> selenium <span class="kw">import</span> webdriver<span class="ann">⟳ from selenium import webdriver：导入浏览器驱动。</span>
+<span class="kw">from</span> selenium.webdriver.common.by <span class="kw">import</span> By<span class="ann">⟳ from selenium.webdriver.common.by import By：导入定位方式枚举。动机：By 提供 ID/NAME/XPATH 等定位常量。</span>
 
-driver = webdriver.Chrome()
-driver.get(<span class="str">"https://example.com/login"</span>)
+driver = webdriver.Chrome()<span class="ann">⟳ driver = webdriver.Chrome()：启动浏览器。</span>
+driver.get(<span class="str">"https://example.com/login"</span>)<span class="ann">⟳ driver.get("https://example.com/login")：打开登录页。动机：先导航到目标页才能定位其元素。</span>
 
-<span class="cmt"># id 唯一，最快最稳，能用 id 就别用别的</span>
-el = driver.find_element(By.ID, <span class="str">"username"</span>)
-el.send_keys(<span class="str">"tom"</span>)</code></pre>
+<span class="cmt"># id 唯一，最快最稳，能用 id 就别用别的</span><span class="ann">⟳ 注释：id 唯一、最快最稳。动机：能用 id 就别用别的，定位最可靠。</span>
+el = driver.find_element(By.ID, <span class="str">"username"</span>)<span class="ann">⟳ el = driver.find_element(By.ID, "username")：按 id 定位。动机：id 在页面唯一，直接命中目标输入框。</span>
+el.send_keys(<span class="str">"tom"</span>)<span class="ann">⟳ el.send_keys("tom")：输入文本。动机：模拟用户在输入框里敲字。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · find_element：</b> 在页面里找<b>第一个</b>匹配的元素并返回；找不到会抛 <code>NoSuchElementException</code>。参数是 <code>(By.方式, "值")</code> 两个参数。<code>find_elements</code>（复数）则返回所有匹配的列表，找不到返回空列表。</div>
 
   <h3>4.2 📛 By.NAME / By.CLASS / By.TAG_NAME</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">by_name_class.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 按 name 属性</span>
-el = driver.find_element(By.NAME, <span class="str">"user"</span>)
+    <pre><code><span class="cmt"># 按 name 属性</span><span class="ann">⟳ 注释：按 name 属性。</span>
+el = driver.find_element(By.NAME, <span class="str">"user"</span>)<span class="ann">⟳ el = driver.find_element(By.NAME, "user")：按 name 定位。动机：name 属性常用于表单字段，也可唯一定位。</span>
 
-<span class="cmt"># 按 class（注意：class 常重复，可能返回非目标元素）</span>
-els = driver.find_elements(By.CLASS, <span class="str">"form-control"</span>)
+<span class="cmt"># 按 class（注意：class 常重复，可能返回非目标元素）</span><span class="ann">⟳ 注释：class 常重复。动机：提醒 class 可能匹配多个元素，慎用单数 find_element。</span>
+els = driver.find_elements(By.CLASS, <span class="str">"form-control"</span>)<span class="ann">⟳ els = driver.find_element(By.CLASS, "form-control")：按 class 定位。动机：class 常用于样式类，可能返回多个，注意取对。</span>
 
-<span class="cmt"># 按标签名（如取所有 input）</span>
-inputs = driver.find_elements(By.TAG_NAME, <span class="str">"input"</span>)</code></pre>
+<span class="cmt"># 按标签名（如取所有 input）</span><span class="ann">⟳ 注释：按标签名。动机：取某一类标签（如所有 input）时用。</span>
+inputs = driver.find_elements(By.TAG_NAME, <span class="str">"input"</span>)<span class="ann">⟳ inputs = driver.find_elements(By.TAG_NAME, "input")：取所有 input。动机：复数 find_elements 返回列表，用于批量处理。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · CLASS 的坑：</b> <code>class</code> 属性经常重复（一个页面几十个 <code>btn</code>），<code>find_element(By.CLASS,...)</code> 只返回第一个匹配，很可能不是你要的。class 不唯一时慎用，优先 id 或 CSS。</div>
 
   <h3>4.3 🔗 By.LINK_TEXT / By.PARTIAL_LINK_TEXT（专用于 &lt;a&gt; 链接）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">by_link.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 精确匹配链接文字</span>
-el = driver.find_element(By.LINK_TEXT, <span class="str">"下一页"</span>)
+    <pre><code><span class="cmt"># 精确匹配链接文字</span><span class="ann">⟳ 注释：精确匹配链接文字。</span>
+el = driver.find_element(By.LINK_TEXT, <span class="str">"下一页"</span>)<span class="ann">⟳ el = driver.find_element(By.LINK_TEXT, "下一页")：按完整文字定位链接。动机：文字完全等于「下一页」的 <a> 才被命中。</span>
 
-<span class="cmt"># 模糊匹配（包含某段文字即可）</span>
-el = driver.find_element(By.PARTIAL_LINK_TEXT, <span class="str">"帮助"</span>)</code></pre>
+<span class="cmt"># 模糊匹配（包含某段文字即可）</span><span class="ann">⟳ 注释：模糊匹配。动机：只需包含某段文字即可，容错性更强。</span>
+el = driver.find_element(By.PARTIAL_LINK_TEXT, <span class="str">"帮助"</span>)<span class="ann">⟳ el = driver.find_element(By.PARTIAL_LINK_TEXT, "帮助")：按部分文字定位。动机：文字含「帮助」的链接都能命中，适合长文本链接。</span></code></pre>
   </div>
 
   <h3>4.4 🧭 By.XPATH（用路径表达式，功能最强）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">by_xpath.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 绝对路径（脆弱，页面微调就失效，不推荐）</span>
-<span class="cmt"># /html/body/div/form/input[1]</span>
+    <pre><code><span class="cmt"># 绝对路径（脆弱，页面微调就失效，不推荐）</span><span class="ann">⟳ 注释：绝对路径脆弱。动机：页面结构微调就失效，不推荐。</span>
+<span class="cmt"># /html/body/div/form/input[1]</span><span class="ann">⟳ # /html/body/div/form/input[1]：绝对 XPath 示例。动机：展示脆弱写法的样子，提醒避免。</span>
 
-<span class="cmt"># 相对路径 + 属性（推荐写法）</span>
-el = driver.find_element(By.XPATH, <span class="str">"//input[@id='username']"</span>)
+<span class="cmt"># 相对路径 + 属性（推荐写法）</span><span class="ann">⟳ 注释：相对路径+属性为推荐写法。</span>
+el = driver.find_element(By.XPATH, <span class="str">"//input[@id='username']"</span>)<span class="ann">⟳ el = driver.find_element(By.XPATH, "//input[@id='username']")：相对 XPath。动机：从全文任意处找 id 为 username 的 input，比绝对路径稳。</span>
 
-<span class="cmt"># 按文字内容定位按钮</span>
-btn = driver.find_element(By.XPATH, <span class="str">"//button[text()='登录']"</span>)
+<span class="cmt"># 按文字内容定位按钮</span><span class="ann">⟳ 注释：按文字内容定位按钮。</span>
+btn = driver.find_element(By.XPATH, <span class="str">"//button[text()='登录']"</span>)<span class="ann">⟳ btn = driver.find_element(By.XPATH, "//button[text()='登录']")：按按钮文字定位。动机：没有 id 时，用按钮显示的文字定位最直观。</span>
 
-<span class="cmt"># 多条件</span>
-el = driver.find_element(By.XPATH, <span class="str">"//input[@type='text' and @name='user']"</span>)</code></pre>
+<span class="cmt"># 多条件</span><span class="ann">⟳ 注释：多条件。动机：单个属性不唯一时，用 and 组合多个条件精确定位。</span>
+el = driver.find_element(By.XPATH, <span class="str">"//input[@type='text' and @name='user']"</span>)<span class="ann">⟳ el = driver.find_element(By.XPATH, "//input[@type='text' and @name='user']")：多条件 XPath。动机：type 与 name 同时满足才命中，避免误选。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · XPath：</b> 用 <code>//</code> 从任意位置查找，<code>[@属性='值']</code> 加条件。<code>text()='登录'</code> 按元素文字定位。<b>XPath 功能最强但可读性差、对页面结构敏感</b>，能用 id/CSS 时优先它们，XPath 作为兜底利器。</div>
 
   <h3>4.5 🎨 By.CSS_SELECTOR（性能最好，推荐）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">by_css.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># id</span>
-el = driver.find_element(By.CSS_SELECTOR, <span class="str">"#username"</span>)
+    <pre><code><span class="cmt"># id</span><span class="ann">⟳ 注释：按 id。</span>
+el = driver.find_element(By.CSS_SELECTOR, <span class="str">"#username"</span>)<span class="ann">⟳ el = driver.find_element(By.CSS_SELECTOR, "#username")：CSS 选择器按 id。动机：# 前缀等价于 By.ID，CSS 写法更灵活。</span>
 
-<span class="cmt"># class</span>
-el = driver.find_element(By.CSS_SELECTOR, <span class="str">".form-control"</span>)
+<span class="cmt"># class</span><span class="ann">⟳ 注释：按 class。</span>
+el = driver.find_element(By.CSS_SELECTOR, <span class="str">".form-control"</span>)<span class="ann">⟳ el = driver.find_element(By.CSS_SELECTOR, ".form-control")：CSS 按 class。动机：. 前缀表示 class，注意 class 可能重复。</span>
 
-<span class="cmt"># 标签.类名</span>
-el = driver.find_element(By.CSS_SELECTOR, <span class="str">"input.btn"</span>)
+<span class="cmt"># 标签.类名</span><span class="ann">⟳ 注释：标签.类名。</span>
+el = driver.find_element(By.CSS_SELECTOR, <span class="str">"input.btn"</span>)<span class="ann">⟳ el = driver.find_element(By.CSS_SELECTOR, "input.btn")：标签+类组合。动机：限定 input 且带 btn 类，缩小范围更精准。</span>
 
-<span class="cmt"># 属性选择器</span>
-el = driver.find_element(By.CSS_SELECTOR, <span class="str">"input[type='password']"</span>)
+<span class="cmt"># 属性选择器</span><span class="ann">⟳ 注释：属性选择器。</span>
+el = driver.find_element(By.CSS_SELECTOR, <span class="str">"input[type='password']"</span>)<span class="ann">⟳ el = driver.find_element(By.CSS_SELECTOR, "input[type='password']")：属性选择器。动机：用 [属性=值] 精确定位密码框。</span>
 
-<span class="cmt"># 父子层级</span>
-el = driver.find_element(By.CSS_SELECTOR, <span class="str">"form div input"</span>)</code></pre>
+<span class="cmt"># 父子层级</span><span class="ann">⟳ 注释：父子层级。</span>
+el = driver.find_element(By.CSS_SELECTOR, <span class="str">"form div input"</span>)<span class="ann">⟳ el = driver.find_element(By.CSS_SELECTOR, "form div input")：层级选择器。动机：用空格表示后代关系，按结构定位嵌套元素。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · CSS_SELECTOR：</b> 用 CSS 选择器定位，<b>性能比 XPath 更好</b>（浏览器原生支持），写法 <code>#id</code>、<code>.class</code>、<code>tag.class</code>、<code>[属性='值']</code>。日常最推荐，兼顾速度与可读性。</div>
 
@@ -479,41 +483,41 @@ el = driver.find_element(By.CSS_SELECTOR, <span class="str">"form div input"</sp
   <h3>5.1 ✍️ 基础操作：输入、点击、取文本</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">basic_actions.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium <span class="kw">import</span> webdriver
-<span class="kw">from</span> selenium.webdriver.common.by <span class="kw">import</span> By
+    <pre><code><span class="kw">from</span> selenium <span class="kw">import</span> webdriver<span class="ann">⟳ from selenium import webdriver：导入驱动。</span>
+<span class="kw">from</span> selenium.webdriver.common.by <span class="kw">import</span> By<span class="ann">⟳ from selenium.webdriver.common.by import By：导入定位枚举。</span>
 
-driver = webdriver.Chrome()
-driver.get(<span class="str">"https://example.com/login"</span>)
+driver = webdriver.Chrome()<span class="ann">⟳ driver = webdriver.Chrome()：启动浏览器。</span>
+driver.get(<span class="str">"https://example.com/login"</span>)<span class="ann">⟳ driver.get("https://example.com/login")：打开登录页。</span>
 
-driver.find_element(By.ID, <span class="str">"username"</span>).send_keys(<span class="str">"tom"</span>)     <span class="cmt"># 输入</span>
-driver.find_element(By.ID, <span class="str">"password"</span>).send_keys(<span class="str">"123456"</span>)
-driver.find_element(By.XPATH, <span class="str">"//button[text()='登录']"</span>).click()  <span class="cmt"># 点击</span>
+driver.find_element(By.ID, <span class="str">"username"</span>).send_keys(<span class="str">"tom"</span>)     <span class="cmt"># 输入</span><span class="ann">⟳ driver.find_element(By.ID, "username").send_keys("tom")：定位用户名框并输入。动机：链式写法一行完成定位+输入。</span>
+driver.find_element(By.ID, <span class="str">"password"</span>).send_keys(<span class="str">"123456"</span>)<span class="ann">⟳ driver.find_element(By.ID, "password").send_keys("123456")：输入密码。动机：同上，填充密码框。</span>
+driver.find_element(By.XPATH, <span class="str">"//button[text()='登录']"</span>).click()  <span class="cmt"># 点击</span><span class="ann">⟳ driver.find_element(By.XPATH, "//button[text()='登录']").click()：点击登录按钮。动机：用按钮文字定位后触发点击，提交表单。</span>
 
-<span class="cmt"># 取文本 / 取属性</span>
-msg = driver.find_element(By.CLASS, <span class="str">"msg"</span>).text
-<span class="builtin">print</span>(msg)
-<span class="builtin">print</span>(driver.find_element(By.ID, <span class="str">"username"</span>).get_attribute(<span class="str">"value"</span>))</code></pre>
+<span class="cmt"># 取文本 / 取属性</span><span class="ann">⟳ 注释：取文本/取属性。</span>
+msg = driver.find_element(By.CLASS, <span class="str">"msg"</span>).text<span class="ann">⟳ msg = driver.find_element(By.CLASS, "msg").text：取元素文本。动机：.text 拿到元素显示内容，用于校验提示。</span>
+<span class="builtin">print</span>(msg)<span class="ann">⟳ print(msg)：打印文本。动机：运行时可见，便于调试断言。</span>
+<span class="builtin">print</span>(driver.find_element(By.ID, <span class="str">"username"</span>).get_attribute(<span class="str">"value"</span>))<span class="ann">⟳ print(….get_attribute("value"))：取属性值。动机：get_attribute 读指定属性（如当前输入值），比 .text 更全。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · send_keys / click / text：</b> <code>send_keys()</code> 模拟键盘输入（也可传 <code>Keys.ENTER</code> 等特殊键）；<code>click()</code> 点击；<code>.text</code> 取元素显示文本；<code>get_attribute()</code> 取任意属性值（如 input 当前值）。</div>
 
   <h3>5.2 🔽 下拉框（Select）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">select_demo.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> Select
+    <pre><code><span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> Select<span class="ann">⟳ from selenium.webdriver.support.ui import Select：导入下拉框辅助类。动机：Select 专门简化 <select> 下拉操作。</span>
 
-sel = Select(driver.find_element(By.ID, <span class="str">"city"</span>))
-sel.select_by_visible_text(<span class="str">"北京"</span>)     <span class="cmt"># 按可见文字选</span>
-<span class="cmt"># sel.select_by_value("110000")         # 按 value 选</span>
-<span class="cmt"># sel.select_by_index(2)                # 按下标选</span>
-<span class="cmt"># sel.deselect_all()                    # 取消全选（多选时）</span></code></pre>
+sel = Select(driver.find_element(By.ID, <span class="str">"city"</span>))<span class="ann">⟳ sel = Select(driver.find_element(By.ID, "city"))：包装下拉框元素。动机：把找到的 <select> 交给 Select 管理。</span>
+sel.select_by_visible_text(<span class="str">"北京"</span>)     <span class="cmt"># 按可见文字选</span><span class="ann">⟳ sel.select_by_visible_text("北京")：按可见文字选择。动机：用户看到什么文字就传什么，最直观。</span>
+<span class="cmt"># sel.select_by_value("110000")         # 按 value 选</span><span class="ann">⟳ # sel.select_by_value("110000")：按 value 选（注释示例）。动机：value 稳定，适合知道编码时。</span>
+<span class="cmt"># sel.select_by_index(2)                # 按下标选</span><span class="ann">⟳ # sel.select_by_index(2)：按下标选（注释示例）。动机：按选项序号选，简单但易随数据变动。</span>
+<span class="cmt"># sel.deselect_all()                    # 取消全选（多选时）</span><span class="ann">⟳ # sel.deselect_all()：取消全选（注释示例）。动机：多选下拉时清空已选项。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · Select：</b> 原生 <code>&lt;select&gt;</code> 下拉框要用 <code>Select</code> 类操作，不能直接 click。三种选法：<code>select_by_visible_text</code>（按文字，最常用）、<code>select_by_value</code>（按属性值）、<code>select_by_index</code>（按下标）。</div>
 
   <h3>5.3 ⏸️ 暂停与 sleep</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">sleep.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">import</span> time
-time.sleep(<span class="num">2</span>)   <span class="cmt"># 强制等 2 秒（简单但粗暴，仅调试用）</span></code></pre>
+    <pre><code><span class="kw">import</span> time<span class="ann">⟳ import time：导入时间库。动机：提供 sleep 强制等待。</span>
+time.sleep(<span class="num">2</span>)   <span class="cmt"># 强制等 2 秒（简单但粗暴，仅调试用）</span><span class="ann">⟳ time.sleep(2)：强制等 2 秒。动机：简单但粗暴，仅调试用；正式脚本应用显式等待。</span></code></pre>
   </div>
   <div class="card danger">
     <b>🚫【避免滥用 sleep】</b> <code>time.sleep</code> 是「死等」——不管元素出没出现都干等固定秒数，慢了还容易 flaky。<b>正式脚本要用第 6 章的显式等待</b>，sleep 只在调试时临时用。
@@ -522,42 +526,42 @@ time.sleep(<span class="num">2</span>)   <span class="cmt"># 强制等 2 秒（�
   <h3>5.4 🪟 弹窗（Alert / Confirm / Prompt）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">alert_demo.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 触发弹窗后，用 switch_to.alert 处理</span>
-alert = driver.switch_to.alert
-<span class="builtin">print</span>(alert.text)        <span class="cmt"># 弹窗文字</span>
-alert.accept()             <span class="cmt"># 点确定</span>
-<span class="cmt"># alert.dismiss()          # 点取消</span>
-<span class="cmt"># alert.send_keys("xxx")   # Prompt 弹窗可输入</span></code></pre>
+    <pre><code><span class="cmt"># 触发弹窗后，用 switch_to.alert 处理</span><span class="ann">⟳ 注释：触发弹窗后用 switch_to.alert 处理。动机：alert 不在 DOM 里，须专门切换。</span>
+alert = driver.switch_to.alert<span class="ann">⟳ alert = driver.switch_to.alert：切到弹窗。动机：拿到弹窗对象才能读文字、点按钮。</span>
+<span class="builtin">print</span>(alert.text)        <span class="cmt"># 弹窗文字</span><span class="ann">⟳ print(alert.text)：打印弹窗文字。动机：读取提示内容用于校验。</span>
+alert.accept()             <span class="cmt"># 点确定</span><span class="ann">⟳ alert.accept()：点确定。动机：关闭确认弹窗，继续后续流程。</span>
+<span class="cmt"># alert.dismiss()          # 点取消</span><span class="ann">⟳ # alert.dismiss()：点取消（注释示例）。动机：需要取消时改用 dismiss。</span>
+<span class="cmt"># alert.send_keys("xxx")   # Prompt 弹窗可输入</span><span class="ann">⟳ # alert.send_keys("xxx")：Prompt 弹窗输入（注释示例）。动机：仅输入型弹窗支持。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · switch_to.alert：</b> 浏览器原生弹窗（<code>alert()</code>）不属于页面 DOM，不能用 find_element 定位，必须切到 <code>alert</code> 上下文处理，用 <code>accept()</code>/<code>dismiss()</code> 点确定/取消。</div>
 
   <h3>5.5 🗂️ iframe（内嵌框架）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">iframe_demo.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 先切进 iframe，才能操作里面的元素</span>
-iframe = driver.find_element(By.ID, <span class="str">"frame1"</span>)
-driver.switch_to.frame(iframe)
+    <pre><code><span class="cmt"># 先切进 iframe，才能操作里面的元素</span><span class="ann">⟳ 注释：先切进 iframe 才能操作里面元素。动机：iframe 是独立文档，须切换作用域。</span>
+iframe = driver.find_element(By.ID, <span class="str">"frame1"</span>)<span class="ann">⟳ iframe = driver.find_element(By.ID, "frame1")：先定位 iframe。动机：拿到 iframe 元素作为切入凭证。</span>
+driver.switch_to.frame(iframe)<span class="ann">⟳ driver.switch_to.frame(iframe)：切入 iframe。动机：切换后才能在内部找元素。</span>
 
-<span class="cmt"># 现在可以操作 iframe 内元素了</span>
-driver.find_element(By.ID, <span class="str">"inner-input"</span>).send_keys(<span class="str">"hi"</span>)
+<span class="cmt"># 现在可以操作 iframe 内元素了</span><span class="ann">⟳ 注释：现在可操作 iframe 内元素。</span>
+driver.find_element(By.ID, <span class="str">"inner-input"</span>).send_keys(<span class="str">"hi"</span>)<span class="ann">⟳ driver.find_element(By.ID, "inner-input").send_keys("hi")：操作内部元素。动机：切入后正常定位输入。</span>
 
-<span class="cmt"># 操作完切回主页面</span>
-driver.switch_to.default_content()</code></pre>
+<span class="cmt"># 操作完切回主页面</span><span class="ann">⟳ 注释：操作完切回主页面。动机：否则后续无法操作外层元素。</span>
+driver.switch_to.default_content()<span class="ann">⟳ driver.switch_to.default_content()：切回主文档。动机：复位作用域，恢复对外层元素的访问。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · switch_to.frame：</b> iframe 里的元素在主页面里是找不到的，必须先 <code>switch_to.frame()</code> 切进去；操作完用 <code>default_content()</code> 切回主页面，否则后续元素全部定位失败。</div>
 
   <h3>5.6 🪟 多窗口切换</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">window_demo.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 点击后打开了新标签页，需切换到新窗口</span>
-<span class="cmt"># 拿到所有窗口句柄（一个列表）</span>
-handles = driver.window_handles
-<span class="cmt"># 切到最新打开的窗口</span>
-driver.switch_to.window(handles[-<span class="num">1</span>])
+    <pre><code><span class="cmt"># 点击后打开了新标签页，需切换到新窗口</span><span class="ann">⟳ 注释：点击后开了新标签页，需切换到新窗口。动机：新窗口是独立句柄，须显式切换。</span>
+<span class="cmt"># 拿到所有窗口句柄（一个列表）</span><span class="ann">⟳ 注释：拿到所有窗口句柄（列表）。</span>
+handles = driver.window_handles<span class="ann">⟳ handles = driver.window_handles：获取全部句柄。动机：句柄是窗口的唯一标识，用于切换。</span>
+<span class="cmt"># 切到最新打开的窗口</span><span class="ann">⟳ 注释：切到最新打开的窗口。</span>
+driver.switch_to.window(handles[-<span class="num">1</span>])<span class="ann">⟳ driver.switch_to.window(handles[-1])：切到最后一个窗口。动机：[-1] 取最新，通常是刚弹出的那个。</span>
 
-<span class="cmt"># 在新窗口里操作……</span>
-<span class="cmt"># 切回原窗口</span>
-driver.switch_to.window(handles[<span class="num">0</span>])</code></pre>
+<span class="cmt"># 在新窗口里操作……</span><span class="ann">⟳ 注释：在新窗口里操作。</span>
+<span class="cmt"># 切回原窗口</span><span class="ann">⟳ 注释：切回原窗口。动机：需要回到旧窗口时用其句柄切回。</span>
+driver.switch_to.window(handles[<span class="num">0</span>])<span class="ann">⟳ driver.switch_to.window(handles[0])：切回第一个窗口。动机：[0] 是最初的主窗口。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · window_handles：</b> 每开一个新标签页/窗口，句柄就进 <code>window_handles</code> 列表。<code>switch_to.window(句柄)</code> 切换。点击「打开新页」的按钮后，<b>必须切换句柄</b>才能操作新页面。</div>
   <div class="card warning">
@@ -593,53 +597,53 @@ driver.switch_to.window(handles[<span class="num">0</span>])</code></pre>
   <h3>6.2 🕐 隐式等待</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">implicit_wait.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 设置一次，全局生效：find_element 找不到时最多等 10 秒</span>
-driver.implicitly_wait(<span class="num">10</span>)
+    <pre><code><span class="cmt"># 设置一次，全局生效：find_element 找不到时最多等 10 秒</span><span class="ann">⟳ 注释：设置一次全局生效。动机：隐式等待是全局的，设一次即可。</span>
+driver.implicitly_wait(<span class="num">10</span>)<span class="ann">⟳ driver.implicitly_wait(10)：设隐式等待 10 秒。动机：find_element 找不到时最多等 10 秒，缓解加载延迟。</span>
 
-el = driver.find_element(By.ID, <span class="str">"dynamic-box"</span>)  <span class="cmt"># 会自动等到出现</span></code></pre>
+el = driver.find_element(By.ID, <span class="str">"dynamic-box"</span>)  <span class="cmt"># 会自动等到出现</span><span class="ann">⟳ el = driver.find_element(By.ID, "dynamic-box")：定位动态元素。动机：配合隐式等待，会自动等到元素出现。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · implicitly_wait：</b> 给整个 driver 设一个「找元素的最长等待时间」。设了之后，每次 <code>find_element</code> 找不到不会立刻报错，而是轮询等待直到超时。<b>全局生效、简单</b>，但对「等某个特定条件」不够灵活。</div>
 
   <h3>6.3 🎯 显式等待（推荐）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">explicit_wait.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> WebDriverWait
-<span class="kw">from</span> selenium.webdriver.support <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC
+    <pre><code><span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> WebDriverWait<span class="ann">⟳ from selenium.webdriver.support.ui import WebDriverWait：导入显式等待类。动机：显式等待比隐式更灵活、更推荐。</span>
+<span class="kw">from</span> selenium.webdriver.support <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC<span class="ann">⟳ from selenium.webdriver.support import expected_conditions as EC：导入期望条件。动机：EC 提供「可见/可点/存在」等判断。</span>
 
-<span class="cmt"># 最多等 10 秒，每 0.5 秒检查一次</span>
-wait = WebDriverWait(driver, <span class="num">10</span>, poll_frequency=<span class="num">0.5</span>)
+<span class="cmt"># 最多等 10 秒，每 0.5 秒检查一次</span><span class="ann">⟳ 注释：最多等 10 秒，每 0.5 秒检查一次。动机：轮询式等待，条件满足立即继续，不浪费时间。</span>
+wait = WebDriverWait(driver, <span class="num">10</span>, poll_frequency=<span class="num">0.5</span>)<span class="ann">⟳ wait = WebDriverWait(driver, 10, poll_frequency=0.5)：创建显式等待。动机：封装超时与轮询间隔，供多处复用。</span>
 
-<span class="cmt"># 等到元素「可见」才继续</span>
-el = wait.until(EC.visibility_of_element_located((By.ID, <span class="str">"submit"</span>)))
-el.click()
+<span class="cmt"># 等到元素「可见」才继续</span><span class="ann">⟳ 注释：等到元素「可见」才继续。动机：可见=有宽高，比仅存在更可靠。</span>
+el = wait.until(EC.visibility_of_element_located((By.ID, <span class="str">"submit"</span>)))<span class="ann">⟳ el = wait.until(EC.visibility_of_element_located((By.ID, "submit")))：等到可见。动机：until 在条件成立前持续等待，超时则报错。</span>
+el.click()<span class="ann">⟳ el.click()：点击元素。动机：确认可见后再点，避免「元素还没出来就点」的失败。</span>
 
-<span class="cmt"># 常用条件：
-# EC.presence_of_element_located   元素出现在 DOM
-# EC.visibility_of_element_located 元素可见（有宽高）
-# EC.element_to_be_clickable       元素可点击
-# EC.title_contains                标题包含某文字</span></code></pre>
+<span class="cmt"># 常用条件：<span class="ann">⟳ 注释：常用条件列表。动机：提醒按需选用不同判断。</span>
+# EC.presence_of_element_located   元素出现在 DOM<span class="ann">⟳ # EC.presence_of_element_located：存在于 DOM。动机：只要求节点出现，不要求可见。</span>
+# EC.visibility_of_element_located 元素可见（有宽高）<span class="ann">⟳ # EC.visibility_of_element_located：元素可见。动机：有宽高，最常用。</span>
+# EC.element_to_be_clickable       元素可点击<span class="ann">⟳ # EC.element_to_be_clickable：元素可点击。动机：可见且未被遮挡，点击更稳。</span>
+# EC.title_contains                标题包含某文字</span><span class="ann">⟳ # EC.title_contains：标题包含某文字。动机：用于校验页面跳转是否成功。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · WebDriverWait + expected_conditions：</b> 显式等待<b>针对具体元素/条件</b>：<code>until(条件)</code> 会一直等到条件成立或超时。<code>EC</code> 提供一堆预置条件（可见、可点击、标题包含等）。它比隐式等待更精准——「等这个按钮可点击」而不是「等 10 秒」，是<b>稳定脚本的首选</b>。</div>
 
   <h3>6.4 🧰 封装一个带等待的定位方法</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">common/wait_util.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> WebDriverWait
-<span class="kw">from</span> selenium.webdriver.support <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC
+    <pre><code><span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> WebDriverWait<span class="ann">⟳ from selenium.webdriver.support.ui import WebDriverWait：导入显式等待。</span>
+<span class="kw">from</span> selenium.webdriver.support <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC<span class="ann">⟳ from selenium.webdriver.support import expected_conditions as EC：导入期望条件。</span>
 
-<span class="kw">def</span> <span class="fn">find_and_click</span>(driver, by, value, timeout=<span class="num">10</span>):
-    <span class="str">"""等到元素可点击后点击，封装复用"""</span>
-    el = WebDriverWait(driver, timeout).until(
-        EC.element_to_be_clickable((by, value)))
-    el.click()
-    <span class="kw">return</span> el
+<span class="kw">def</span> <span class="fn">find_and_click</span>(driver, by, value, timeout=<span class="num">10</span>):<span class="ann">⟳ def find_and_click(driver, by, value, timeout=10):：定义「找到并点击」函数。动机：把等待+点击封装复用，用例更简洁。</span>
+    <span class="str">"""等到元素可点击后点击，封装复用"""</span><span class="ann">⟳ """等到元素可点击后点击，封装复用"""：函数说明。</span>
+    el = WebDriverWait(driver, timeout).until(<span class="ann">⟳ el = WebDriverWait(driver, timeout).until(…)：等到条件成立。动机：动态创建等待，超时受 timeout 控制。</span>
+        EC.element_to_be_clickable((by, value)))<span class="ann">⟳ EC.element_to_be_clickable((by, value))：等可点击。动机：确保能点再点，避免点击失败。</span>
+    el.click()<span class="ann">⟳ el.click()：执行点击。</span>
+    <span class="kw">return</span> el<span class="ann">⟳ return el：返回元素。动机：调用方需要时可继续操作该元素。</span>
 
-<span class="kw">def</span> <span class="fn">find_and_send</span>(driver, by, value, text, timeout=<span class="num">10</span>):
-    <span class="str">"""等到元素可见后输入"""</span>
-    el = WebDriverWait(driver, timeout).until(
-        EC.visibility_of_element_located((by, value)))
-    el.send_keys(text)
-    <span class="kw">return</span> el</code></pre>
+<span class="kw">def</span> <span class="fn">find_and_send</span>(driver, by, value, text, timeout=<span class="num">10</span>):<span class="ann">⟳ def find_and_send(driver, by, value, text, timeout=10):：定义「找到并输入」函数。动机：与上对称，封装输入动作。</span>
+    <span class="str">"""等到元素可见后输入"""</span><span class="ann">⟳ """等到元素可见后输入"""：函数说明。</span>
+    el = WebDriverWait(driver, timeout).until(<span class="ann">⟳ el = WebDriverWait(driver, timeout).until(…)：等到可见。动机：可见后再输入，避免元素未就绪。</span>
+        EC.visibility_of_element_located((by, value)))<span class="ann">⟳ EC.visibility_of_element_located((by, value))：等可见。</span>
+    el.send_keys(text)<span class="ann">⟳ el.send_keys(text)：输入文本。</span>
+    <span class="kw">return</span> el<span class="ann">⟳ return el：返回元素。</span></code></pre>
   </div>
   <div class="card tip">
     <strong>💡 最佳实践：</strong> 真实项目里<b>显式等待为主、隐式等待兜底</b>。把「等待+定位+操作」封装成 <code>find_and_click</code> 这类方法，用例里一行搞定，既稳定又简洁。
@@ -678,36 +682,36 @@ el.click()
   <h3>7.2 🧰 封装断言工具</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">common/assert_util.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">def</span> <span class="fn">assert_text_contains</span>(driver, by, value, expect):
-    <span class="str">"""断言某元素文本包含期望内容"""</span>
-    el = driver.find_element(by, value)
-    <span class="kw">assert</span> expect <span class="kw">in</span> el.text, \
-        <span class="str">"文本不含 '"</span>+expect+<span class="str">"'，实际："</span>+el.text
+    <pre><code><span class="kw">def</span> <span class="fn">assert_text_contains</span>(driver, by, value, expect):<span class="ann">⟳ def assert_text_contains(driver, by, value, expect):：定义文本包含断言。动机：把常见校验封装，报错更友好。</span>
+    <span class="str">"""断言某元素文本包含期望内容"""</span><span class="ann">⟳ """断言某元素文本包含期望内容"""：函数说明。</span>
+    el = driver.find_element(by, value)<span class="ann">⟳ el = driver.find_element(by, value)：定位元素。动机：先拿到元素才能读文本。</span>
+    <span class="kw">assert</span> expect <span class="kw">in</span> el.text, \<span class="ann">⟳ assert expect in el.text, …：断言文本包含。动机：用 in 判断子串，失败时打印实际文本便于排查。</span>
+        <span class="str">"文本不含 '"</span>+expect+<span class="str">"'，实际："</span>+el.text<span class="ann">⟳ "文本不含 '"+expect+"'，实际："+el.text：拼接错误信息。动机：直接告诉你差在哪。</span>
 
-<span class="kw">def</span> <span class="fn">assert_visible</span>(driver, by, value):
-    <span class="str">"""断言元素可见"""</span>
-    el = driver.find_element(by, value)
-    <span class="kw">assert</span> el.is_displayed(), <span class="str">"元素不可见："</span>+value
+<span class="kw">def</span> <span class="fn">assert_visible</span>(driver, by, value):<span class="ann">⟳ def assert_visible(driver, by, value):：定义可见性断言。动机：校验元素是否显示。</span>
+    <span class="str">"""断言元素可见"""</span><span class="ann">⟳ """断言元素可见"""：函数说明。</span>
+    el = driver.find_element(by, value)<span class="ann">⟳ el = driver.find_element(by, value)：定位元素。</span>
+    <span class="kw">assert</span> el.is_displayed(), <span class="str">"元素不可见："</span>+value<span class="ann">⟳ assert el.is_displayed(), …：断言可见。动机：is_displayed 返回是否可见，失败时打印元素名。</span>
 
-<span class="kw">def</span> <span class="fn">assert_title_contains</span>(driver, keyword):
-    <span class="str">"""断言页面标题包含关键字"""</span>
-    <span class="kw">assert</span> keyword <span class="kw">in</span> driver.title, \
-        <span class="str">"标题不含 '"</span>+keyword+<span class="str">"'，实际："</span>+driver.title</code></pre>
+<span class="kw">def</span> <span class="fn">assert_title_contains</span>(driver, keyword):<span class="ann">⟳ def assert_title_contains(driver, keyword):：定义标题断言。动机：校验页面跳转是否成功。</span>
+    <span class="str">"""断言页面标题包含关键字"""</span><span class="ann">⟳ """断言页面标题包含关键字"""：函数说明。</span>
+    <span class="kw">assert</span> keyword <span class="kw">in</span> driver.title, \<span class="ann">⟳ assert keyword in driver.title, …：断言标题含关键字。动机：标题变化常代表页面跳转，是重要校验点。</span>
+        <span class="str">"标题不含 '"</span>+keyword+<span class="str">"'，实际："</span>+driver.title<span class="ann">⟳ "标题不含 '"+keyword+"'，实际："+driver.title：拼接错误信息。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · 断言信息：</b> <code>assert 条件, "提示"</code> 的第二参数在失败时显示。写清「期望 vs 实际」，让失败原因自我解释。UI 断言尤其重要——失败时能立刻看到页面实际显示了什么。</div>
 
   <h3>7.3 🧪 在用例中组合断言</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">test_login_assert.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> common.assert_util <span class="kw">import</span> assert_text_contains, assert_title_contains
+    <pre><code><span class="kw">from</span> common.assert_util <span class="kw">import</span> assert_text_contains, assert_title_contains<span class="ann">⟳ from common.assert_util import assert_text_contains, assert_title_contains：导入断言工具。动机：复用友好断言。</span>
 
-<span class="kw">def</span> <span class="fn">test_login_success</span>(driver):
-    driver.find_element(By.ID, <span class="str">"username"</span>).send_keys(<span class="str">"tom"</span>)
-    driver.find_element(By.ID, <span class="str">"password"</span>).send_keys(<span class="str">"123456"</span>)
-    driver.find_element(By.XPATH, <span class="str">"//button[text()='登录']"</span>).click()
+<span class="kw">def</span> <span class="fn">test_login_success</span>(driver):<span class="ann">⟳ def test_login_success(driver):：定义登录成功用例。动机：driver 由 conftest 夹具注入。</span>
+    driver.find_element(By.ID, <span class="str">"username"</span>).send_keys(<span class="str">"tom"</span>)<span class="ann">⟳ driver.find_element(By.ID, "username").send_keys("tom")：输入用户名。动机：链式定位+输入。</span>
+    driver.find_element(By.ID, <span class="str">"password"</span>).send_keys(<span class="str">"123456"</span>)<span class="ann">⟳ driver.find_element(By.ID, "password").send_keys("123456")：输入密码。</span>
+    driver.find_element(By.XPATH, <span class="str">"//button[text()='登录']"</span>).click()<span class="ann">⟳ driver.find_element(By.XPATH, "//button[text()='登录']").click()：点击登录。动机：按按钮文字定位并提交。</span>
 
-    assert_title_contains(driver, <span class="str">"首页"</span>)          <span class="cmt"># ① 标题</span>
-    assert_text_contains(driver, By.CLASS, <span class="str">"welcome"</span>, <span class="str">"你好"</span>)  <span class="cmt"># ② 文本</span></code></pre>
+    assert_title_contains(driver, <span class="str">"首页"</span>)          <span class="cmt"># ① 标题</span><span class="ann">⟳ assert_title_contains(driver, "首页")：断言标题。动机：登录成功应跳转到首页，验证跳转。</span>
+    assert_text_contains(driver, By.CLASS, <span class="str">"welcome"</span>, <span class="str">"你好"</span>)  <span class="cmt"># ② 文本</span><span class="ann">⟳ assert_text_contains(driver, By.CLASS, "welcome", "你好")：断言文本。动机：验证欢迎区出现「你好」，双重校验。</span></code></pre>
   </div>
   <div class="card warning">
     <b>⚠️【断言陷阱】</b>
@@ -744,70 +748,70 @@ el.click()
   <h3>8.2 🧱 基础页面对象类</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">pages/base_page.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> WebDriverWait
-<span class="kw">from</span> selenium.webdriver.support <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC
+    <pre><code><span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> WebDriverWait<span class="ann">⟳ from selenium.webdriver.support.ui import WebDriverWait：导入显式等待。</span>
+<span class="kw">from</span> selenium.webdriver.support <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC<span class="ann">⟳ from selenium.webdriver.support import expected_conditions as EC：导入期望条件。</span>
 
-<span class="kw">class</span> <span class="fn">BasePage</span>:
-    <span class="str">"""所有页面对象的父类，封装通用操作"""</span>
-    <span class="kw">def</span> <span class="fn">__init__</span>(self, driver):
-        self.driver = driver
-        self.wait = WebDriverWait(driver, <span class="num">10</span>)
+<span class="kw">class</span> <span class="fn">BasePage</span>:<span class="ann">⟳ class BasePage:：定义页面对象基类。动机：把所有页面的通用操作抽到父类，子类复用。</span>
+    <span class="str">"""所有页面对象的父类，封装通用操作"""</span><span class="ann">⟳ """所有页面对象的父类，封装通用操作"""：类说明。</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, driver):<span class="ann">⟳ def __init__(self, driver):：构造函数。动机：接收 driver，供各方法使用。</span>
+        self.driver = driver<span class="ann">⟳ self.driver = driver：保存驱动。动机：存成属性，方法内调用。</span>
+        self.wait = WebDriverWait(driver, <span class="num">10</span>)<span class="ann">⟳ self.wait = WebDriverWait(driver, 10)：建显式等待。动机：每个页面对象自带等待，统一超时。</span>
 
-    <span class="kw">def</span> <span class="fn">find</span>(self, by, value):
-        <span class="kw">return</span> self.driver.find_element(by, value)
+    <span class="kw">def</span> <span class="fn">find</span>(self, by, value):<span class="ann">⟳ def find(self, by, value):：封装查找。动机：统一入口，便于日后扩展（如加日志）。</span>
+        <span class="kw">return</span> self.driver.find_element(by, value)<span class="ann">⟳ return self.driver.find_element(by, value)：执行查找。动机：透传参数给原生方法。</span>
 
-    <span class="kw">def</span> <span class="fn">click</span>(self, by, value):
-        <span class="str">"""等待可点击后点击"""</span>
-        el = self.wait.until(EC.element_to_be_clickable((by, value)))
-        el.click()
+    <span class="kw">def</span> <span class="fn">click</span>(self, by, value):<span class="ann">⟳ def click(self, by, value):：封装点击。动机：把「等待可点+点击」合成一步。</span>
+        <span class="str">"""等待可点击后点击"""</span><span class="ann">⟳ """等待可点击后点击"""：方法说明。</span>
+        el = self.wait.until(EC.element_to_be_clickable((by, value)))<span class="ann">⟳ el = self.wait.until(EC.element_to_be_clickable((by, value)))：等到可点击。动机：确保能点再点，提升稳定性。</span>
+        el.click()<span class="ann">⟳ el.click()：执行点击。</span>
 
-    <span class="kw">def</span> <span class="fn">send</span>(self, by, value, text):
-        <span class="str">"""等待可见后输入"""</span>
-        el = self.wait.until(EC.visibility_of_element_located((by, value)))
-        el.clear()
-        el.send_keys(text)</code></pre>
+    <span class="kw">def</span> <span class="fn">send</span>(self, by, value, text):<span class="ann">⟳ def send(self, by, value, text):：封装输入。动机：把「等待可见+清空+输入」合成一步。</span>
+        <span class="str">"""等待可见后输入"""</span><span class="ann">⟳ """等待可见后输入"""：方法说明。</span>
+        el = self.wait.until(EC.visibility_of_element_located((by, value)))<span class="ann">⟳ el = self.wait.until(EC.visibility_of_element_located((by, value)))：等到可见。</span>
+        el.clear()<span class="ann">⟳ el.clear()：清空已有内容。动机：避免新文本与旧内容拼接。</span>
+        el.send_keys(text)<span class="ann">⟳ el.send_keys(text)：输入文本。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · 继承 BasePage：</b> 用 <code>class LoginPage(BasePage)</code> 让所有页面对象继承父类的通用方法（find/click/send），避免每个页面重复写等待逻辑。这是面向对象<b>继承</b>的典型应用。</div>
 
   <h3>8.3 📄 具体页面对象：登录页</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">pages/login_page.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium.webdriver.common.by <span class="kw">import</span> By
-<span class="kw">from</span> pages.base_page <span class="kw">import</span> BasePage
+    <pre><code><span class="kw">from</span> selenium.webdriver.common.by <span class="kw">import</span> By<span class="ann">⟳ from selenium.webdriver.common.by import By：导入定位枚举。</span>
+<span class="kw">from</span> pages.base_page <span class="kw">import</span> BasePage<span class="ann">⟳ from pages.base_page import BasePage：导入基类。动机：登录页继承通用操作。</span>
 
-<span class="kw">class</span> <span class="fn">LoginPage</span>(BasePage):
-    <span class="str">"""登录页对象：集中管理登录页的元素与操作"""</span>
-    URL = <span class="str">"https://example.com/login"</span>
-    USERNAME = (By.ID, <span class="str">"username"</span>)
-    PASSWORD = (By.ID, <span class="str">"password"</span>)
-    LOGIN_BTN = (By.XPATH, <span class="str">"//button[text()='登录']"</span>)
+<span class="kw">class</span> <span class="fn">LoginPage</span>(BasePage):<span class="ann">⟳ class LoginPage(BasePage):：定义登录页对象。动机：继承 BasePage，专注登录页的元素与动作。</span>
+    <span class="str">"""登录页对象：集中管理登录页的元素与操作"""</span><span class="ann">⟳ """登录页对象：集中管理登录页的元素与操作"""：类说明。</span>
+    URL = <span class="str">"https://example.com/login"</span><span class="ann">⟳ URL = "https://example.com/login"：定义页面地址。动机：作为常量集中管理，open 时引用。</span>
+    USERNAME = (By.ID, <span class="str">"username"</span>)<span class="ann">⟳ USERNAME = (By.ID, "username")：定义用户名定位器。动机：把定位信息抽成常量，语义清晰、易维护。</span>
+    PASSWORD = (By.ID, <span class="str">"password"</span>)<span class="ann">⟳ PASSWORD = (By.ID, "password")：定义密码定位器。</span>
+    LOGIN_BTN = (By.XPATH, <span class="str">"//button[text()='登录']"</span>)<span class="ann">⟳ LOGIN_BTN = (By.XPATH, "//button[text()='登录']")：定义登录按钮定位器。动机：按文字定位，改 id 也不受影响。</span>
 
-    <span class="kw">def</span> <span class="fn">open</span>(self):
-        self.driver.get(self.URL)
+    <span class="kw">def</span> <span class="fn">open</span>(self):<span class="ann">⟳ def open(self):：定义打开方法。动机：封装「访问本页」动作。</span>
+        self.driver.get(self.URL)<span class="ann">⟳ self.driver.get(self.URL)：导航到本页。动机：用类常量 URL，改地址只改一处。</span>
 
-    <span class="kw">def</span> <span class="fn">login</span>(self, user, pwd):
-        <span class="str">"""执行登录动作"""</span>
-        self.send(self.USERNAME, user)
-        self.send(self.PASSWORD, pwd)
-        self.click(self.LOGIN_BTN)</code></pre>
+    <span class="kw">def</span> <span class="fn">login</span>(self, user, pwd):<span class="ann">⟳ def login(self, user, pwd):：定义登录动作。动机：把一次完整登录封装成一步，用例直接调用。</span>
+        <span class="str">"""执行登录动作"""</span><span class="ann">⟳ """执行登录动作"""：方法说明。</span>
+        self.send(self.USERNAME, user)<span class="ann">⟳ self.send(self.USERNAME, user)：输入用户名。动机：调用基类封装的输入方法。</span>
+        self.send(self.PASSWORD, pwd)<span class="ann">⟳ self.send(self.PASSWORD, pwd)：输入密码。</span>
+        self.click(self.LOGIN_BTN)<span class="ann">⟳ self.click(self.LOGIN_BTN)：点击登录。动机：调用基类封装的点击方法提交。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · 定位元组：</b> 把 <code>(By.ID, "username")</code> 这样的元组存成类属性（如 <code>USERNAME</code>），定位集中管理。改定位时只改这一处。用例里写 <code>login_page.login("tom","123")</code>，完全不出现 find_element。</div>
 
   <h3>8.4 📂 PO 模式的目录结构</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-shell">目录</span><span class="fname">ui_test/</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code>ui_test/
-├── conftest.py          <span class="cmt"># 全局 fixture（driver 管理、截图）</span>
-├── pytest.ini           <span class="cmt"># pytest 配置</span>
-├── pages/               <span class="cmt"># 页面对象（PO）</span>
-│   ├── base_page.py
-│   ├── login_page.py
-│   └── home_page.py
-├── common/              <span class="cmt"># 公共工具（断言、等待）</span>
-├── data/                <span class="cmt"># 测试数据（YAML）</span>
-├── testcases/           <span class="cmt"># 用例（只调 PO 方法）</span>
-│   └── test_login.py
-└── reports/             <span class="cmt"># 报告 + 失败截图</span></code></pre>
+    <pre><code>ui_test/<span class="ann">⟳ ui_test/：项目根目录。动机：UI 自动化资产集中于此。</span>
+├── conftest.py          <span class="cmt"># 全局 fixture（driver 管理、截图）</span><span class="ann">⟳ ├── conftest.py：全局夹具。动机：管理 driver、失败截图等公共准备。</span>
+├── pytest.ini           <span class="cmt"># pytest 配置</span><span class="ann">⟳ ├── pytest.ini：pytest 配置。动机：统一运行参数与用例路径。</span>
+├── pages/               <span class="cmt"># 页面对象（PO）</span><span class="ann">⟳ ├── pages/：页面对象目录。动机：PO 模式的核心，每个页面一个类。</span>
+│   ├── base_page.py<span class="ann">⟳ │   ├── base_page.py：基类。动机：封装所有页面共享的操作。</span>
+│   ├── login_page.py<span class="ann">⟳ │   ├── login_page.py：登录页对象。动机：管理登录页元素与动作。</span>
+│   └── home_page.py<span class="ann">⟳ │   └── home_page.py：首页对象。动机：再分一个页面，职责单一。</span>
+├── common/              <span class="cmt"># 公共工具（断言、等待）</span><span class="ann">⟳ ├── common/：公共工具目录。动机：断言、等待等复用代码集中管理。</span>
+├── data/                <span class="cmt"># 测试数据（YAML）</span><span class="ann">⟳ ├── data/：测试数据目录。动机：YAML 数据与代码分离。</span>
+├── testcases/           <span class="cmt"># 用例（只调 PO 方法）</span><span class="ann">⟳ ├── testcases/：用例目录。动机：用例只负责调用 PO 方法，不含定位细节。</span>
+│   └── test_login.py<span class="ann">⟳ │   └── test_login.py：登录用例。动机：只调 LoginPage 的方法，逻辑清晰。</span>
+└── reports/             <span class="cmt"># 报告 + 失败截图</span><span class="ann">⟳ └── reports/：报告+截图目录。动机：报告与失败截图统一落地归档。</span></code></pre>
   </div>
   <div class="card tip">
     <strong>💡 PO 的价值：</strong> 用例层读起来像业务描述（<code>login_page.login("tom","123")</code>），页面对象层管定位与动作，二者分离。<b>页面改版只改 pages/，用例不动</b>——这就是 UI 自动化能长期维护的关键。
@@ -829,87 +833,87 @@ el.click()
   <h3>9.1 🩹 conftest.py：管理 driver 生命周期</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">conftest.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">import</span> pytest
-<span class="kw">from</span> selenium <span class="kw">import</span> webdriver
+    <pre><code><span class="kw">import</span> pytest<span class="ann">⟳ import pytest：导入测试框架。</span>
+<span class="kw">from</span> selenium <span class="kw">import</span> webdriver<span class="ann">⟳ from selenium import webdriver：导入浏览器驱动。</span>
 
-<span class="dec">@pytest.fixture</span>(scope=<span class="str">"function"</span>)
-<span class="kw">def</span> <span class="fn">driver</span>():
-    <span class="str">"""每条用例一个独立 driver，用完即关"""</span>
-    options = webdriver.ChromeOptions()
-    options.add_argument(<span class="str">"--disable-gpu"</span>)
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(<span class="num">10</span>)
-    <span class="kw">yield</span> driver
-    driver.quit()           <span class="cmt"># 后置：用例结束关闭浏览器</span>
+<span class="dec">@pytest.fixture</span>(scope=<span class="str">"function"</span>)<span class="ann">⟳ @pytest.fixture(scope="function")：函数级夹具。动机：scope=function 表示每条用例都新建一个 driver，互不影响。</span>
+<span class="kw">def</span> <span class="fn">driver</span>():<span class="ann">⟳ def driver():：定义 driver 夹具。动机：用例按名取用现成的浏览器实例。</span>
+    <span class="str">"""每条用例一个独立 driver，用完即关"""</span><span class="ann">⟳ """每条用例一个独立 driver，用完即关"""：夹具说明。</span>
+    options = webdriver.ChromeOptions()<span class="ann">⟳ options = webdriver.ChromeOptions()：创建浏览器配置。动机：集中设置启动参数。</span>
+    options.add_argument(<span class="str">"--disable-gpu"</span>)<span class="ann">⟳ options.add_argument("--disable-gpu")：禁用 GPU。动机：无头/服务器环境无显卡，禁用可避免报错。</span>
+    driver = webdriver.Chrome(options=options)<span class="ann">⟳ driver = webdriver.Chrome(options=options)：按配置启动。动机：应用上面的参数创建浏览器。</span>
+    driver.implicitly_wait(<span class="num">10</span>)<span class="ann">⟳ driver.implicitly_wait(10)：设隐式等待。动机：给新 driver 一个全局等待兜底。</span>
+    <span class="kw">yield</span> driver<span class="ann">⟳ yield driver：交给用例使用。动机：用例期间共享该实例。</span>
+    driver.quit()           <span class="cmt"># 后置：用例结束关闭浏览器</span><span class="ann">⟳ driver.quit()：后置关闭。动机：用例结束即关浏览器，避免进程残留。</span>
 
-<span class="dec">@pytest.fixture</span>(scope=<span class="str">"function"</span>)
-<span class="kw">def</span> <span class="fn">screenshot</span>(driver, request):
-    <span class="str">"""用例失败时自动截图"""</span>
-    <span class="kw">yield</span>
-    <span class="kw">if</span> request.node.rep_call.failed:
-        driver.save_screenshot(<span class="str">"reports/"</span> + request.node.name + <span class="str">".png"</span>)</code></pre>
+<span class="dec">@pytest.fixture</span>(scope=<span class="str">"function"</span>)<span class="ann">⟳ @pytest.fixture(scope="function")：又一个函数级夹具。动机：让截图能力注入每条用例。</span>
+<span class="kw">def</span> <span class="fn">screenshot</span>(driver, request):<span class="ann">⟳ def screenshot(driver, request):：定义截图夹具。动机：request 能拿到当前用例信息，用于命名截图。</span>
+    <span class="str">"""用例失败时自动截图"""</span><span class="ann">⟳ """用例失败时自动截图"""：夹具说明。</span>
+    <span class="kw">yield</span><span class="ann">⟳ yield：先让用例执行。动机：yield 后是后置逻辑，用例跑完才判断是否失败。</span>
+    <span class="kw">if</span> request.node.rep_call.failed:<span class="ann">⟳ if request.node.rep_call.failed:：判断用例是否失败。动机：只有失败才截图，减少无谓开销。</span>
+        driver.save_screenshot(<span class="str">"reports/"</span> + request.node.name + <span class="str">".png"</span>)<span class="ann">⟳ driver.save_screenshot("reports/" + request.node.name + ".png")：保存截图。动机：按用例名存图，便于对应排查失败现场。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · driver fixture：</b> 用 fixture 统一管理浏览器的创建与销毁，用例通过参数名 <code>driver</code> 直接拿到实例，不用每条用例自己 <code>Chrome()</code>/<code>quit()</code>。<code>scope="function"</code> 保证每条用例一个干净浏览器，互不干扰。</div>
 
   <h3>9.2 📊 用 pytest_runtest_makereport 精准捕获失败</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">conftest.py（钩子）</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">import</span> pytest
+    <pre><code><span class="kw">import</span> pytest<span class="ann">⟳ import pytest：导入测试框架。</span>
 
-<span class="dec">@pytest.hookimpl</span>(tryfirst=<span class="kw">True</span>, hookwrapper=<span class="kw">True</span>)
-<span class="kw">def</span> <span class="fn">pytest_runtest_makereport</span>(item, call):
-    <span class="str">"""捕获用例执行结果，失败时截图"""</span>
-    outcome = <span class="kw">yield</span>
-    rep = outcome.get_result()
-    setattr(item, <span class="str">"rep_"</span> + rep.when, rep)   <span class="cmt"># 记录 setup/call/teardown 结果</span></code></pre>
+<span class="dec">@pytest.hookimpl</span>(tryfirst=<span class="kw">True</span>, hookwrapper=<span class="kw">True</span>)<span class="ann">⟳ @pytest.hookimpl(tryfirst=True, hookwrapper=True)：声明钩子。动机：tryfirst 抢先执行、hookwrapper 允许包裹报告生成，才能拿到执行结果。</span>
+<span class="kw">def</span> <span class="fn">pytest_runtest_makereport</span>(item, call):<span class="ann">⟳ def pytest_runtest_makereport(item, call):：报告生成钩子。动机：每条用例每个阶段都会调用，可据此记录结果。</span>
+    <span class="str">"""捕获用例执行结果，失败时截图"""</span><span class="ann">⟳ """捕获用例执行结果，失败时截图"""：函数说明。</span>
+    outcome = <span class="kw">yield</span><span class="ann">⟳ outcome = yield：执行原始报告生成。动机：yield 拿到执行结果对象。</span>
+    rep = outcome.get_result()<span class="ann">⟳ rep = outcome.get_result()：取执行结果。动机：结果含 when（阶段）与 failed（是否失败）等信息。</span>
+    setattr(item, <span class="str">"rep_"</span> + rep.when, rep)   <span class="cmt"># 记录 setup/call/teardown 结果</span><span class="ann">⟳ setattr(item, "rep_" + rep.when, rep)：记录该阶段结果到用例。动机：存成 item.rep_call 等属性，供截图夹具读取判断。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · 钩子函数：</b> <code>pytest_runtest_makereport</code> 是 pytest 的钩子，每条用例每个阶段（setup/call/teardown）都会调用。用它判断 <code>rep_call.failed</code>，只在<b>真正失败时</b>截图，比在 fixture 里判断更准确。</div>
 
   <h3>9.3 📋 数据驱动（YAML + parametrize）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-json">YAML</span><span class="fname">data/login_cases.yaml</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code>- case: 正常登录
-  user: tom
-  pwd: "123456"
-  expect_title: "首页"
-- case: 密码错误
-  user: tom
-  pwd: "wrong"
-  expect_title: "登录失败"</code></pre>
+    <pre><code>- case: 正常登录<span class="ann">⟳ - case: 正常登录：一条用例开始。动机：用 case 名标识场景。</span>
+  user: tom<span class="ann">⟳ user: tom：输入用户名。</span>
+  pwd: "123456"<span class="ann">⟳ pwd: "123456"：输入密码。</span>
+  expect_title: "首页"<span class="ann">⟳ expect_title: "首页"：期望标题。动机：登录成功应跳转首页，作为校验依据。</span>
+- case: 密码错误<span class="ann">⟳ - case: 密码错误：第二条用例。动机：覆盖认证失败场景。</span>
+  user: tom<span class="ann">⟳ user: tom：输入用户名。</span>
+  pwd: "wrong"<span class="ann">⟳ pwd: "wrong"：错误密码。动机：构造异常输入。</span>
+  expect_title: "登录失败"<span class="ann">⟳ expect_title: "登录失败"：期望标题。动机：密码错应停留在失败页，验证错误处理。</span></code></pre>
   </div>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">test_login.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">import</span> pytest, yaml
-<span class="kw">from</span> pages.login_page <span class="kw">import</span> LoginPage
-<span class="kw">from</span> common.assert_util <span class="kw">import</span> assert_title_contains
+    <pre><code><span class="kw">import</span> pytest, yaml<span class="ann">⟳ import pytest, yaml：导入框架与 YAML 库。动机：解析数据并驱动用例。</span>
+<span class="kw">from</span> pages.login_page <span class="kw">import</span> LoginPage<span class="ann">⟳ from pages.login_page import LoginPage：导入登录页对象。动机：用例只调 PO 方法。</span>
+<span class="kw">from</span> common.assert_util <span class="kw">import</span> assert_title_contains<span class="ann">⟳ from common.assert_util import assert_title_contains：导入断言工具。</span>
 
-cases = yaml.safe_load(open(<span class="str">"data/login_cases.yaml"</span>, encoding=<span class="str">"utf-8"</span>))
+cases = yaml.safe_load(open(<span class="str">"data/login_cases.yaml"</span>, encoding=<span class="str">"utf-8"</span>))<span class="ann">⟳ cases = yaml.safe_load(open(…, encoding="utf-8"))：加载用例数据。动机：把 YAML 读成列表，供参数化展开。</span>
 
-<span class="dec">@pytest.mark.parametrize</span>(<span class="str">"c"</span>, cases, ids=[x[<span class="str">'case'</span>] <span class="kw">for</span> x <span class="kw">in</span> cases])
-<span class="kw">def</span> <span class="fn">test_login</span>(driver, c):
-    page = LoginPage(driver)
-    page.open()
-    page.login(c[<span class="str">'user'</span>], c[<span class="str">'pwd'</span>])
-    assert_title_contains(driver, c[<span class="str">'expect_title'</span>])</code></pre>
+<span class="dec">@pytest.mark.parametrize</span>(<span class="str">"c"</span>, cases, ids=[x[<span class="str">'case'</span>] <span class="kw">for</span> x <span class="kw">in</span> cases])<span class="ann">⟳ @pytest.mark.parametrize("c", cases, ids=[x['case'] for x in cases])：参数化。动机：每组数据跑一次，并用 case 名作报告 ID。</span>
+<span class="kw">def</span> <span class="fn">test_login</span>(driver, c):<span class="ann">⟳ def test_login(driver, c):：数据驱动用例。动机：c 是单组数据，driver 由夹具注入。</span>
+    page = LoginPage(driver)<span class="ann">⟳ page = LoginPage(driver)：创建登录页对象。动机：把 driver 交给 PO。</span>
+    page.open()<span class="ann">⟳ page.open()：打开登录页。动机：调用 PO 封装的打开动作。</span>
+    page.login(c[<span class="str">'user'</span>], c[<span class="str">'pwd'</span>])<span class="ann">⟳ page.login(c['user'], c['pwd'])：执行登录。动机：用当前数据调用 PO 封装的登录动作。</span>
+    assert_title_contains(driver, c[<span class="str">'expect_title'</span>])<span class="ann">⟳ assert_title_contains(driver, c['expect_title'])：断言标题。动机：用数据里的期望标题校验跳转结果。</span></code></pre>
   </div>
   <div class="kp"><b>🔑 知识点 · 数据驱动：</b> 测试数据放 YAML，用 <code>parametrize</code> 展开成多条用例，<code>ids</code> 用 <code>case</code> 名命名，运行时能看到「正常登录」「密码错误」这样清晰的用例名。数据与代码分离，非程序员也能维护。</div>
 
   <h3>9.4 ▶️ 运行命令与报告</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-shell">Shell</span><span class="fname">命令行</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 运行全部用例</span>
-pytest -v -s
+    <pre><code><span class="cmt"># 运行全部用例</span><span class="ann">⟳ 注释：运行全部用例。</span>
+pytest -v -s<span class="ann">⟳ pytest -v -s：跑全部用例。动机：-v 看详情、-s 看 print，能观察到真实浏览器自动操作。</span>
 
-<span class="cmt"># 指定文件 + 显示 print</span>
-pytest testcases/test_login.py -v -s
+<span class="cmt"># 指定文件 + 显示 print</span><span class="ann">⟳ 注释：指定文件+显示 print。</span>
+pytest testcases/test_login.py -v -s<span class="ann">⟳ pytest testcases/test_login.py -v -s：只跑登录用例。动机：缩小范围、加快反馈。</span>
 
-<span class="cmt"># 按用例名关键字</span>
-pytest -v -k <span class="str">"login"</span>
+<span class="cmt"># 按用例名关键字</span><span class="ann">⟳ 注释：按用例名关键字。</span>
+pytest -v -k <span class="str">"login"</span><span class="ann">⟳ pytest -v -k "login"：按关键字筛选。动机：一次跑所有含 login 的用例。</span>
 
-<span class="cmt"># 生成 HTML 报告</span>
-pytest -v --html=reports/report.html --self-contained-html
+<span class="cmt"># 生成 HTML 报告</span><span class="ann">⟳ 注释：生成 HTML 报告。</span>
+pytest -v --html=reports/report.html --self-contained-html<span class="ann">⟳ pytest -v --html=reports/report.html --self-contained-html：生成单文件报告。动机：自包含，可独立分享归档。</span>
 
-<span class="cmt"># 无头模式跑（CI/服务器）：在 conftest 里加 --headless</span></code></pre>
+<span class="cmt"># 无头模式跑（CI/服务器）：在 conftest 里加 --headless</span><span class="ann">⟳ 注释：无头模式跑（CI/服务器）。动机：在 conftest 加 --headless 可不在前台弹浏览器，适合流水线。</span></code></pre>
   </div>
   <div class="card tip">
     <strong>💡 CI 落地：</strong> UI 用例较慢，建议：① 用 <code>--headless</code> 无头模式在 CI 跑；② 只把核心主流程做成 UI 回归，每日定时跑；③ 失败自动截图附到报告，方便定位。
@@ -933,71 +937,71 @@ pytest -v --html=reports/report.html --self-contained-html
   <h3>10.2 🩹 步骤一：conftest 管理 driver</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">conftest.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">import</span> pytest
-<span class="kw">from</span> selenium <span class="kw">import</span> webdriver
+    <pre><code><span class="kw">import</span> pytest<span class="ann">⟳ import pytest：导入测试框架。</span>
+<span class="kw">from</span> selenium <span class="kw">import</span> webdriver<span class="ann">⟳ from selenium import webdriver：导入浏览器驱动。</span>
 
-<span class="dec">@pytest.fixture</span>
-<span class="kw">def</span> <span class="fn">driver</span>():
-    driver = webdriver.Chrome()
-    driver.implicitly_wait(<span class="num">10</span>)
-    <span class="kw">yield</span> driver
-    driver.quit()</code></pre>
+<span class="dec">@pytest.fixture</span><span class="ann">⟳ @pytest.fixture：定义夹具（默认函数级）。动机：每条用例共享一个 driver 的创建逻辑。</span>
+<span class="kw">def</span> <span class="fn">driver</span>():<span class="ann">⟳ def driver():：定义 driver 夹具。</span>
+    driver = webdriver.Chrome()<span class="ann">⟳ driver = webdriver.Chrome()：启动浏览器。动机：创建实例供用例使用。</span>
+    driver.implicitly_wait(<span class="num">10</span>)<span class="ann">⟳ driver.implicitly_wait(10)：设隐式等待。动机：给新 driver 一个等待兜底。</span>
+    <span class="kw">yield</span> driver<span class="ann">⟳ yield driver：交给用例。</span>
+    driver.quit()<span class="ann">⟳ driver.quit()：后置关闭。动机：用例结束释放浏览器。</span></code></pre>
   </div>
 
   <h3>10.3 📄 步骤二：页面对象（PO）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">pages/form_page.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> selenium.webdriver.common.by <span class="kw">import</span> By
-<span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> WebDriverWait
-<span class="kw">from</span> selenium.webdriver.support <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC
+    <pre><code><span class="kw">from</span> selenium.webdriver.common.by <span class="kw">import</span> By<span class="ann">⟳ from selenium.webdriver.common.by import By：导入定位枚举。</span>
+<span class="kw">from</span> selenium.webdriver.support.ui <span class="kw">import</span> WebDriverWait<span class="ann">⟳ from selenium.webdriver.support.ui import WebDriverWait：导入显式等待。</span>
+<span class="kw">from</span> selenium.webdriver.support <span class="kw">import</span> expected_conditions <span class="kw">as</span> EC<span class="ann">⟳ from selenium.webdriver.support import expected_conditions as EC：导入期望条件。</span>
 
-<span class="kw">class</span> <span class="fn">FormPage</span>:
-    URL = <span class="str">"https://www.selenium.dev/selenium/web/web-form.html"</span>
-    <span class="kw">def</span> <span class="fn">__init__</span>(self, driver):
-        self.driver = driver
-        self.wait = WebDriverWait(driver, <span class="num">10</span>)
+<span class="kw">class</span> <span class="fn">FormPage</span>:<span class="ann">⟳ class FormPage:：定义表单页对象。动机：把表单页操作封装成类。</span>
+    URL = <span class="str">"https://www.selenium.dev/selenium/web/web-form.html"</span><span class="ann">⟳ URL = "https://www.selenium.dev/selenium/web/web-form.html"：页面地址。动机：用官方练习表单，稳定可测。</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, driver):<span class="ann">⟳ def __init__(self, driver):：构造函数。动机：接收 driver。</span>
+        self.driver = driver<span class="ann">⟳ self.driver = driver：保存驱动。</span>
+        self.wait = WebDriverWait(driver, <span class="num">10</span>)<span class="ann">⟳ self.wait = WebDriverWait(driver, 10)：建显式等待。动机：供读取提示信息时等待。</span>
 
-    <span class="kw">def</span> <span class="fn">open</span>(self):
-        self.driver.get(self.URL)
+    <span class="kw">def</span> <span class="fn">open</span>(self):<span class="ann">⟳ def open(self):：打开方法。</span>
+        self.driver.get(self.URL)<span class="ann">⟳ self.driver.get(self.URL)：导航到表单页。</span>
 
-    <span class="kw">def</span> <span class="fn">fill_and_submit</span>(self, name, pwd):
-        <span class="str">"""填写表单并提交"""</span>
-        self.driver.find_element(By.CSS_SELECTOR, <span class="str">"input.text"</span>).send_keys(name)
-        self.driver.find_element(By.CSS_SELECTOR, <span class="str">"input[type=password]"</span>).send_keys(pwd)
-        self.driver.find_element(By.CSS_SELECTOR, <span class="str">"button[type=submit]"</span>).click()
+    <span class="kw">def</span> <span class="fn">fill_and_submit</span>(self, name, pwd):<span class="ann">⟳ def fill_and_submit(self, name, pwd):：填写并提交。动机：把「输入+提交」封装成一步。</span>
+        <span class="str">"""填写表单并提交"""</span><span class="ann">⟳ """填写表单并提交"""：方法说明。</span>
+        self.driver.find_element(By.CSS_SELECTOR, <span class="str">"input.text"</span>).send_keys(name)<span class="ann">⟳ self.driver.find_element(By.CSS_SELECTOR, "input.text").send_keys(name)：输入用户名。动机：按 CSS 定位文本框并输入。</span>
+        self.driver.find_element(By.CSS_SELECTOR, <span class="str">"input[type=password]"</span>).send_keys(pwd)<span class="ann">⟳ self.driver.find_element(By.CSS_SELECTOR, "input[type=password]").send_keys(pwd)：输入密码。动机：按属性定位密码框。</span>
+        self.driver.find_element(By.CSS_SELECTOR, <span class="str">"button[type=submit]"</span>).click()<span class="ann">⟳ self.driver.find_element(By.CSS_SELECTOR, "button[type=submit]").click()：点击提交。动机：按类型定位提交按钮并触发。</span>
 
-    <span class="kw">def</span> <span class="fn">get_message</span>(self):
-        <span class="str">"""等待并返回提交后的提示信息"""</span>
-        el = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, <span class="str">".show"</span>)))
-        <span class="kw">return</span> el.text</code></pre>
+    <span class="kw">def</span> <span class="fn">get_message</span>(self):<span class="ann">⟳ def get_message(self):：读取提示信息。动机：封装「等待并取提交后提示」。</span>
+        <span class="str">"""等待并返回提交后的提示信息"""</span><span class="ann">⟳ """等待并返回提交后的提示信息"""：方法说明。</span>
+        el = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, <span class="str">".show"</span>)))<span class="ann">⟳ el = self.wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".show")))：等提示出现。动机：提交后提示是动态出现的，须等待。</span>
+        <span class="kw">return</span> el.text<span class="ann">⟳ return el.text：返回提示文本。动机：交给用例断言。</span></code></pre>
   </div>
 
   <h3>10.4 🧪 步骤三：用例（数据驱动）</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-py">Python</span><span class="fname">testcases/test_form.py</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="kw">from</span> pages.form_page <span class="kw">import</span> FormPage
+    <pre><code><span class="kw">from</span> pages.form_page <span class="kw">import</span> FormPage<span class="ann">⟳ from pages.form_page import FormPage：导入表单页对象。动机：用例只调 PO 方法。</span>
 
-<span class="kw">def</span> <span class="fn">test_submit_ok</span>(driver):
-    <span class="str">"""用例：正常提交表单，验证返回提示"""</span>
-    page = FormPage(driver)
-    page.open()
-    page.fill_and_submit(<span class="str">"tom"</span>, <span class="str">"123456"</span>)
-    msg = page.get_message()
-    <span class="kw">assert</span> <span class="str">"success"</span> <span class="kw">in</span> msg.lower() <span class="kw">or</span> <span class="str">"成功"</span> <span class="kw">in</span> msg
-    <span class="builtin">print</span>(<span class="str">"提交结果："</span>, msg)</code></pre>
+<span class="kw">def</span> <span class="fn">test_submit_ok</span>(driver):<span class="ann">⟳ def test_submit_ok(driver):：定义提交用例。动机：driver 由夹具注入。</span>
+    <span class="str">"""用例：正常提交表单，验证返回提示"""</span><span class="ann">⟳ """用例：正常提交表单，验证返回提示"""：用例说明。</span>
+    page = FormPage(driver)<span class="ann">⟳ page = FormPage(driver)：创建表单页对象。</span>
+    page.open()<span class="ann">⟳ page.open()：打开表单页。</span>
+    page.fill_and_submit(<span class="str">"tom"</span>, <span class="str">"123456"</span>)<span class="ann">⟳ page.fill_and_submit("tom", "123456")：填写并提交。动机：调用 PO 封装动作，传入测试数据。</span>
+    msg = page.get_message()<span class="ann">⟳ msg = page.get_message()：读取提示信息。动机：拿到提交结果文本供断言。</span>
+    <span class="kw">assert</span> <span class="str">"success"</span> <span class="kw">in</span> msg.lower() <span class="kw">or</span> <span class="str">"成功"</span> <span class="kw">in</span> msg<span class="ann">⟳ assert "success" in msg.lower() or "成功" in msg：断言提示含成功字样。动机：用 lower 忽略大小写，并兼容中英文成功提示。</span>
+    <span class="builtin">print</span>(<span class="str">"提交结果："</span>, msg)<span class="ann">⟳ print("提交结果：", msg)：打印结果。动机：-s 运行时可见，便于确认。</span></code></pre>
   </div>
 
   <h3>10.5 ▶️ 步骤四：运行与出报告</h3>
   <div class="code-block">
     <div class="header"><span class="lang lang-shell">Shell</span><span class="fname">命令行</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
-    <pre><code><span class="cmt"># 跑用例（会看到真实浏览器自动操作）</span>
-pytest -v -s
+    <pre><code><span class="cmt"># 跑用例（会看到真实浏览器自动操作）</span><span class="ann">⟳ 注释：跑用例（会看到真实浏览器自动操作）。</span>
+pytest -v -s<span class="ann">⟳ pytest -v -s：运行用例。动机：-s 显示过程，能亲眼看到浏览器自动填表提交。</span>
 
-<span class="cmt"># 生成 HTML 报告</span>
-pytest -v --html=reports/report.html --self-contained-html
+<span class="cmt"># 生成 HTML 报告</span><span class="ann">⟳ 注释：生成 HTML 报告。</span>
+pytest -v --html=reports/report.html --self-contained-html<span class="ann">⟳ pytest -v --html=reports/report.html --self-contained-html：生成单文件报告。动机：自包含，可独立分享。</span>
 
-<span class="cmt"># 无头模式（把 conftest 里加 options.add_argument("--headless")）</span>
-pytest -v</code></pre>
+<span class="cmt"># 无头模式（把 conftest 里加 options.add_argument("--headless")）</span><span class="ann">⟳ 注释：无头模式。动机：在 conftest 加 --headless 后不弹浏览器，适合 CI。</span>
+pytest -v<span class="ann">⟳ pytest -v：无头模式下运行。动机：配合上面的 headless 配置在后台跑。</span></code></pre>
   </div>
 
   <h3>10.6 🔄 完整执行流程回顾</h3>
