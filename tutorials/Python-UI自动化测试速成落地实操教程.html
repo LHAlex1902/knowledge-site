@@ -236,7 +236,7 @@
   <ul>
     <li>已安装 Python 3.8+（命令行 <code>python --version</code> 确认）。</li>
     <li>已安装 Chrome 或 Edge 浏览器（Selenium 4 支持自动管理驱动，无需手动下载 chromedriver）。</li>
-    <li>已安装 VS Code 等编辑器。</li>
+    <li>已安装 <b>PyCharm</b>（发音「派-查姆」/ˈpaɪtʃɑːrm/，JetBrains 出品的 Python 专用 IDE，本教程推荐用它）或 VS Code 等编辑器。</li>
   </ul>
   <h3>2.2 ⬇️ 创建虚拟环境与安装依赖</h3>
   <div class="tabs">
@@ -302,6 +302,21 @@ driver.quit()</code></pre>
       <li>尝试加 <code>--headless</code> 参数，观察浏览器是否还在前台弹出。</li>
     </ol>
   </div>
+  <h3>2.4 🖥️ 用 PyCharm 打开项目（推荐，发音「派-查姆」）</h3>
+  <p>命令行配好后，建议用 <b>PyCharm</b> 来写和跑用例——它对 pytest、虚拟环境、浏览器驱动的集成更省心。三步搞定：</p>
+  <div class="card tip">
+    <strong>① 打开项目</strong>
+    <p style="margin:6px 0 0">启动 PyCharm → <code>File → Open</code> → 选中刚建的 <code>ui_test</code> 文件夹 → OK。弹出「Trust Project」点信任。</p>
+  </div>
+  <div class="card tip">
+    <strong>② 配置解释器（关键，让 PyCharm 用上你的 venv）</strong>
+    <p style="margin:6px 0 0"><code>File → Settings → Project: ui_test → Python Interpreter → Add Interpreter → Add Local Interpreter</code> → 选 <b>Existing environment</b> → 指向 <code>ui_test\venv\Scripts\python.exe</code> → OK。右下角状态栏应显示 <code>Python 3.x (ui_test)</code>。</p>
+  </div>
+  <div class="card tip">
+    <strong>③ 装库 + 跑用例</strong>
+    <p style="margin:6px 0 0">底部打开 <code>Terminal</code> 标签（已自动带 <code>(venv)</code> 前缀），跑上面的 <code>pip install selenium pytest pytest-html</code>。写完右键测试文件 → <b>Run 'pytest for ...'</b>，或 Terminal 里 <code>pytest -v</code>。</p>
+  </div>
+  <div class="kp"><b>🔑 小贴士 · UI 自动化在 PyCharm 里的额外好处：</b> 首次跑 <code>webdriver.Chrome()</code> 时，PyCharm 的 Terminal 能实时看到 Selenium Manager 自动下载驱动的进度；断点可停在 <code>driver.find_element(...)</code> 处，用 <b>Watches</b> 面板查看元素属性，比纯编辑器调试直观得多。本教程所有代码在 PyCharm 里<b>无需改动</b>即可运行。</div>
 </section>
 
 <!-- ═══════════════ 第 3 章 核心概念 ═══════════════ -->
