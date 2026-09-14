@@ -75,19 +75,19 @@
   .copy-btn:hover{color:var(--text); border-color:var(--accent)}
   pre{margin:0; padding:14px 16px; overflow-x:auto; font-family:"Cascadia Code","Fira Code",Consolas,monospace; font-size:13px; line-height:1.9}
   code{font-family:"Cascadia Code","Fira Code",Consolas,monospace}
-  pre code{display:block}
+  pre code{display:block; color:#d4d4d4}
   /* ★ 代码行布局：代码靠左、注释统一贴右侧右对齐，形成整齐的注释列 ★ */
   .cl{display:flex; align-items:baseline; gap:20px}
   .cl>.cd{white-space:pre; flex:0 0 auto}
-  /* 语法高亮 */
-  .kw{color:#ff7b72}
-  .builtin{color:#d2a8ff}
-  .str{color:#a5d6ff}
-  .num{color:#79c0ff}
+  /* 语法高亮（VSCode Dark+ 标准配色） */
+  .kw{color:#569cd6}
+  .builtin{color:#4ec9b0}
+  .str{color:#ce9178}
+  .num{color:#b5cea8}
   .cmt{color:#8b949e}
-  .dec{color:#ffa657}
-  .cls{color:#ffa657}
-  .self{color:#ff7b72}
+  .dec{color:#d7ba7d}
+  .cls{color:#4ec9b0}
+  .self{color:#ffcb6b}
   /* ★ 正文重点强调：红色加粗；刻意不换字体，与正文保持同一字体（全局只有「正文一种 + 代码注释宋体」）★ */
   .kai{color:var(--kai-color); font-weight:600}
   /* ★ 代码块内逐行注释：宋体、不加粗、不倾斜、常用注释绿；靠右对齐、与代码留足间距 ★
