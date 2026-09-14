@@ -66,6 +66,8 @@
   .kw { color: #ff7b72; } .fn { color: #d2a8ff; } .str { color: #a5d6a7; }
   .cmt { color: #8b949e; font-style: italic; } .num { color: #79c0ff; }
   .dec { color: #d2a8ff; } .builtin { color: #ffa657; }
+.ann { color:#6a9955; font-family:"SimSun","宋体","Noto Serif SC",serif; font-style:normal; font-weight:normal; font-size:12.5px; margin-left:6px; white-space:normal; }
+
   .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
   .tab-btn { padding: 8px 16px; background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px;
     border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
@@ -78,6 +80,8 @@
   .kp { background: rgba(88,166,255,0.06); border: 1px dashed rgba(88,166,255,0.35); border-radius: var(--radius);
     padding: 12px 16px; margin: 12px 0; font-size: 14px; }
   .kp b { color: var(--accent); }
+  /* 正文重点强调：红色加粗（优先级低于类规则，不误伤 .kp/.qa 等组件配色） */
+  strong, b { color: var(--accent-red); font-weight: 700; }
   .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 16px 0; justify-content: center; }
   .flow-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; text-align: center; font-size: 13px; }
   .flow-box.accent { border-color: var(--accent); background: rgba(88,166,255,0.06); }
@@ -243,28 +247,28 @@
   <div class="tab-content active" id="env-win" data-page-node-id="Jabk0YUgwh4EHU72DEXHnD">
     <div class="code-block" data-page-node-id="vqgilfdmNM6PE2BYzJxhw8">
       <div class="header" data-page-node-id="iPTqSBqwNeZfymqbkhpsyM"><span class="lang lang-shell" data-page-node-id="Jt2BFE67shkTUSBG5HiWTm">Shell</span><span class="fname" data-page-node-id="E6QeiBvsUAV7ZMRhKLFMyk">创建并激活虚拟环境</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="E0aSLKpiHWkswnmP2B1eUj">📋 复制</button></div>
-      <pre data-page-node-id="10OjT129BHhZjHduA7slB4"><code data-page-node-id="VwhkCbdCa6NSmfPfy4wJQ5"><span class="cmt" data-page-node-id="FNZ73NSYnIzg4kQCnwgtAM"># 1. 建项目目录</span>
-mkdir api_test &amp; cd api_test
-<span class="cmt" data-page-node-id="6xdwZ9rGxVx5VNoZXSMue7"># 2. 创建虚拟环境（隔离依赖，避免污染全局）</span>
-python -m venv venv
-<span class="cmt" data-page-node-id="uX65yVXhhffHfK9HGtDVAS"># 3. 激活</span>
-venv\Scripts\activate
-<span class="cmt" data-page-node-id="LNRWkQRaOGHLXNeTy8SKu7"># 4. 升级 pip 并安装核心库</span>
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
-pip install requests pytest pytest-html allure-pytest PyYAML</code></pre>
+      <pre data-page-node-id="10OjT129BHhZjHduA7slB4"><code data-page-node-id="VwhkCbdCa6NSmfPfy4wJQ5"><span class="cmt" data-page-node-id="FNZ73NSYnIzg4kQCnwgtAM"># 1. 建项目目录</span><span class="ann">⟳ 建项目目录：新建名为 api_test 的文件夹。动机：让接口自动化工程有独立空间，代码、依赖、报告都放里面，互不干扰。</span>
+mkdir api_test &amp; cd api_test<span class="ann">⟳ mkdir 建目录并用 & 连接 cd 进入。动机：一条命令完成「建好就进去」，后续操作都在项目内执行。</span>
+<span class="cmt" data-page-node-id="6xdwZ9rGxVx5VNoZXSMue7"># 2. 创建虚拟环境（隔离依赖，避免污染全局）</span><span class="ann">⟳ 注释：提示下一步是创建虚拟环境（隔离依赖的关键步骤）。</span>
+python -m venv venv<span class="ann">⟳ python -m venv venv：用当前 Python 建一个名为 venv 的虚拟环境。动机：给本项目一套独立的包，不污染全局。</span>
+<span class="cmt" data-page-node-id="uX65yVXhhffHfK9HGtDVAS"># 3. 激活</span><span class="ann">⟳ 注释：提示下一步激活虚拟环境。</span>
+venv\Scripts\activate<span class="ann">⟳ venv\Scripts\activate：激活虚拟环境（Windows 写法）。动机：激活后命令行带 (venv) 前缀，pip 装的库才进本项目。</span>
+<span class="cmt" data-page-node-id="LNRWkQRaOGHLXNeTy8SKu7"># 4. 升级 pip 并安装核心库</span><span class="ann">⟳ 注释：提示下一步安装依赖。</span>
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip<span class="ann">⟳ pip install -i 清华源 --upgrade pip：换国内镜像并升级 pip。动机：加速下载、避免超时，并让 pip 支持新特性。</span>
+pip install requests pytest pytest-html allure-pytest PyYAML<span class="ann">⟳ pip install …：安装接口自动化核心库。动机：requests 发请求、pytest 组织用例、pytest-html/allure 出报告、PyYAML 读测试数据。</span></code></pre>
     </div>
   </div>
   <div class="tab-content" id="env-mac" data-page-node-id="L7bPrrD3wLC8BAg6BaJmcD">
     <div class="code-block" data-page-node-id="WCLiSqXbNG3bFD55gTuadv">
       <div class="header" data-page-node-id="LU07ph2rv8IYQzp9NnNlRF"><span class="lang lang-shell" data-page-node-id="PaiVj1DBLkUKqzO5rSgoId">Shell</span><span class="fname" data-page-node-id="bnUuG2H0RxL67ZDzD5W9NS">创建并激活虚拟环境</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="h1T6efDfsxMdFB3HzHI6V7">📋 复制</button></div>
-      <pre data-page-node-id="SLEtD0porj99KqFuV0Q3d8"><code data-page-node-id="upewU1BquGw6LaI8VXq8IR"><span class="cmt" data-page-node-id="cz2hWADiHX8l2J9MHd22VG"># 1. 建项目目录</span>
-mkdir api_test &amp;&amp; cd api_test
-<span class="cmt" data-page-node-id="qe3OqityeJJfs4gQzgA1Ud"># 2. 创建虚拟环境</span>
-python3 -m venv venv
-<span class="cmt" data-page-node-id="W508WZTSXkqjzAzlFmc17Z"># 3. 激活</span>
-source venv/bin/activate
-<span class="cmt" data-page-node-id="wZlJ1EGCudJ2FhFA2tbppu"># 4. 安装核心库</span>
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
+      <pre data-page-node-id="SLEtD0porj99KqFuV0Q3d8"><code data-page-node-id="upewU1BquGw6LaI8VXq8IR"><span class="cmt" data-page-node-id="cz2hWADiHX8l2J9MHd22VG"># 1. 建项目目录</span><span class="ann">⟳ 建项目目录：新建 ui_test 文件夹（mac/Linux 版）。动机：工程独立成目录，便于管理。</span>
+mkdir api_test &amp;&amp; cd api_test<span class="ann">⟳ mkdir … && cd …：建目录并进入（mac/Linux 用 && 顺序执行）。动机：一条命令完成「建好就进去」。</span>
+<span class="cmt" data-page-node-id="qe3OqityeJJfs4gQzgA1Ud"># 2. 创建虚拟环境</span><span class="ann">⟳ 注释：提示下一步创建虚拟环境。</span>
+python3 -m venv venv<span class="ann">⟳ python3 -m venv venv：用 Python3 建虚拟环境。动机：mac/Linux 上 python 常指向 python2，须显式用 python3。</span>
+<span class="cmt" data-page-node-id="W508WZTSXkqjzAzlFmc17Z"># 3. 激活</span><span class="ann">⟳ source venv/bin/activate：激活虚拟环境（mac/Linux 写法）。动机：路径与 Windows 不同，激活后依赖才装进本项目。</span>
+source venv/bin/activate<span class="ann">⟳ 注释：提示下一步安装依赖。</span>
+<span class="cmt" data-page-node-id="wZlJ1EGCudJ2FhFA2tbppu"># 4. 安装核心库</span><span class="ann">⟳ pip install -i 清华源 --upgrade pip：换镜像并升级 pip。动机：加速、防超时。</span>
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip<span class="ann">⟳ pip install …：安装核心库。动机：同 Windows 版，只是环境隔离在 mac/Linux 上生效。</span>
 pip install requests pytest pytest-html allure-pytest PyYAML</code></pre>
     </div>
   </div>
@@ -272,9 +276,9 @@ pip install requests pytest pytest-html allure-pytest PyYAML</code></pre>
   <h3 data-page-node-id="x3yfXCZXKYuY1s1DB3ogr2">2.3 ✅ 验证安装</h3>
   <div class="code-block" data-page-node-id="A6JW93fgixd41scNb1LRMD">
     <div class="header" data-page-node-id="dbpniXqePKptbSeh4v8KZb"><span class="lang lang-py" data-page-node-id="oQjaHBSTxtCVBiUogponNT">Python</span><span class="fname" data-page-node-id="06ob10qvTdyZOW3AxcLoMa">check.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="2yX8oYakFSPxDf9s3IuUOj">📋 复制</button></div>
-    <pre data-page-node-id="jWWdN6aCVVBZ7Kvs3aUxKM"><code data-page-node-id="bhgqlyoc3nYAfxoQrba6f2"><span class="kw" data-page-node-id="cs7fZlHbPNvZ5uATy7lFXt">import</span> requests, pytest
-<span class="builtin" data-page-node-id="1fHM8bkcQALgXqzWhHiF4Z">print</span>(<span class="str" data-page-node-id="UJwHABURbTfTGbNEwy9jnw">"requests 版本："</span>, requests.__version__)
-<span class="builtin" data-page-node-id="WF5zWURlzpJCOzj2BqPmfJ">print</span>(<span class="str" data-page-node-id="hpSaUdQ6Q1kXDfCJDFVE9D">"pytest 版本："</span>, pytest.__version__)</code></pre>
+    <pre data-page-node-id="jWWdN6aCVVBZ7Kvs3aUxKM"><code data-page-node-id="bhgqlyoc3nYAfxoQrba6f2"><span class="kw" data-page-node-id="cs7fZlHbPNvZ5uATy7lFXt">import</span> requests, pytest<span class="ann">⟳ import requests, pytest：导入两个核心库。动机：一行同时导入，验证它们都已正确安装。</span>
+<span class="builtin" data-page-node-id="1fHM8bkcQALgXqzWhHiF4Z">print</span>(<span class="str" data-page-node-id="UJwHABURbTfTGbNEwy9jnw">"requests 版本："</span>, requests.__version__)<span class="ann">⟳ print 打印 requests 版本。动机：__version__ 能读出来，说明 requests 装好了。</span>
+<span class="builtin" data-page-node-id="WF5zWURlzpJCOzj2BqPmfJ">print</span>(<span class="str" data-page-node-id="hpSaUdQ6Q1kXDfCJDFVE9D">"pytest 版本："</span>, pytest.__version__)<span class="ann">⟳ print 打印 pytest 版本。动机：与上一行一起，作为「安装成功」的可视化证据。</span></code></pre>
   </div>
   <div class="card warning" data-page-node-id="kZ9G9bush6h4bgJ9BFJGF2">
     <b data-page-node-id="V2izDnRPrLa6W6DaDEOeof">⚠️【装不上排查】</b>
@@ -362,17 +366,17 @@ pip install requests pytest pytest-html allure-pytest PyYAML</code></pre>
   <h3 data-page-node-id="J8OBB1qiaDBjSYDM3eRhoo">4.1 🟢 GET 请求（查数据）</h3>
   <div class="code-block" data-page-node-id="xzH1CTjcgvOpYXVskFzSCO">
     <div class="header" data-page-node-id="TsFik7n55JHle9X9Eo1urF"><span class="lang lang-py" data-page-node-id="3jQiDXpi11t3p6vrOKdELx">Python</span><span class="fname" data-page-node-id="1SLstlSsHnFInTZLyrhdjD">01_get.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="7zYDOK44ZftxMUcSterZyC">📋 复制</button></div>
-    <pre data-page-node-id="8Yz3bOdnCLWyL4mScbNAYO"><code data-page-node-id="pGgeQLhTdgyvbA6WoJViWk"><span class="kw" data-page-node-id="kQrZ02erMoEXPyauSWWuhs">import</span> requests
+    <pre data-page-node-id="8Yz3bOdnCLWyL4mScbNAYO"><code data-page-node-id="pGgeQLhTdgyvbA6WoJViWk"><span class="kw" data-page-node-id="kQrZ02erMoEXPyauSWWuhs">import</span> requests<span class="ann">⟳ import requests：导入 HTTP 库。动机：接口自动化发请求全靠它。</span>
 
-<span class="cmt" data-page-node-id="QWxpQWUFYIHmnYZcgOppB2"># params 会自动拼到 URL 后面变成 ?page=1&size=10</span>
-url = <span class="str" data-page-node-id="w8ohX1pzZfrSryEaA0eyEW">"https://httpbin.org/get"</span>
-params = {<span class="str" data-page-node-id="y0A6lbYekiwHiW3jEE7VtG">"page"</span>: <span class="num" data-page-node-id="7mIOfbcqJPWHhHHVPRrWD8">1</span>, <span class="str" data-page-node-id="tiIAmb0WAFR8bzkvbE58yy">"size"</span>: <span class="num" data-page-node-id="hYoYHnFDBJHSkBNHFYJaBp">10</span>}
-headers = {<span class="str" data-page-node-id="8waBbtUY9VJdYahFtV3sIB">"User-Agent"</span>: <span class="str" data-page-node-id="OMBqYpTXohyKkHnqLHvKSf">"test-client"</span>}
+<span class="cmt" data-page-node-id="QWxpQWUFYIHmnYZcgOppB2"># params 会自动拼到 URL 后面变成 ?page=1&size=10</span><span class="ann">⟳ 注释：说明 params 的作用。动机：提醒 GET 参数会自动拼到 URL 后成 ?page=1&size=10。</span>
+url = <span class="str" data-page-node-id="w8ohX1pzZfrSryEaA0eyEW">"https://httpbin.org/get"</span><span class="ann">⟳ url = "…/get"：指定请求地址。动机：httpbin.org/get 是免费测试接口，专门回显你发给它的参数。</span>
+params = {<span class="str" data-page-node-id="y0A6lbYekiwHiW3jEE7VtG">"page"</span>: <span class="num" data-page-node-id="7mIOfbcqJPWHhHHVPRrWD8">1</span>, <span class="str" data-page-node-id="tiIAmb0WAFR8bzkvbE58yy">"size"</span>: <span class="num" data-page-node-id="hYoYHnFDBJHSkBNHFYJaBp">10</span>}<span class="ann">⟳ params = {…}：把查询参数放进字典。动机：用字典传参比手拼字符串安全、自动编码，避免中文/特殊字符出错。</span>
+headers = {<span class="str" data-page-node-id="8waBbtUY9VJdYahFtV3sIB">"User-Agent"</span>: <span class="str" data-page-node-id="OMBqYpTXohyKkHnqLHvKSf">"test-client"</span>}<span class="ann">⟳ headers = {"User-Agent": …}：自定义请求头。动机：模拟真实客户端身份，有些接口会校验 UA。</span>
 
-resp = requests.get(url, params=params, headers=headers, timeout=<span class="num" data-page-node-id="vClJB2EWDoj5it6UNC0yRv">10</span>)
+resp = requests.get(url, params=params, headers=headers, timeout=<span class="num" data-page-node-id="vClJB2EWDoj5it6UNC0yRv">10</span>)<span class="ann">⟳ resp = requests.get(…)：发起 GET 请求。动机：timeout=10 防止网络卡死时无限等待，是健壮性基本功。</span>
 
-<span class="builtin" data-page-node-id="P8WkVZXtpJk1Ja47KJJN8w">print</span>(<span class="str" data-page-node-id="pwUA6ylFDUJNwB5TtmNUpC">"状态码："</span>, resp.status_code)
-<span class="builtin" data-page-node-id="znbUfelPAGqI8vdw8xeUwu">print</span>(<span class="str" data-page-node-id="mfK1GDf3NDX9mEfdGiGdHY">"响应JSON："</span>, resp.json())</code></pre>
+<span class="builtin" data-page-node-id="P8WkVZXtpJk1Ja47KJJN8w">print</span>(<span class="str" data-page-node-id="pwUA6ylFDUJNwB5TtmNUpC">"状态码："</span>, resp.status_code)<span class="ann">⟳ print 状态码。动机：200 表示请求成功到达服务器，是最基本的第一道断言。</span>
+<span class="builtin" data-page-node-id="znbUfelPAGqI8vdw8xeUwu">print</span>(<span class="str" data-page-node-id="mfK1GDf3NDX9mEfdGiGdHY">"响应JSON："</span>, resp.json())<span class="ann">⟳ print 响应 JSON。动机：resp.json() 自动把返回的 JSON 字符串解析成 dict，直接可读。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="WsxANiwqGCr3Nc8vWELz0m"><b data-page-node-id="RtRkRzerXMQ08dK8izT3Wg">🔑 知识点 · resp.json()：</b> <code data-page-node-id="6zW3ak1NCImRB3hW6GTqH9">resp</code> 是 Response 对象。<code data-page-node-id="7CqsoiyutYFVkS4cbm7wdh">.status_code</code> 取状态码（int）；<code data-page-node-id="fEBw9CDsNOiC88hs2U9JGu">.json()</code> 把 JSON 响应体直接解析成 Python dict，比手动 <code data-page-node-id="SHgncTsgNmw4iqMjeNUrCa">json.loads(resp.text)</code> 更省事。</div>
   <div class="kp" data-page-node-id="lxDzgiQ4WFwfmj3TDFN76d"><b data-page-node-id="HSyxTP3Iuj26pXDQtb4sRv">🔑 知识点 · timeout：</b> 单位秒。网络卡死时防止脚本无限等待，是<b data-page-node-id="jNkSX8keqwqpM0HZlXE4ER">生产脚本必加</b>参数。可写 <code data-page-node-id="fJOvX1nc9sfo4CmtIsCYDr">timeout=(3,10)</code> 表示「连接超时 3s，读取超时 10s」。</div>
@@ -380,31 +384,31 @@ resp = requests.get(url, params=params, headers=headers, timeout=<span class="nu
   <h3 data-page-node-id="1EFXebbHnfGpQXMCDLlHFO">4.2 🔵 POST 请求（提交 JSON 数据）</h3>
   <div class="code-block" data-page-node-id="kJALvK5rlQaGRxGicAP94B">
     <div class="header" data-page-node-id="P6bjRUi7d2v41moYlDV1q8"><span class="lang lang-py" data-page-node-id="vhYC9RlfUjLqdmqli6179u">Python</span><span class="fname" data-page-node-id="DoeFM7HeiXmkQfSeUA3vY1">02_post.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="qHX6RCcu2kuGgNEe0TuXZX">📋 复制</button></div>
-    <pre data-page-node-id="tmxIwZT8VUWDtKyeRQdo93"><code data-page-node-id="cHqeGNElhZX5YZLmp4pvQZ"><span class="kw" data-page-node-id="jeIJfbP534y3aWA6CaIj3M">import</span> requests
+    <pre data-page-node-id="tmxIwZT8VUWDtKyeRQdo93"><code data-page-node-id="cHqeGNElhZX5YZLmp4pvQZ"><span class="kw" data-page-node-id="jeIJfbP534y3aWA6CaIj3M">import</span> requests<span class="ann">⟳ import requests：导入 HTTP 库。</span>
 
-url = <span class="str" data-page-node-id="UGUIQvwGv603EjQIbZyNDs">"https://httpbin.org/post"</span>
-data = {<span class="str" data-page-node-id="QwulCQxEkN3e7eDj7Lb6UU">"username"</span>: <span class="str" data-page-node-id="aAAPusHELWd7l18oOw1nM9">"tom"</span>, <span class="str" data-page-node-id="hLsd8BlQ8ZMhW4A4i1ZClE">"password"</span>: <span class="str" data-page-node-id="nogd6OIuX6dOb7bedhMGjC">"123456"</span>}
+url = <span class="str" data-page-node-id="UGUIQvwGv603EjQIbZyNDs">"https://httpbin.org/post"</span><span class="ann">⟳ url = "…/post"：指向 httpbin 的 POST 测试接口。动机：它会把你提交的正文原样回显，方便验证。</span>
+data = {<span class="str" data-page-node-id="QwulCQxEkN3e7eDj7Lb6UU">"username"</span>: <span class="str" data-page-node-id="aAAPusHELWd7l18oOw1nM9">"tom"</span>, <span class="str" data-page-node-id="hLsd8BlQ8ZMhW4A4i1ZClE">"password"</span>: <span class="str" data-page-node-id="nogd6OIuX6dOb7bedhMGjC">"123456"</span>}<span class="ann">⟳ data = {username, password}：准备要提交的表单数据。动机：模拟真实登录提交的字段。</span>
 
-<span class="cmt" data-page-node-id="Nj2UvZocvcWD9v4M6dwt8u"># json= 会自动把 dict 序列化为 JSON，并设置 Content-Type: application/json</span>
-resp = requests.post(url, json=data, timeout=<span class="num" data-page-node-id="IY4uQHLsfl916S3aoIsyxj">10</span>)
-<span class="builtin" data-page-node-id="rhGokPqZfoWhtjLo1GJwHS">print</span>(resp.status_code)
-<span class="builtin" data-page-node-id="pqnB7UtzNhHKuaDtrNsr59">print</span>(resp.json()[<span class="str" data-page-node-id="3gBUpu6FHr1RU96AbQ6tbo">"json"</span>])  <span class="cmt" data-page-node-id="Wj15TETh5fbdjBSu1tgyIm"># httpbin 会回显我们提交的 json</span></code></pre>
+<span class="cmt" data-page-node-id="Nj2UvZocvcWD9v4M6dwt8u"># json= 会自动把 dict 序列化为 JSON，并设置 Content-Type: application/json</span><span class="ann">⟳ 注释：说明 json= 参数。动机：它会自动把 dict 序列化成 JSON 并设置 Content-Type，省去手动 dumps。</span>
+resp = requests.post(url, json=data, timeout=<span class="num" data-page-node-id="IY4uQHLsfl916S3aoIsyxj">10</span>)<span class="ann">⟳ resp = requests.post(url, json=data, …)：发 POST 请求。动机：json= 是提交 JSON 最省心的方式。</span>
+<span class="builtin" data-page-node-id="rhGokPqZfoWhtjLo1GJwHS">print</span>(resp.status_code)<span class="ann">⟳ print 状态码。动机：确认请求被成功接收。</span>
+<span class="builtin" data-page-node-id="pqnB7UtzNhHKuaDtrNsr59">print</span>(resp.json()[<span class="str" data-page-node-id="3gBUpu6FHr1RU96AbQ6tbo">"json"</span>])  <span class="cmt" data-page-node-id="Wj15TETh5fbdjBSu1tgyIm"># httpbin 会回显我们提交的 json</span><span class="ann">⟳ print 回显的 json。动机：resp.json()["json"] 取出 httpbin 回显的正文，验证服务端确实收到了我们发的数据。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="1afJ0FenDwGFl4mK2MgERY"><b data-page-node-id="TUZHrnRvVV18YAAwTO0YUT">🔑 知识点 · json= vs data=：</b> <code data-page-node-id="rDKzIV3v997MPnezU21u8i">json=</code> 发 JSON 体（现代接口主流）；<code data-page-node-id="IFPi8R1TXDgC4RFWkAu4v5">data=</code> 发表单 <code data-page-node-id="LB5F9RV3ZLlLsHOt5BBYZS">application/x-www-form-urlencoded</code>。二者 Content-Type 不同，服务端解析方式也不同，传错会报「参数解析失败」。</div>
 
   <h3 data-page-node-id="P98AU3eVSCACtt5VkQDcco">4.3 🟡 PUT / DELETE（改与删）</h3>
   <div class="code-block" data-page-node-id="4Bn85D9v5FHTvLbuK3xLAa">
     <div class="header" data-page-node-id="mGdASc3BrbLvYHYNujYIIu"><span class="lang lang-py" data-page-node-id="DV2926czMto7tbRYYUbVkL">Python</span><span class="fname" data-page-node-id="5fMWQZzdnOr60D05yHqSqn">03_put_delete.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="bYnkTD405yLgWJ34XfBcMk">📋 复制</button></div>
-    <pre data-page-node-id="ZRYRjCvr3OlVwybQn2a5qq"><code data-page-node-id="txCgXWqL57v3a0cjjUpVQx"><span class="kw" data-page-node-id="KIQIDjVf33wa9PXzu7XPpv">import</span> requests
-base = <span class="str" data-page-node-id="b9jfYOJYIXvi4p4i8c2HRC">"https://httpbin.org"</span>
+    <pre data-page-node-id="ZRYRjCvr3OlVwybQn2a5qq"><code data-page-node-id="txCgXWqL57v3a0cjjUpVQx"><span class="kw" data-page-node-id="KIQIDjVf33wa9PXzu7XPpv">import</span> requests<span class="ann">⟳ import requests：导入 HTTP 库。</span>
+base = <span class="str" data-page-node-id="b9jfYOJYIXvi4p4i8c2HRC">"https://httpbin.org"</span><span class="ann">⟳ base = "https://httpbin.org"：把域名存成变量。动机：下面多个请求复用，改域名只改一处。</span>
 
-<span class="cmt" data-page-node-id="ACslgYHbre6A5MDvDgHYtb"># PUT 全量更新</span>
-r1 = requests.put(base+<span class="str" data-page-node-id="Ip76fhryopEc6vhSWyhnGi">"/put"</span>, json={<span class="str" data-page-node-id="Lq3aNwvd4Bw0IzL2nAw0Sy">"id"</span>:<span class="num" data-page-node-id="TZPravtSc3ddHuYvyKMiG4">1</span>,<span class="str" data-page-node-id="zGS82QN90CA4EfChEnb9FJ">"name"</span>:<span class="str" data-page-node-id="wUUTqLY60TfAKuF7Xf2dVM">"new"</span>}, timeout=<span class="num" data-page-node-id="Fz5gv86D1mpNV8B6hwfDiX">10</span>)
-<span class="builtin" data-page-node-id="IutnJpUrvH1o3GM58qaiXI">print</span>(<span class="str" data-page-node-id="AkRtm8FWOCQI4UIKBMV5V6">"PUT"</span>, r1.status_code)
+<span class="cmt" data-page-node-id="ACslgYHbre6A5MDvDgHYtb"># PUT 全量更新</span><span class="ann">⟳ 注释：说明这是 PUT 全量更新。</span>
+r1 = requests.put(base+<span class="str" data-page-node-id="Ip76fhryopEc6vhSWyhnGi">"/put"</span>, json={<span class="str" data-page-node-id="Lq3aNwvd4Bw0IzL2nAw0Sy">"id"</span>:<span class="num" data-page-node-id="TZPravtSc3ddHuYvyKMiG4">1</span>,<span class="str" data-page-node-id="zGS82QN90CA4EfChEnb9FJ">"name"</span>:<span class="str" data-page-node-id="wUUTqLY60TfAKuF7Xf2dVM">"new"</span>}, timeout=<span class="num" data-page-node-id="Fz5gv86D1mpNV8B6hwfDiX">10</span>)<span class="ann">⟳ r1 = requests.put(…/put, json=…)：发 PUT 请求。动机：PUT 用于「整体更新」资源，json 携带新数据。</span>
+<span class="builtin" data-page-node-id="IutnJpUrvH1o3GM58qaiXI">print</span>(<span class="str" data-page-node-id="AkRtm8FWOCQI4UIKBMV5V6">"PUT"</span>, r1.status_code)<span class="ann">⟳ print PUT 状态码。动机：确认更新请求被接受。</span>
 
-<span class="cmt" data-page-node-id="zpgOnWGCHDmvAR78pVTAIr"># DELETE 删除</span>
-r2 = requests.delete(base+<span class="str" data-page-node-id="vsBGP8EMEHvBTAlRuoLMUS">"/delete"</span>, params={<span class="str" data-page-node-id="0HZXatZgBSdjc3xvJi64Rr">"id"</span>:<span class="num" data-page-node-id="QkRLApsRt7gmY8VkabvhF1">1</span>}, timeout=<span class="num" data-page-node-id="bh8WZBK4eZcxY2bbUnOMLO">10</span>)
-<span class="builtin" data-page-node-id="hyy6jK0xoMci9rBPmAdrSg">print</span>(<span class="str" data-page-node-id="ftCTZRxv9gNFfTutfD6Hfn">"DELETE"</span>, r2.status_code)</code></pre>
+<span class="cmt" data-page-node-id="zpgOnWGCHDmvAR78pVTAIr"># DELETE 删除</span><span class="ann">⟳ 注释：说明这是 DELETE 删除。</span>
+r2 = requests.delete(base+<span class="str" data-page-node-id="vsBGP8EMEHvBTAlRuoLMUS">"/delete"</span>, params={<span class="str" data-page-node-id="0HZXatZgBSdjc3xvJi64Rr">"id"</span>:<span class="num" data-page-node-id="QkRLApsRt7gmY8VkabvhF1">1</span>}, timeout=<span class="num" data-page-node-id="bh8WZBK4eZcxY2bbUnOMLO">10</span>)<span class="ann">⟳ r2 = requests.delete(…/delete, params=…)：发 DELETE 请求。动机：DELETE 用于删除资源，id 通过查询参数指定。</span>
+<span class="builtin" data-page-node-id="hyy6jK0xoMci9rBPmAdrSg">print</span>(<span class="str" data-page-node-id="ftCTZRxv9gNFfTutfD6Hfn">"DELETE"</span>, r2.status_code)<span class="ann">⟳ print DELETE 状态码。动机：确认删除请求被接受。</span></code></pre>
   </div>
 
   <h3 data-page-node-id="5meW0DIOMASHjyaPwbuQvG">4.4 🔎 响应对象的常用属性</h3>
@@ -446,37 +450,37 @@ r2 = requests.delete(base+<span class="str" data-page-node-id="vsBGP8EMEHvBTAlRu
   <h3 data-page-node-id="myy5xTHNEWhOT0FsfUGV22">5.2 🧪 用 Session 保持会话（推荐）</h3>
   <div class="code-block" data-page-node-id="4XvjCBleAmAJrsEYmK0Y3O">
     <div class="header" data-page-node-id="3ZBafez08clOqF8c4IOdel"><span class="lang lang-py" data-page-node-id="HCJeL8gTnz2aShDEhiO5Xy">Python</span><span class="fname" data-page-node-id="x3Sd0RpDqmExHYHUmiPGGe">chain_login.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="bzklFOMA3sE2HHD8jBL8pC">📋 复制</button></div>
-    <pre data-page-node-id="epFteyzEx4CyPlsEbmKbbo"><code data-page-node-id="nABZe0gE42UucNxe3eEbSK"><span class="kw" data-page-node-id="vCSKB700K1wL5p1P0WWl1w">import</span> requests
+    <pre data-page-node-id="epFteyzEx4CyPlsEbmKbbo"><code data-page-node-id="nABZe0gE42UucNxe3eEbSK"><span class="kw" data-page-node-id="vCSKB700K1wL5p1P0WWl1w">import</span> requests<span class="ann">⟳ import requests：导入 HTTP 库。</span>
 
-<span class="cmt" data-page-node-id="KQRuIc8SAZUQyFiRbFRzoM"># Session 会自动保存 cookie，适合需要维持登录态的场景</span>
-session = requests.Session()
-base = <span class="str" data-page-node-id="lGsKnE7dfgwPLeeVZDyblP">"https://httpbin.org"</span>
+<span class="cmt" data-page-node-id="KQRuIc8SAZUQyFiRbFRzoM"># Session 会自动保存 cookie，适合需要维持登录态的场景</span><span class="ann">⟳ 注释：说明 Session 的作用。动机：Session 自动保存 cookie，是维持登录态的关键。</span>
+session = requests.Session()<span class="ann">⟳ session = requests.Session()：创建一个会话对象。动机：同一对象发的请求共享 cookie，模拟「登录一次、后续自动带身份」。</span>
+base = <span class="str" data-page-node-id="lGsKnE7dfgwPLeeVZDyblP">"https://httpbin.org"</span><span class="ann">⟳ base = 域名：存域名变量。动机：复用，避免重复书写。</span>
 
-<span class="cmt" data-page-node-id="hg55rzJzdsK8W5CDhJX5al"># ① 登录（httpbin 用 cookies 模拟）</span>
-login = session.post(base+<span class="str" data-page-node-id="VES53HZYnaZqDTzzzS5sFd">"/cookies/set"</span>,
-                     params={<span class="str" data-page-node-id="UVevEgrcq4tzmPPqWK8GEu">"token"</span>: <span class="str" data-page-node-id="rgK9DI0mB33tWfatDdHKJH">"abc123"</span>}, timeout=<span class="num" data-page-node-id="uhqHChtf5ZT2Mh1hJSh0eg">10</span>)
-<span class="builtin" data-page-node-id="MnXeY71ZN9dFomnfFPsBni">print</span>(<span class="str" data-page-node-id="P3iS1PeLa7Ei663grDPKIA">"登录："</span>, login.status_code)
+<span class="cmt" data-page-node-id="hg55rzJzdsK8W5CDhJX5al"># ① 登录（httpbin 用 cookies 模拟）</span><span class="ann">⟳ 注释：① 登录（httpbin 用 cookies 模拟）。</span>
+login = session.post(base+<span class="str" data-page-node-id="VES53HZYnaZqDTzzzS5sFd">"/cookies/set"</span>,<span class="ann">⟳ login = session.post(…/cookies/set, …)：调设置 cookie 的接口。动机：httpbin 借此把 token 写进会话 cookie，模拟登录成功。</span>
+                     params={<span class="str" data-page-node-id="UVevEgrcq4tzmPPqWK8GEu">"token"</span>: <span class="str" data-page-node-id="rgK9DI0mB33tWfatDdHKJH">"abc123"</span>}, timeout=<span class="num" data-page-node-id="uhqHChtf5ZT2Mh1hJSh0eg">10</span>)<span class="ann">⟳ params={"token":"abc123"}：把 token 作为参数传入。动机：让服务端把该 token 存进本次会话。</span>
+<span class="builtin" data-page-node-id="MnXeY71ZN9dFomnfFPsBni">print</span>(<span class="str" data-page-node-id="P3iS1PeLa7Ei663grDPKIA">"登录："</span>, login.status_code)<span class="ann">⟳ print 登录状态码。动机：确认登录动作成功。</span>
 
-<span class="cmt" data-page-node-id="P9qjAP6NmfNbKRrWjlKlK1"># ② 同一个 session 发请求，cookie 自动带上</span>
-info = session.get(base+<span class="str" data-page-node-id="p71RiRAYCCMm4zlfa3Vm2B">"/cookies"</span>, timeout=<span class="num" data-page-node-id="7T5dFFkmicJuEuBpZAEGNO">10</span>)
-<span class="builtin" data-page-node-id="NmA95QLUc6ENekhrSTl4oB">print</span>(<span class="str" data-page-node-id="CpCm0d7CpMl85vzwj1Uffl">"服务端收到的 cookie："</span>, info.json())</code></pre>
+<span class="cmt" data-page-node-id="P9qjAP6NmfNbKRrWjlKlK1"># ② 同一个 session 发请求，cookie 自动带上</span><span class="ann">⟳ 注释：② 同一 session 发请求，cookie 自动带上。</span>
+info = session.get(base+<span class="str" data-page-node-id="p71RiRAYCCMm4zlfa3Vm2B">"/cookies"</span>, timeout=<span class="num" data-page-node-id="7T5dFFkmicJuEuBpZAEGNO">10</span>)<span class="ann">⟳ info = session.get(…/cookies, …)：请求查看 cookie 的接口。动机：验证会话是否还记得刚才登录的 token。</span>
+<span class="builtin" data-page-node-id="NmA95QLUc6ENekhrSTl4oB">print</span>(<span class="str" data-page-node-id="CpCm0d7CpMl85vzwj1Uffl">"服务端收到的 cookie："</span>, info.json())<span class="ann">⟳ print 服务端收到的 cookie。动机：若能看到 token，就证明 Session 自动维持了登录态——这是有状态测试的核心。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="TRL7aZTQVTJ67CQKNC9jx7"><b data-page-node-id="bpvvQwWwxQDwLC7Jn03ohF">🔑 知识点 · requests.Session()：</b> Session 是一个「会话对象」，会在多次请求间<b data-page-node-id="FwcFJaCPkFVszEoodr5fsi">自动保存 cookie</b> 和公共配置（如 headers、base_url）。登录态、鉴权类接口用它最省心，不用每次手动拼 token。</div>
 
   <h3 data-page-node-id="BlKOrrdCLBse2mJK4nDag1">5.3 🧰 提取返回值并传递（变量关联）</h3>
   <div class="code-block" data-page-node-id="oDBFQIEGMQWTCr9QUar3g1">
     <div class="header" data-page-node-id="ZvFLNv2Wz7wNEWO2jKnqnU"><span class="lang lang-py" data-page-node-id="g5JkvEksBPa8TBVUB4OnZh">Python</span><span class="fname" data-page-node-id="UGT5k7eBvQBWhPdVvfrbpP">chain_extract.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="voPCKHHF3obZcqd7vrcI2Y">📋 复制</button></div>
-    <pre data-page-node-id="0jDKMlDDdRJFupfyDfq6MG"><code data-page-node-id="MBHVCaPVdfGdhpYEhIUFuL"><span class="kw" data-page-node-id="HbNO89nb5RPTE6xaDsB3bo">import</span> requests
+    <pre data-page-node-id="0jDKMlDDdRJFupfyDfq6MG"><code data-page-node-id="MBHVCaPVdfGdhpYEhIUFuL"><span class="kw" data-page-node-id="HbNO89nb5RPTE6xaDsB3bo">import</span> requests<span class="ann">⟳ import requests：导入 HTTP 库。</span>
 
-<span class="cmt" data-page-node-id="gc9msbIACgmGd6fVtXcVrd"># ① 登录拿 token（这里用 httpbin 回显模拟真实返回）</span>
-r1 = requests.post(<span class="str" data-page-node-id="nFpBeWGEkDjH4Ap860c2cC">"https://httpbin.org/post"</span>,
-                 json={<span class="str" data-page-node-id="T0WCrnY9oBrEK1GmzDpbpQ">"user"</span>:<span class="str" data-page-node-id="8XAspCNpoidRJMIjHIu3tv">"tom"</span>}, timeout=<span class="num" data-page-node-id="tdxubScKCIVjeYBVi44mzJ">10</span>)
-token = <span class="str" data-page-node-id="6ttEssata9U9AXptQk1Wbd">"fake-token-"</span> + r1.json()[<span class="str" data-page-node-id="PPqoL8yBoVJx8EuyUovDGW">"json"</span>][<span class="str" data-page-node-id="JB7A5gd9fzL4nEJKpAHhAj">"user"</span>]  <span class="cmt" data-page-node-id="oZTWYF2AQTSrJheBiKLPru"># 从响应里取字段</span>
+<span class="cmt" data-page-node-id="gc9msbIACgmGd6fVtXcVrd"># ① 登录拿 token（这里用 httpbin 回显模拟真实返回）</span><span class="ann">⟳ 注释：① 登录拿 token（用 httpbin 回显模拟真实返回）。</span>
+r1 = requests.post(<span class="str" data-page-node-id="nFpBeWGEkDjH4Ap860c2cC">"https://httpbin.org/post"</span>,<span class="ann">⟳ r1 = requests.post(…/post, …)：发一次登录请求。动机：真实项目里这一步会返回正式 token。</span>
+                 json={<span class="str" data-page-node-id="T0WCrnY9oBrEK1GmzDpbpQ">"user"</span>:<span class="str" data-page-node-id="8XAspCNpoidRJMIjHIu3tv">"tom"</span>}, timeout=<span class="num" data-page-node-id="tdxubScKCIVjeYBVi44mzJ">10</span>)<span class="ann">⟳ json={"user":"tom"}：提交用户名。动机：httpbin 会把它回显，便于我们从响应里取字段造 token。</span>
+token = <span class="str" data-page-node-id="6ttEssata9U9AXptQk1Wbd">"fake-token-"</span> + r1.json()[<span class="str" data-page-node-id="PPqoL8yBoVJx8EuyUovDGW">"json"</span>][<span class="str" data-page-node-id="JB7A5gd9fzL4nEJKpAHhAj">"user"</span>]  <span class="cmt" data-page-node-id="oZTWYF2AQTSrJheBiKLPru"># 从响应里取字段</span><span class="ann">⟳ token = "fake-token-" + ….json…["user"]：从响应里取字段拼出 token。动机：演示「登录后解析响应、提取凭证」这一通用套路。</span>
 
-<span class="cmt" data-page-node-id="XJlV8auWZqBTKQVmpRUK2n"># ② 把 token 放进请求头，去查受保护资源</span>
-headers = {<span class="str" data-page-node-id="GynXiD5WjVHkwdrbJIOT9f">"Authorization"</span>: <span class="str" data-page-node-id="xHYb7G9zxUgKqE5f52CdqG">"Bearer "</span> + token}
-r2 = requests.get(<span class="str" data-page-node-id="eQHIqZpz9t1kZEqxdDzHeP">"https://httpbin.org/get"</span>, headers=headers, timeout=<span class="num" data-page-node-id="B9eVhESQRHbLqv14q1LP9r">10</span>)
-<span class="builtin" data-page-node-id="xBF0aKNgZLlG6oNaU1YI0S">print</span>(<span class="str" data-page-node-id="fPS5C2Ildbp2m99ULXHV9Y">"带 token 请求成功："</span>, r2.status_code)</code></pre>
+<span class="cmt" data-page-node-id="XJlV8auWZqBTKQVmpRUK2n"># ② 把 token 放进请求头，去查受保护资源</span><span class="ann">⟳ 注释：② 把 token 放进请求头去查受保护资源。</span>
+headers = {<span class="str" data-page-node-id="GynXiD5WjVHkwdrbJIOT9f">"Authorization"</span>: <span class="str" data-page-node-id="xHYb7G9zxUgKqE5f52CdqG">"Bearer "</span> + token}<span class="ann">⟳ headers = {"Authorization": "Bearer " + token}：构造鉴权头。动机：Bearer 是标准的令牌认证格式，服务端据此判断身份。</span>
+r2 = requests.get(<span class="str" data-page-node-id="eQHIqZpz9t1kZEqxdDzHeP">"https://httpbin.org/get"</span>, headers=headers, timeout=<span class="num" data-page-node-id="B9eVhESQRHbLqv14q1LP9r">10</span>)<span class="ann">⟳ r2 = requests.get(…/get, headers=headers, …)：带 token 请求受保护接口。动机：验证凭证能否换来访问权限。</span>
+<span class="builtin" data-page-node-id="xBF0aKNgZLlG6oNaU1YI0S">print</span>(<span class="str" data-page-node-id="fPS5C2Ildbp2m99ULXHV9Y">"带 token 请求成功："</span>, r2.status_code)<span class="ann">⟳ print 请求成功状态码。动机：200 说明 token 有效、链路打通。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="GjRN9ma1YuJdr4PHCSmERH"><b data-page-node-id="mHQT4X7qSrwPcTcynefApH">🔑 知识点 · 变量关联：</b> 本质就是「把 <code data-page-node-id="tadmOHgr2B3ZcC5FocjMZD">r1</code> 里解析出的值，存进 Python 变量，再拼进 <code data-page-node-id="UU0Towq9kq7O0kutAMXqe7">r2</code> 的请求」。后续在 pytest 里会用 <code data-page-node-id="2KBJUUPG0TC6M2EvSv594M">conftest.py</code> + fixture 把这套关联自动化、可复用。</div>
   <div class="card warning" data-page-node-id="YgBY9d5llU5JtfGqgbor0Z">
@@ -508,56 +512,56 @@ r2 = requests.get(<span class="str" data-page-node-id="eQHIqZpz9t1kZEqxdDzHeP">"
   <h3 data-page-node-id="Hsvm9mpaI5n589CjtiA6xv">6.2 ✅ 第一个 pytest 用例</h3>
   <div class="code-block" data-page-node-id="Tdw8FH5KtdpnhFuLqGvU7k">
     <div class="header" data-page-node-id="Y36QBnYlWQDGTqSyBE7W1W"><span class="lang lang-py" data-page-node-id="5OoAwGHgoZSTYC8tVBaaLf">Python</span><span class="fname" data-page-node-id="IWtfPmXTGGqSIIJdb7aKvi">test_demo.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="6Vkkm0UftzdbP4VpCrJPm3">📋 复制</button></div>
-    <pre data-page-node-id="lfLMRKJ4sURNMsfYIkljYG"><code data-page-node-id="oVGhIx5o4fExDS7bwNn8jp"><span class="kw" data-page-node-id="XvB0ko598VcwDYMAVmD2RK">import</span> requests
+    <pre data-page-node-id="lfLMRKJ4sURNMsfYIkljYG"><code data-page-node-id="oVGhIx5o4fExDS7bwNn8jp"><span class="kw" data-page-node-id="XvB0ko598VcwDYMAVmD2RK">import</span> requests<span class="ann">⟳ import requests：导入 HTTP 库。</span>
 
-<span class="kw" data-page-node-id="RObgHttO9COBD7cXgBE7Eh">def</span> <span class="fn" data-page-node-id="qPjDBwWVo0sVgXa9soC120">test_httpbin_get</span>():
-    <span class="str" data-page-node-id="H8HKpDdyUJBrWq9pb7d2VQ">"""用例：验证 get 接口返回 200"""</span>
-    r = requests.get(<span class="str" data-page-node-id="u3y3osvkEtL3vNLWSyBf1G">"https://httpbin.org/get"</span>, timeout=<span class="num" data-page-node-id="5tEKzyQsPBy5wH56v0ZrFF">10</span>)
-    <span class="kw" data-page-node-id="bSBtufDakQZvJ2zSTGJs0K">assert</span> r.status_code == <span class="num" data-page-node-id="c2ggO04G2r7VnsBGbdKSXX">200</span>          <span class="cmt" data-page-node-id="sqJhC0KgTU3KSTJaJhf4g5"># 断言：不成立则用例失败</span>
+<span class="kw" data-page-node-id="RObgHttO9COBD7cXgBE7Eh">def</span> <span class="fn" data-page-node-id="qPjDBwWVo0sVgXa9soC120">test_httpbin_get</span>():<span class="ann">⟳ def test_httpbin_get():：定义一条用例。动机：pytest 靠「test_ 开头的函数」自动发现用例。</span>
+    <span class="str" data-page-node-id="H8HKpDdyUJBrWq9pb7d2VQ">"""用例：验证 get 接口返回 200"""</span><span class="ann">⟳ """用例：验证 get 接口返回 200"""：用例说明。动机：写清意图，报告里也会显示，便于他人理解。</span>
+    r = requests.get(<span class="str" data-page-node-id="u3y3osvkEtL3vNLWSyBf1G">"https://httpbin.org/get"</span>, timeout=<span class="num" data-page-node-id="5tEKzyQsPBy5wH56v0ZrFF">10</span>)<span class="ann">⟳ r = requests.get(…/get, …)：发起 GET 请求。动机：拿到真实响应，供下面断言。</span>
+    <span class="kw" data-page-node-id="bSBtufDakQZvJ2zSTGJs0K">assert</span> r.status_code == <span class="num" data-page-node-id="c2ggO04G2r7VnsBGbdKSXX">200</span>          <span class="cmt" data-page-node-id="sqJhC0KgTU3KSTJaJhf4g5"># 断言：不成立则用例失败</span><span class="ann">⟳ assert r.status_code == 200：断言状态码为 200。动机：断言不成立则用例判失败——这是测试的判定核心。</span>
 
-<span class="kw" data-page-node-id="cKA2SPzjDh1pNeXqHQ7Io6">def</span> <span class="fn" data-page-node-id="c8YZgX9ZxKSFF0fqOS9j8h">test_httpbin_post</span>():
-    <span class="str" data-page-node-id="ByOWcViZmnRaD9B7FtifjH">"""用例：验证 post 能回显数据"""</span>
-    r = requests.post(<span class="str" data-page-node-id="Tgc8D9HcNDOIs56V2KoibF">"https://httpbin.org/post"</span>, json={<span class="str" data-page-node-id="dYtoxqeb40dDtbBeMlD8Yr">"a"</span>:<span class="num" data-page-node-id="JS0HqPViw60Zbq4Twlt5fr">1</span>}, timeout=<span class="num" data-page-node-id="Nus74P3JnbuWjmseuyqzRC">10</span>)
-    <span class="kw" data-page-node-id="ovuV2QlsUY3ao3tUsGCNMG">assert</span> r.json()[<span class="str" data-page-node-id="mDmX6JiaAsSWEpiI5L70Er">"json"</span>][<span class="str" data-page-node-id="pSUeWLZm4Z0JSx8TOOOGh5">"a"</span>] == <span class="num" data-page-node-id="vJjHtlTtxICDc4XANuGOgN">1</span></code></pre>
+<span class="kw" data-page-node-id="cKA2SPzjDh1pNeXqHQ7Io6">def</span> <span class="fn" data-page-node-id="c8YZgX9ZxKSFF0fqOS9j8h">test_httpbin_post</span>():<span class="ann">⟳ def test_httpbin_post():：定义第二条用例。动机：再覆盖 POST 方法。</span>
+    <span class="str" data-page-node-id="ByOWcViZmnRaD9B7FtifjH">"""用例：验证 post 能回显数据"""</span><span class="ann">⟳ """用例：验证 post 能回显数据"""：用例说明。</span>
+    r = requests.post(<span class="str" data-page-node-id="Tgc8D9HcNDOIs56V2KoibF">"https://httpbin.org/post"</span>, json={<span class="str" data-page-node-id="dYtoxqeb40dDtbBeMlD8Yr">"a"</span>:<span class="num" data-page-node-id="JS0HqPViw60Zbq4Twlt5fr">1</span>}, timeout=<span class="num" data-page-node-id="Nus74P3JnbuWjmseuyqzRC">10</span>)<span class="ann">⟳ r = requests.post(…/post, json={"a":1}, …)：POST 提交数据。动机：httpbin 会回显，便于校验。</span>
+    <span class="kw" data-page-node-id="ovuV2QlsUY3ao3tUsGCNMG">assert</span> r.json()[<span class="str" data-page-node-id="mDmX6JiaAsSWEpiI5L70Er">"json"</span>][<span class="str" data-page-node-id="pSUeWLZm4Z0JSx8TOOOGh5">"a"</span>] == <span class="num" data-page-node-id="vJjHtlTtxICDc4XANuGOgN">1</span><span class="ann">⟳ assert ….json()["json"]["a"] == 1：断言回显内容一致。动机：不仅看状态码，还校验正文，断言更严格。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="WLcIF6cfCOBHaPi6PjeeHp"><b data-page-node-id="bjSwb3QENXigyG9yosH9zD">🔑 知识点 · assert：</b> Python 原生断言。pytest 会捕获 <code data-page-node-id="u2tdu1TlYFM4cuY0DslYaF">assert</code> 失败并标记该用例为 <b data-page-node-id="Z7xeEWuGX2kGqkWhX3GSMO">FAILED</b>，同时记录期望值与实际值，比 <code data-page-node-id="1l8KkDF1T9cgbQIEsDiWuI">if...print</code> 手动判断专业得多。</div>
 
   <h3 data-page-node-id="FcgoL8ulk9GgTVv5LtpgdI">6.3 ▶️ 运行与常用命令</h3>
   <div class="code-block" data-page-node-id="gXG9QhDDCpsaHvyrwDV98P">
     <div class="header" data-page-node-id="0khG245V7GCadPzuGD6zYH"><span class="lang lang-shell" data-page-node-id="szbyzXySXkg1yl8nHyReis">Shell</span><span class="fname" data-page-node-id="85dsUx4hARCmRp1MY8fs2a">命令行</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="sEOqHcHX03RQS4QL9SBrcZ">📋 复制</button></div>
-    <pre data-page-node-id="xOfVwLeMXg5TGYBcfUg3yL"><code data-page-node-id="XaMe5h1wWuUnvR5T5jC28z"><span class="cmt" data-page-node-id="QSYFH1s6jKpZW98f2JJnRI"># 运行当前目录所有用例，-v 显示详情，-s 显示 print</span>
-pytest -v -s
+    <pre data-page-node-id="xOfVwLeMXg5TGYBcfUg3yL"><code data-page-node-id="XaMe5h1wWuUnvR5T5jC28z"><span class="cmt" data-page-node-id="QSYFH1s6jKpZW98f2JJnRI"># 运行当前目录所有用例，-v 显示详情，-s 显示 print</span><span class="ann">⟳ 注释：说明本组命令的用途。</span>
+pytest -v -s<span class="ann">⟳ pytest -v -s：运行当前目录全部用例。动机：-v 显示每条详情、-s 显示 print 输出，调试最常用。</span>
 
-<span class="cmt" data-page-node-id="NwMOu6qGJYu7RRYJxtmJHg"># 运行指定文件</span>
-pytest test_demo.py -v
+<span class="cmt" data-page-node-id="NwMOu6qGJYu7RRYJxtmJHg"># 运行指定文件</span><span class="ann">⟳ 注释：运行指定文件。</span>
+pytest test_demo.py -v<span class="ann">⟳ pytest test_demo.py -v：只跑某文件。动机：缩小范围、加快反馈，聚焦调试。</span>
 
-<span class="cmt" data-page-node-id="yysOYkwSnq4QkE6cL5XOsj"># 运行指定用例（按函数名）</span>
-pytest test_demo.py::test_httpbin_get -v
+<span class="cmt" data-page-node-id="yysOYkwSnq4QkE6cL5XOsj"># 运行指定用例（按函数名）</span><span class="ann">⟳ 注释：运行指定用例（按函数名）。</span>
+pytest test_demo.py::test_httpbin_get -v<span class="ann">⟳ pytest test_demo.py::test_httpbin_get -v：只跑单个函数。动机：精准复现某条失败用例。</span>
 
-<span class="cmt" data-page-node-id="fEdaqfGlvGvESCNkA7xNLO"># 按关键字匹配用例名（模糊运行）</span>
-pytest -v -k <span class="str" data-page-node-id="2uKmD3QNRg15LZSZ2wPaYn">"get"</span>
+<span class="cmt" data-page-node-id="fEdaqfGlvGvESCNkA7xNLO"># 按关键字匹配用例名（模糊运行）</span><span class="ann">⟳ 注释：按关键字模糊运行。</span>
+pytest -v -k <span class="str" data-page-node-id="2uKmD3QNRg15LZSZ2wPaYn">"get"</span><span class="ann">⟳ pytest -v -k "get"：按名字关键字筛选用例。动机：一次跑所有含 get 的用例，无需逐个点名。</span>
 
-<span class="cmt" data-page-node-id="YzIKZIsmVLelPw48VlljNu"># 生成 HTML 报告（需装 pytest-html）</span>
-pytest -v --html=report.html --self-contained-html</code></pre>
+<span class="cmt" data-page-node-id="YzIKZIsmVLelPw48VlljNu"># 生成 HTML 报告（需装 pytest-html）</span><span class="ann">⟳ 注释：生成 HTML 报告。</span>
+pytest -v --html=report.html --self-contained-html<span class="ann">⟳ pytest -v --html=report.html --self-contained-html：生成单文件 HTML 报告。动机：--self-contained-html 把样式内联，报告可独立分享。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="CyIQrpZARR0TzF9Y3VyB8j"><b data-page-node-id="VDoy4mLDUQBrPzwEI1Ltvq">🔑 知识点 · -v / -s：</b> <code data-page-node-id="Jq5WldofNTBG9VfI7CkKBW">-v</code>（verbose）显示每条用例名与结果；<code data-page-node-id="WMxFfdloOEJJqkNpFUsDzH">-s</code> 关闭输出捕获，让 <code data-page-node-id="6rQy7dUwq8qN0v01xIlqIx">print</code> 内容显示出来，调试时必用。</div>
 
   <h3 data-page-node-id="AabUUmAoirXraVWwsNNc2R">6.4 🩹 setup / teardown（前后置）</h3>
   <div class="code-block" data-page-node-id="eQh5btdqM4T9FU6lrFrY9T">
     <div class="header" data-page-node-id="UYijBbbNOVonRekoL8Vdeo"><span class="lang lang-py" data-page-node-id="KPE92R659CfsCRCUH9RfzK">Python</span><span class="fname" data-page-node-id="FAlBfLQT8Lj2uMteaMbPkr">test_with_fixture.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="C2lXp3CdNj4i3wYfcAq8Wa">📋 复制</button></div>
-    <pre data-page-node-id="givtjGnNYCFio8lSturmqC"><code data-page-node-id="C4zOFr765CPFrkJjbRFy2t"><span class="kw" data-page-node-id="21xjJdOpbgd7NHPxdRCxEZ">import</span> pytest, requests
+    <pre data-page-node-id="givtjGnNYCFio8lSturmqC"><code data-page-node-id="C4zOFr765CPFrkJjbRFy2t"><span class="kw" data-page-node-id="21xjJdOpbgd7NHPxdRCxEZ">import</span> pytest, requests<span class="ann">⟳ import pytest, requests：导入测试框架与 HTTP 库。</span>
 
-<span class="cmt" data-page-node-id="7ImAhAn9olZrR9KMjgLrgX"># 前置：每条用例前准备一个干净的 session</span>
-<span class="dec" data-page-node-id="RwH0dx0X2WIfLRwX0AsL7Q">@pytest.fixture</span>
-<span class="kw" data-page-node-id="jD5S8f0dSyvmxkzN3Cfjcb">def</span> <span class="fn" data-page-node-id="4Iz1Qro1avDnCwSxte04MB">session</span>():
-    s = requests.Session()
-    s.headers.update({<span class="str" data-page-node-id="Dox0jybXhlx7hTzvTl7ULO">"User-Agent"</span>: <span class="str" data-page-node-id="BaZLKIMEv937BUH7pk2Nd5">"pytest-client"</span>})
-    <span class="kw" data-page-node-id="IzgFvinuz1YCYUQZs6DoI0">yield</span> s                 <span class="cmt" data-page-node-id="l9Hj5bFO25kCMdgBWAWnuY"># yield 之前=前置，之后=后置</span>
-    s.close()               <span class="cmt" data-page-node-id="9KhUx96CGHVPy1FZQhVwT0"># 用例结束后关闭会话</span>
+<span class="cmt" data-page-node-id="7ImAhAn9olZrR9KMjgLrgX"># 前置：每条用例前准备一个干净的 session</span><span class="ann">⟳ 注释：说明前置准备。动机：每条用例前给一个干净 session，避免用例间相互污染。</span>
+<span class="dec" data-page-node-id="RwH0dx0X2WIfLRwX0AsL7Q">@pytest.fixture</span><span class="ann">⟳ @pytest.fixture：把函数声明为夹具。动机：fixture 负责准备/清理资源，是用例解耦的关键。</span>
+<span class="kw" data-page-node-id="jD5S8f0dSyvmxkzN3Cfjcb">def</span> <span class="fn" data-page-node-id="4Iz1Qro1avDnCwSxte04MB">session</span>():<span class="ann">⟳ def session():：定义 session 夹具。动机：名字即引用标识，用例按名取用。</span>
+    s = requests.Session()<span class="ann">⟳ s = requests.Session()：新建会话。动机：给每条用例一个独立会话。</span>
+    s.headers.update({<span class="str" data-page-node-id="Dox0jybXhlx7hTzvTl7ULO">"User-Agent"</span>: <span class="str" data-page-node-id="BaZLKIMEv937BUH7pk2Nd5">"pytest-client"</span>})<span class="ann">⟳ s.headers.update({"User-Agent": …})：统一加请求头。动机：所有经此会话的请求都带统一身份，减少重复代码。</span>
+    <span class="kw" data-page-node-id="IzgFvinuz1YCYUQZs6DoI0">yield</span> s                 <span class="cmt" data-page-node-id="l9Hj5bFO25kCMdgBWAWnuY"># yield 之前=前置，之后=后置</span><span class="ann">⟳ yield s：把会话交给用例使用。动机：yield 之前是前置、之后是后置，一个夹具管两头。</span>
+    s.close()               <span class="cmt" data-page-node-id="9KhUx96CGHVPy1FZQhVwT0"># 用例结束后关闭会话</span><span class="ann">⟳ s.close()：用例结束后关闭会话。动机：释放连接，避免资源泄漏。</span>
 
-<span class="kw" data-page-node-id="cajQ7FFnYlrbJCaYPUIoDj">def</span> <span class="fn" data-page-node-id="Tts6SH4tCfE6l6ey8YbWCY">test_get</span>(session):     <span class="cmt" data-page-node-id="0wXGiuSnzRbAojIBQw0VYW"># 参数名对应 fixture 名，自动注入</span>
-    r = session.get(<span class="str" data-page-node-id="GOEEqhzJsPCvxPIDXmw5Ef">"https://httpbin.org/get"</span>, timeout=<span class="num" data-page-node-id="goo1arv4peehjTKCFBmGEM">10</span>)
-    <span class="kw" data-page-node-id="PEcRb1gqW3CtABkJguBhrN">assert</span> r.status_code == <span class="num" data-page-node-id="rHNFceE2jTwnGatObZQ6zT">200</span></code></pre>
+<span class="kw" data-page-node-id="cajQ7FFnYlrbJCaYPUIoDj">def</span> <span class="fn" data-page-node-id="Tts6SH4tCfE6l6ey8YbWCY">test_get</span>(session):     <span class="cmt" data-page-node-id="0wXGiuSnzRbAojIBQw0VYW"># 参数名对应 fixture 名，自动注入</span><span class="ann">⟳ def test_get(session):：用例参数名对应夹具名。动机：pytest 据此自动注入上面准备好的 session。</span>
+    r = session.get(<span class="str" data-page-node-id="GOEEqhzJsPCvxPIDXmw5Ef">"https://httpbin.org/get"</span>, timeout=<span class="num" data-page-node-id="goo1arv4peehjTKCFBmGEM">10</span>)<span class="ann">⟳ r = session.get(…/get, …)：用注入的会话发请求。动机：直接复用夹具，不必自己建会话。</span>
+    <span class="kw" data-page-node-id="PEcRb1gqW3CtABkJguBhrN">assert</span> r.status_code == <span class="num" data-page-node-id="rHNFceE2jTwnGatObZQ6zT">200</span><span class="ann">⟳ assert r.status_code == 200：断言成功。动机：验证接口可用。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="eVrjlIrjRwCh8a0bcwrK2V"><b data-page-node-id="PA6w4ibnjzlKfbBXl7mjV2">🔑 知识点 · @pytest.fixture：</b> fixture 是 pytest 的<b data-page-node-id="QMnMVlPWSlBK519rFDcEvF">依赖注入</b>机制。用 <code data-page-node-id="ER6rCuFqNJBv2Qcig7SlFO">@pytest.fixture</code> 装饰一个函数，把「公共准备逻辑」（如建 session、登录拿 token）抽出来，用例通过<b data-page-node-id="wkTRCm0OQMeDTsA47C383W">参数名</b>就能拿到。<code data-page-node-id="NU9LKEm6OEZmSOiCTnFM5C">yield</code> 前是前置、后是后置清理。这是框架化的<b data-page-node-id="q5fM7jBuTTjMRPQTCEUc5p">核心</b>。</div>
   <div class="card tip" data-page-node-id="oYSd7je4XHRCHkZe12aWCz">
@@ -580,19 +584,19 @@ pytest -v --html=report.html --self-contained-html</code></pre>
   <h3 data-page-node-id="c5RFbZmCKAI35B9Hi5EPwG">7.1 🐣 @pytest.mark.parametrize（内置参数化）</h3>
   <div class="code-block" data-page-node-id="drEaVtqWzGNxQKlPGY4Brv">
     <div class="header" data-page-node-id="wg5ZdkMWAHTV8x7bh3h9P5"><span class="lang lang-py" data-page-node-id="rEmGu1029p7zEFBgL7kULp">Python</span><span class="fname" data-page-node-id="cqoV54MFL1Q5sWkNOXracA">test_param.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="LfAqwsHDexCYe5kvbOb0vK">📋 复制</button></div>
-    <pre data-page-node-id="y62qcZthLJc4dSjK16nH0o"><code data-page-node-id="Gg1e7DzHiS1A6aJnkIvMxH"><span class="kw" data-page-node-id="aUAEl2HADFdB69s5BI6ZJA">import</span> pytest, requests
+    <pre data-page-node-id="y62qcZthLJc4dSjK16nH0o"><code data-page-node-id="Gg1e7DzHiS1A6aJnkIvMxH"><span class="kw" data-page-node-id="aUAEl2HADFdB69s5BI6ZJA">import</span> pytest, requests<span class="ann">⟳ import pytest, requests：导入框架与 HTTP 库。</span>
 
-<span class="cmt" data-page-node-id="8tuBLRV2MVRE5NL2oljfEQ"># 一组参数 = 一次独立执行；pytest 会自动展开成 3 条用例</span>
-<span class="dec" data-page-node-id="5UNUHvgfFyYUJUVCtIY1o5">@pytest.mark.parametrize</span>(<span class="str" data-page-node-id="DJMXzQ0XepO5uUKJX435rH">"user,expect_code"</span>, [
-    (<span class="str" data-page-node-id="jQLtjDhu81M13OeN2DSYMD">"tom"</span>, <span class="num" data-page-node-id="2vS3T1OSfhJpm3nGag0GHG">200</span>),
-    (<span class="str" data-page-node-id="NFqIzP3py0afExy3cnKF8t">"jerry"</span>, <span class="num" data-page-node-id="POxM7EGTQySAEWWAGTHeHb">200</span>),
-    (<span class="str" data-page-node-id="1RZEJJImVDZwTjupHjmlnO">""</span>, <span class="num" data-page-node-id="1exuFlquqBBvBALqYUBjGj">400</span>),          <span class="cmt" data-page-node-id="nMjQJ2h0Sus4slDOpowpLE"># 空用户名期望 400</span>
-])
-<span class="kw" data-page-node-id="BjOdPTbs0OgDGHzBMZJjYC">def</span> <span class="fn" data-page-node-id="CZtkLnUEqvRPsxG2bk6PoC">test_login</span>(user, expect_code):
-    r = requests.post(<span class="str" data-page-node-id="e8mZxAWFCAvF3QwPnZSPF7">"https://httpbin.org/post"</span>,
+<span class="cmt" data-page-node-id="8tuBLRV2MVRE5NL2oljfEQ"># 一组参数 = 一次独立执行；pytest 会自动展开成 3 条用例</span><span class="ann">⟳ 注释：一组参数=一次独立执行。动机：pytest 会把下面 3 组参数自动展开成 3 条用例。</span>
+<span class="dec" data-page-node-id="5UNUHvgfFyYUJUVCtIY1o5">@pytest.mark.parametrize</span>(<span class="str" data-page-node-id="DJMXzQ0XepO5uUKJX435rH">"user,expect_code"</span>, [<span class="ann">⟳ @pytest.mark.parametrize("user,expect_code", […])：参数化装饰器。动机：用数据驱动同一逻辑跑多组输入，告别复制粘贴多条用例。</span>
+    (<span class="str" data-page-node-id="jQLtjDhu81M13OeN2DSYMD">"tom"</span>, <span class="num" data-page-node-id="2vS3T1OSfhJpm3nGag0GHG">200</span>),<span class="ann">⟳ ("tom", 200)：第一组参数。动机：合法用户名期望 200。</span>
+    (<span class="str" data-page-node-id="NFqIzP3py0afExy3cnKF8t">"jerry"</span>, <span class="num" data-page-node-id="POxM7EGTQySAEWWAGTHeHb">200</span>),<span class="ann">⟳ ("jerry", 200)：第二组参数。动机：再覆盖一个合法用户。</span>
+    (<span class="str" data-page-node-id="1RZEJJImVDZwTjupHjmlnO">""</span>, <span class="num" data-page-node-id="1exuFlquqBBvBALqYUBjGj">400</span>),          <span class="cmt" data-page-node-id="nMjQJ2h0Sus4slDOpowpLE"># 空用户名期望 400</span><span class="ann">⟳ ("", 400)：第三组参数。动机：空用户名是异常输入，期望 400，覆盖边界/异常流。</span>
+])<span class="ann">⟳ ])：参数列表结束。</span>
+<span class="kw" data-page-node-id="BjOdPTbs0OgDGHzBMZJjYC">def</span> <span class="fn" data-page-node-id="CZtkLnUEqvRPsxG2bk6PoC">test_login</span>(user, expect_code):<span class="ann">⟳ def test_login(user, expect_code):：用例形参对应参数列。动机：每组参数会各调用一次本函数。</span>
+    r = requests.post(<span class="str" data-page-node-id="e8mZxAWFCAvF3QwPnZSPF7">"https://httpbin.org/post"</span>,<span class="ann">⟳ r = requests.post(…/post, json={"user": user}, …)：用当前参数发请求。动机：把参数化输入真正打出去。</span>
                      json={<span class="str" data-page-node-id="oyMDedT9EkvlPn79O30t23">"user"</span>: user}, timeout=<span class="num" data-page-node-id="lKoe6BsPIOA4064iucteSe">10</span>)
-    <span class="cmt" data-page-node-id="G4clCrXWZkWkImDYZ4JOUw"># httpbin 对合法请求回 200；这里仅演示参数化机制</span>
-    <span class="kw" data-page-node-id="mXkau1wrxy03z0fLJKALsj">assert</span> r.status_code == expect_code <span class="kw" data-page-node-id="57BeyB43Ya71kxc0ztK1LW">if</span> user <span class="kw" data-page-node-id="GID31boym2HmurZX7Ehxn9">else</span> r.status_code != <span class="num" data-page-node-id="DhFe2f10PxQMSnV1VZYUeq">200</span></code></pre>
+    <span class="cmt" data-page-node-id="G4clCrXWZkWkImDYZ4JOUw"># httpbin 对合法请求回 200；这里仅演示参数化机制</span><span class="ann">⟳ 注释：说明 httpbin 行为。动机：提示这段仅演示参数化机制，非严格断言。</span>
+    <span class="kw" data-page-node-id="mXkau1wrxy03z0fLJKALsj">assert</span> r.status_code == expect_code <span class="kw" data-page-node-id="57BeyB43Ya71kxc0ztK1LW">if</span> user <span class="kw" data-page-node-id="GID31boym2HmurZX7Ehxn9">else</span> r.status_code != <span class="num" data-page-node-id="DhFe2f10PxQMSnV1VZYUeq">200</span><span class="ann">⟳ assert … if user else …：按输入决定断言。动机：合法用户断 200、空用户断非 200，用条件表达不同期望。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="YXj7iEhH41hK99VvYXKvGe"><b data-page-node-id="LWz42V17g0YGpqjMyVKNjk">🔑 知识点 · parametrize：</b> 第一个参数是<b data-page-node-id="H6JRzjEzBnO7VCFk8WHEyO">变量名字符串</b>，第二个是<b data-page-node-id="GMWWuGAAPKXt8OSAbzo5xx">数据列表</b>，列表里每个元组对应一次执行。加 <code data-page-node-id="THaRU1v0rMBod1caa2AQOT">-v</code> 运行时能看到 <code data-page-node-id="H3oByQW7LeV9KkamfNz9t5">[tom]</code>、<code data-page-node-id="k512kddw1h0Xa5nLl1Hu3s">[jerry]</code> 这样按数据命名的用例，失败时一眼定位是哪组数据。</div>
 
@@ -600,48 +604,48 @@ pytest -v --html=report.html --self-contained-html</code></pre>
   <p data-page-node-id="X7IrCrsP2NEFSmwI7nHV0D">把数据写进代码不够优雅。真实项目里，测试数据放在 <code data-page-node-id="M0JRlU9tqGRmgCkyxaIIYM">data/</code> 目录的 YAML/JSON 文件里，非程序员也能维护。</p>
   <div class="code-block" data-page-node-id="gCmdhfPvCLZj2fneuGwuAg">
     <div class="header" data-page-node-id="xVohBnLVnYQkVmKEEPEuJG"><span class="lang lang-json" data-page-node-id="ie4BSDeVuqe6LfqhfP3uUa">YAML</span><span class="fname" data-page-node-id="9fs4DVAXphb0zBPRAf4zr3">data/login_cases.yaml</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="Fw7WLbHOwtlncwC2EMz5ZO">📋 复制</button></div>
-    <pre data-page-node-id="zsXxNamsw5CYUotvGfAc9b"><code data-page-node-id="tVh69ZRSGK886QBe8CHNu5">- case: 正常登录
-  user: tom
-  pwd: "123456"
-  expect_code: 200
-- case: 密码错误
-  user: tom
-  pwd: "wrong"
-  expect_code: 401
-- case: 用户名为空
-  user: ""
-  pwd: "123456"
-  expect_code: 400</code></pre>
+    <pre data-page-node-id="zsXxNamsw5CYUotvGfAc9b"><code data-page-node-id="tVh69ZRSGK886QBe8CHNu5">- case: 正常登录<span class="ann">⟳ - case: 正常登录：一条用例的开始。动机：用 case 名标识场景，报告里可读。</span>
+  user: tom<span class="ann">⟳ user: tom：输入用户名。动机：数据与代码分离，改数据不动脚本。</span>
+  pwd: "123456"<span class="ann">⟳ pwd: "123456"：输入密码。动机：引号包裹，避免被当成数字。</span>
+  expect_code: 200<span class="ann">⟳ expect_code: 200：期望状态码。动机：把「正确答案」也数据化，供断言比对。</span>
+- case: 密码错误<span class="ann">⟳ - case: 密码错误：第二条用例。动机：覆盖认证失败场景。</span>
+  user: tom<span class="ann">⟳ user: tom：输入用户名。</span>
+  pwd: "wrong"<span class="ann">⟳ pwd: "wrong"：错误密码。动机：构造异常输入。</span>
+  expect_code: 401<span class="ann">⟳ expect_code: 401：期望未认证。动机：密码错应被拒，验证错误处理。</span>
+- case: 用户名为空<span class="ann">⟳ - case: 用户名为空：第三条用例。动机：覆盖边界/空值场景。</span>
+  user: ""<span class="ann">⟳ user: ""：空用户名。动机：测试必填校验。</span>
+  pwd: "123456"<span class="ann">⟳ pwd: "123456"：输入密码。</span>
+  expect_code: 400<span class="ann">⟳ expect_code: 400：期望参数错误。动机：空用户名应被判为参数非法。</span></code></pre>
   </div>
   <div class="code-block" data-page-node-id="XnemTFGY0iPoG6BF1EsjwP">
     <div class="header" data-page-node-id="nk61AitlBLatCiD77SHiTL"><span class="lang lang-py" data-page-node-id="GMMC98Guw0RRZTlm4mPlmG">Python</span><span class="fname" data-page-node-id="V5qFfb5iOvzJC1CFI8vrvg">loader.py — 读取 YAML</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="mFDg0qD96ztdEc112dDwx7">📋 复制</button></div>
-    <pre data-page-node-id="i3Alld2eCHl2TMjG0grMev"><code data-page-node-id="IXQazzuz6xHpsWW4kYMD0z"><span class="kw" data-page-node-id="AXuVEFSu3asXS3AMTvoicO">import</span> yaml
+    <pre data-page-node-id="i3Alld2eCHl2TMjG0grMev"><code data-page-node-id="IXQazzuz6xHpsWW4kYMD0z"><span class="kw" data-page-node-id="AXuVEFSu3asXS3AMTvoicO">import</span> yaml<span class="ann">⟳ import yaml：导入 YAML 库。动机：解析测试数据文件。</span>
 
-<span class="kw" data-page-node-id="Ew27VUBHixMTg4hOiO0bTv">def</span> <span class="fn" data-page-node-id="nylmfMhtEgFHs0tBrkVoRL">load_cases</span>(path):
-    <span class="str" data-page-node-id="4e2MmnK7em5caLLPpyzeMC">"""读取 YAML 测试数据，返回用例列表"""</span>
-    <span class="kw" data-page-node-id="ohiXtCFDZUR8skDSM0ltsp">with</span> open(path, encoding=<span class="str" data-page-node-id="LyagXRp7TQvHsd2gCjtovY">'utf-8'</span>) <span class="kw" data-page-node-id="kdEcSJCUjBK1XFmTs5aWnb">as</span> f:
-        <span class="kw" data-page-node-id="GzJOLlYSey3BpiU77Cevhd">return</span> yaml.safe_load(f)
+<span class="kw" data-page-node-id="Ew27VUBHixMTg4hOiO0bTv">def</span> <span class="fn" data-page-node-id="nylmfMhtEgFHs0tBrkVoRL">load_cases</span>(path):<span class="ann">⟳ def load_cases(path):：定义读取函数。动机：把「读 YAML」封装成可复用的一步。</span>
+    <span class="str" data-page-node-id="4e2MmnK7em5caLLPpyzeMC">"""读取 YAML 测试数据，返回用例列表"""</span><span class="ann">⟳ """读取 YAML 测试数据，返回用例列表"""：函数说明。动机：写清职责，便于他人调用。</span>
+    <span class="kw" data-page-node-id="ohiXtCFDZUR8skDSM0ltsp">with</span> open(path, encoding=<span class="str" data-page-node-id="LyagXRp7TQvHsd2gCjtovY">'utf-8'</span>) <span class="kw" data-page-node-id="kdEcSJCUjBK1XFmTs5aWnb">as</span> f:<span class="ann">⟳ with open(path, encoding='utf-8') as f:：安全打开文件。动机：with 自动关闭文件，encoding 指定中文不乱码。</span>
+        <span class="kw" data-page-node-id="GzJOLlYSey3BpiU77Cevhd">return</span> yaml.safe_load(f)<span class="ann">⟳ return yaml.safe_load(f)：解析并返回。动机：safe_load 只解析数据、不执行代码，比 load 安全。</span>
 
-<span class="cmt" data-page-node-id="pdmoP4fX7skSfDdCU45mAJ"># 配合 parametrize 使用</span>
-cases = load_cases(<span class="str" data-page-node-id="A7dD3rKVXJ93AMpmRSpYEp">"data/login_cases.yaml"</span>)
-ids = [c[<span class="str" data-page-node-id="T4U7dT36O71LJEASne25AM">'case'</span>] <span class="kw" data-page-node-id="XNAXZ6svLKa8p2JOD6M0LD">for</span> c <span class="kw" data-page-node-id="14ZCqYhbn7mIaS0oLNuxiq">in</span> cases]   <span class="cmt" data-page-node-id="gS7M8jXVIZGqRf1ejlTdYl"># 用 case 名作为用例 ID</span></code></pre>
+<span class="cmt" data-page-node-id="pdmoP4fX7skSfDdCU45mAJ"># 配合 parametrize 使用</span><span class="ann">⟳ 注释：配合 parametrize 使用。</span>
+cases = load_cases(<span class="str" data-page-node-id="A7dD3rKVXJ93AMpmRSpYEp">"data/login_cases.yaml"</span>)<span class="ann">⟳ cases = load_cases("data/login_cases.yaml")：读取用例数据。动机：把文件内容加载成 Python 列表，供参数化展开。</span>
+ids = [c[<span class="str" data-page-node-id="T4U7dT36O71LJEASne25AM">'case'</span>] <span class="kw" data-page-node-id="XNAXZ6svLKa8p2JOD6M0LD">for</span> c <span class="kw" data-page-node-id="14ZCqYhbn7mIaS0oLNuxiq">in</span> cases]   <span class="cmt" data-page-node-id="gS7M8jXVIZGqRf1ejlTdYl"># 用 case 名作为用例 ID</span><span class="ann">⟳ ids = [c['case'] for c in cases]：提取用例名作 ID。动机：让报告里显示可读的场景名，而非一串参数。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="LeRlfRKIoI1a8leA60ZXuv"><b data-page-node-id="koU6qQHpTT6hNLXTyNZynq">🔑 知识点 · yaml.safe_load：</b> 用 <code data-page-node-id="2kVKb0wNEELCPbI1JbWWZJ">safe_load</code> 而非 <code data-page-node-id="arTAtwglDhHQI8yQZY5eUi">load</code>，避免 YAML 中的恶意构造（安全最佳实践）。读文件务必指定 <code data-page-node-id="1yx87FTLhrAkjfFAXqgqld">encoding='utf-8'</code>，否则 Windows 下中文可能乱码。</div>
 
   <h3 data-page-node-id="JGL06ur7KWfNuYYwyvxNAt">7.3 📂 推荐的工程目录结构</h3>
   <div class="code-block" data-page-node-id="15OBbt4MLmtrweSH5G3Uea">
     <div class="header" data-page-node-id="UHtzEuifzHzJRCNMHRuJeE"><span class="lang lang-shell" data-page-node-id="DyLzCGbArsFRDA5OaBNY7M">目录</span><span class="fname" data-page-node-id="uiGMwy7PIXQMyKrj027qIn">api_test/</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="VYBR6WD9fwHqDAeLM0C7Ng">📋 复制</button></div>
-    <pre data-page-node-id="6DjfXhecylswE8rzIpzwzr"><code data-page-node-id="VLSsbtThaAtRpzXeCZ7fxf">api_test/
-├── conftest.py          <span class="cmt" data-page-node-id="95kl9QSA34iQqbBHm6UJB9"># 全局 fixture（登录 token、session）</span>
-├── pytest.ini           <span class="cmt" data-page-node-id="BVlNhg4gOwQiQu3ycYjIcU"># pytest 配置</span>
-├── data/                <span class="cmt" data-page-node-id="1iMqmcpT3FduN6c9GnPsSW"># 测试数据（YAML/JSON）</span>
-│   └── login_cases.yaml
-├── common/              <span class="cmt" data-page-node-id="3b7JbkfpApY7gGi7gwJZ5h"># 公共封装（请求封装、断言工具）</span>
-│   └── request_util.py
-├── testcases/           <span class="cmt" data-page-node-id="RKDa40xftY8E9XFx8uWSND"># 用例目录</span>
-│   ├── test_login.py
-│   └── test_user.py
-└── reports/             <span class="cmt" data-page-node-id="pk9WZBSmDOJDyX7azVQbLq"># 报告输出</span></code></pre>
+    <pre data-page-node-id="6DjfXhecylswE8rzIpzwzr"><code data-page-node-id="VLSsbtThaAtRpzXeCZ7fxf">api_test/<span class="ann">⟳ api_test/：项目根目录。动机：所有自动化资产集中于此。</span>
+├── conftest.py          <span class="cmt" data-page-node-id="95kl9QSA34iQqbBHm6UJB9"># 全局 fixture（登录 token、session）</span><span class="ann">⟳ ├── conftest.py：全局夹具。动机：把登录 token、session 等公共准备放这，各用例共享。</span>
+├── pytest.ini           <span class="cmt" data-page-node-id="BVlNhg4gOwQiQu3ycYjIcU"># pytest 配置</span><span class="ann">⟳ ├── pytest.ini：pytest 配置。动机：统一运行参数、用例路径、标记，团队规范一致。</span>
+├── data/                <span class="cmt" data-page-node-id="1iMqmcpT3FduN6c9GnPsSW"># 测试数据（YAML/JSON）</span><span class="ann">⟳ ├── data/：测试数据目录。动机：YAML/JSON 数据与代码分离，改数据不动脚本。</span>
+│   └── login_cases.yaml<span class="ann">⟳ │   └── login_cases.yaml：登录用例数据。动机：具体承载登录场景的输入与期望。</span>
+├── common/              <span class="cmt" data-page-node-id="3b7JbkfpApY7gGi7gwJZ5h"># 公共封装（请求封装、断言工具）</span><span class="ann">⟳ ├── common/：公共封装目录。动机：请求封装、断言工具等复用代码集中管理。</span>
+│   └── request_util.py<span class="ann">⟳ │   └── request_util.py：请求工具。动机：封装 base_url、超时、日志，用例不重复写。</span>
+├── testcases/           <span class="cmt" data-page-node-id="RKDa40xftY8E9XFx8uWSND"># 用例目录</span><span class="ann">⟳ ├── testcases/：用例目录。动机：所有用例集中，pytest 按此搜索执行。</span>
+│   ├── test_login.py<span class="ann">⟳ │   ├── test_login.py：登录用例。动机：按模块拆分，职责单一。</span>
+│   └── test_user.py<span class="ann">⟳ │   └── test_user.py：用户用例。动机：再分一个模块，便于分类运行。</span>
+└── reports/             <span class="cmt" data-page-node-id="pk9WZBSmDOJDyX7azVQbLq"># 报告输出</span><span class="ann">⟳ └── reports/：报告输出目录。动机：HTML/Allure 报告统一落地，方便查看归档。</span></code></pre>
   </div>
   <div class="card tip" data-page-node-id="j4BIlNAdvhcaj5X2yhGc8m">
     <strong data-page-node-id="pCuWDWScpGj6kdPPxcOttw">💡 分层思想：</strong> <code data-page-node-id="9TZeKVd1BjohiJa1xdhHad">common/</code> 放封装、<code data-page-node-id="Vs5TXZ8WuzEyI7a4ylfqUA">data/</code> 放数据、<code data-page-node-id="Xr9RnfJgYodtYBqSu94AIe">testcases/</code> 放用例。<b data-page-node-id="5WPuhzvbGTJLvrI19IBcs5">改动隔离</b>——接口地址变了只改封装，数据变了只改 YAML，用例逻辑几乎不用动。
@@ -671,21 +675,21 @@ ids = [c[<span class="str" data-page-node-id="T4U7dT36O71LJEASne25AM">'case'</sp
   <h3 data-page-node-id="3QnnD7BuMDS225hN2Le6Qz">8.2 🧰 封装通用断言工具</h3>
   <div class="code-block" data-page-node-id="OKVZWmgYLDIrUHivSxjkCA">
     <div class="header" data-page-node-id="dIRbrBCwuOeSLIfOKZhSgD"><span class="lang lang-py" data-page-node-id="wQbrdmvDHmgE4GLlHCE14o">Python</span><span class="fname" data-page-node-id="z1ItcomEJmYHW8Pg46fzJp">common/assert_util.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="hLhjseZGcNMrZs5tIUPwyk">📋 复制</button></div>
-    <pre data-page-node-id="pn5nbyONjE5WbMilpDIvfW"><code data-page-node-id="Vu86FjJM6Tx5lfbRLmmKXw"><span class="kw" data-page-node-id="1rC4UR8YHfISL9vaazTiau">def</span> <span class="fn" data-page-node-id="D2MfaztTnfywSK0LwKzzAB">assert_status</span>(resp, code=<span class="num" data-page-node-id="aic43nGkdEGxOVZxCM45do">200</span>):
-    <span class="str" data-page-node-id="iqxtTwEhyHVT9g1OhmIazT">"""断言 HTTP 状态码"""</span>
-    <span class="kw" data-page-node-id="iMFncaquY0l6xk8bl8vn1u">assert</span> resp.status_code == code, \
-        <span class="str" data-page-node-id="euRYMa76jg6SEbpqao66JU">"状态码不符：期望 "</span>+str(code)+<span class="str" data-page-node-id="NbC7tw34uhpkuQBOgJXmi8">"，实际 "</span>+str(resp.status_code)
+    <pre data-page-node-id="pn5nbyONjE5WbMilpDIvfW"><code data-page-node-id="Vu86FjJM6Tx5lfbRLmmKXw"><span class="kw" data-page-node-id="1rC4UR8YHfISL9vaazTiau">def</span> <span class="fn" data-page-node-id="D2MfaztTnfywSK0LwKzzAB">assert_status</span>(resp, code=<span class="num" data-page-node-id="aic43nGkdEGxOVZxCM45do">200</span>):<span class="ann">⟳ def assert_status(resp, code=200):：定义状态码断言函数。动机：把重复的断言逻辑抽出来，用例调用即可，报错信息还更友好。</span>
+    <span class="str" data-page-node-id="iqxtTwEhyHVT9g1OhmIazT">"""断言 HTTP 状态码"""</span><span class="ann">⟳ """断言 HTTP 状态码"""：函数说明。</span>
+    <span class="kw" data-page-node-id="iMFncaquY0l6xk8bl8vn1u">assert</span> resp.status_code == code, \<span class="ann">⟳ assert resp.status_code == code, …：断言并附失败信息。动机：失败时打印期望与实际值，排查不用猜。</span>
+        <span class="str" data-page-node-id="euRYMa76jg6SEbpqao66JU">"状态码不符：期望 "</span>+str(code)+<span class="str" data-page-node-id="NbC7tw34uhpkuQBOgJXmi8">"，实际 "</span>+str(resp.status_code)<span class="ann">⟳ "状态码不符：期望 "+…：拼接错误提示。动机：让断言报错直接告诉你差在哪。</span>
 
-<span class="kw" data-page-node-id="TOGmhoGRyXSKCBwo8Gz5QT">def</span> <span class="fn" data-page-node-id="OmRzUcxGLSG1gGOL6Ates8">assert_biz_code</span>(resp, biz_code=<span class="num" data-page-node-id="4gH9FbBLevmmt6s2TvHmCC">0</span>):
-    <span class="str" data-page-node-id="pBuE7dUVlTu1cuh3XCtAaY">"""断言业务码，并打印 msg 便于排查"""</span>
-    body = resp.json()
-    <span class="kw" data-page-node-id="Ia1FblTS332LJ0ZAD754lF">assert</span> body.get(<span class="str" data-page-node-id="qTomthTFV7oKEkme3VYRo9">"code"</span>) == biz_code, \
-        <span class="str" data-page-node-id="j9b0FcDcrKVoCGabKBnIIi">"业务码不符：期望 "</span>+str(biz_code)+<span class="str" data-page-node-id="alElFjnqn9DpylIQJQnkVp">"，实际 "</span>+str(body.get(<span class="str" data-page-node-id="RBEIhcuF5EculXcc5lwzOG">"code"</span>))+<span class="str" data-page-node-id="S3JE5lJW8C5igq0eACF17f">"，msg="</span>+str(body.get(<span class="str" data-page-node-id="wBAx6hbm3CfuFMC88ImTVE">"msg"</span>))
+<span class="kw" data-page-node-id="TOGmhoGRyXSKCBwo8Gz5QT">def</span> <span class="fn" data-page-node-id="OmRzUcxGLSG1gGOL6Ates8">assert_biz_code</span>(resp, biz_code=<span class="num" data-page-node-id="4gH9FbBLevmmt6s2TvHmCC">0</span>):<span class="ann">⟳ def assert_biz_code(resp, biz_code=0):：定义业务码断言。动机：接口常把结果放在 body 的 code 字段，需单独校验。</span>
+    <span class="str" data-page-node-id="pBuE7dUVlTu1cuh3XCtAaY">"""断言业务码，并打印 msg 便于排查"""</span><span class="ann">⟳ """断言业务码，并打印 msg"""：函数说明。动机：带上服务端 msg 便于定位业务失败原因。</span>
+    body = resp.json()<span class="ann">⟳ body = resp.json()：解析响应体。动机：业务码在 JSON 里，先解析再取。</span>
+    <span class="kw" data-page-node-id="Ia1FblTS332LJ0ZAD754lF">assert</span> body.get(<span class="str" data-page-node-id="qTomthTFV7oKEkme3VYRo9">"code"</span>) == biz_code, \<span class="ann">⟳ assert body.get("code") == biz_code, …：断言业务码。动机：用 get 取值避免字段缺失报错。</span>
+        <span class="str" data-page-node-id="j9b0FcDcrKVoCGabKBnIIi">"业务码不符：期望 "</span>+str(biz_code)+<span class="str" data-page-node-id="alElFjnqn9DpylIQJQnkVp">"，实际 "</span>+str(body.get(<span class="str" data-page-node-id="RBEIhcuF5EculXcc5lwzOG">"code"</span>))+<span class="str" data-page-node-id="S3JE5lJW8C5igq0eACF17f">"，msg="</span>+str(body.get(<span class="str" data-page-node-id="wBAx6hbm3CfuFMC88ImTVE">"msg"</span>))<span class="ann">⟳ …"msg="+str(body.get("msg"))：把服务端提示拼进报错。动机：失败时一眼看到服务端为什么拒绝。</span>
 
-<span class="kw" data-page-node-id="FrBeZ2hRGqB2QeJeTYkdWE">def</span> <span class="fn" data-page-node-id="0tYpTyLdYI1GOh9aQGaJr5">assert_field</span>(resp, field, expect):
-    <span class="str" data-page-node-id="aq0aA8h8ukD0CyV16FJ2Kl">"""断言某个字段值"""</span>
-    actual = resp.json().get(field)
-    <span class="kw" data-page-node-id="JQ2MHEAaKNQlvdcQ9OG07m">assert</span> actual == expect, \
+<span class="kw" data-page-node-id="FrBeZ2hRGqB2QeJeTYkdWE">def</span> <span class="fn" data-page-node-id="0tYpTyLdYI1GOh9aQGaJr5">assert_field</span>(resp, field, expect):<span class="ann">⟳ def assert_field(resp, field, expect):：定义字段断言。动机：校验某个具体字段的值是否符合预期。</span>
+    <span class="str" data-page-node-id="aq0aA8h8ukD0CyV16FJ2Kl">"""断言某个字段值"""</span><span class="ann">⟳ """断言某个字段值"""：函数说明。</span>
+    actual = resp.json().get(field)<span class="ann">⟳ actual = resp.json().get(field)：取出实际值。动机：按字段名取值，与期望比对。</span>
+    <span class="kw" data-page-node-id="JQ2MHEAaKNQlvdcQ9OG07m">assert</span> actual == expect, \<span class="ann">⟳ assert actual == expect, …：断言字段值。动机：不符则打印期望与实际，快速定位。</span>
         <span class="str" data-page-node-id="fcsbxsH2GGbg5XEp57u7gc">"字段 "</span>+field+<span class="str" data-page-node-id="Y1Z0flAd2DPZZAkKZe8ecV">" 不符：期望 "</span>+str(expect)+<span class="str" data-page-node-id="iaGBMCo4ycyDAA9kEcDSLl">"，实际 "</span>+str(actual)</code></pre>
   </div>
   <div class="kp" data-page-node-id="iIELCeqAidgLCL0M1JbjjT"><b data-page-node-id="YY4qBNMBawmfl8Tor5wsDA">🔑 知识点 · 断言信息：</b> <code data-page-node-id="zKdtskdOQkdDovANdjc1Hi">assert 条件, "提示信息"</code> 的第二个参数在失败时会显示。写清「期望 vs 实际」，能让失败原因<b data-page-node-id="qGFHlsPBpy8zFDQLByvWuF">自我解释</b>，不用每次翻代码猜。这是专业与业余的分水岭。</div>
@@ -693,15 +697,15 @@ ids = [c[<span class="str" data-page-node-id="T4U7dT36O71LJEASne25AM">'case'</sp
   <h3 data-page-node-id="uTZTz2ci7J5O7EYuzLXj3K">8.3 🧪 在用例中组合断言</h3>
   <div class="code-block" data-page-node-id="nauijGhyvqUkrEEX13fqRN">
     <div class="header" data-page-node-id="efAKsNmdHdSso0ZGe84QPC"><span class="lang lang-py" data-page-node-id="EMmpE1xve2mVSHjEut2krQ">Python</span><span class="fname" data-page-node-id="B4gE705szQ0BMsIHfhWBKn">test_login_assert.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="YJSEzzEOIltxghPeDdki7y">📋 复制</button></div>
-    <pre data-page-node-id="MfhvjeLcZGMdQfjVrSCwXz"><code data-page-node-id="rpwGUu3wYJbjG3E9l5YSbC"><span class="kw" data-page-node-id="5qyB5wPBs7ni0SdnyGtQMf">from</span> common.assert_util <span class="kw" data-page-node-id="yeFlJk1N12hzPdkscDqqj2">import</span> assert_status, assert_biz_code, assert_field
-<span class="kw" data-page-node-id="vn8rlsMA7FFpTC7QSDkWGi">import</span> requests
+    <pre data-page-node-id="MfhvjeLcZGMdQfjVrSCwXz"><code data-page-node-id="rpwGUu3wYJbjG3E9l5YSbC"><span class="kw" data-page-node-id="5qyB5wPBs7ni0SdnyGtQMf">from</span> common.assert_util <span class="kw" data-page-node-id="yeFlJk1N12hzPdkscDqqj2">import</span> assert_status, assert_biz_code, assert_field<span class="ann">⟳ from common.assert_util import …：导入断言工具。动机：复用封装好的断言，用例更简洁。</span>
+<span class="kw" data-page-node-id="vn8rlsMA7FFpTC7QSDkWGi">import</span> requests<span class="ann">⟳ import requests：导入 HTTP 库。</span>
 
-<span class="kw" data-page-node-id="hO5kdSiIo9n3rRYLJUhTcF">def</span> <span class="fn" data-page-node-id="2H7N3MVsq3lXXd6Uow92gv">test_login_ok</span>():
-    r = requests.post(<span class="str" data-page-node-id="N9Epu2vrJO5eogd7IfLmRw">"https://httpbin.org/post"</span>,
+<span class="kw" data-page-node-id="hO5kdSiIo9n3rRYLJUhTcF">def</span> <span class="fn" data-page-node-id="2H7N3MVsq3lXXd6Uow92gv">test_login_ok</span>():<span class="ann">⟳ def test_login_ok():：定义一条登录用例。动机：演示如何组合多个断言。</span>
+    r = requests.post(<span class="str" data-page-node-id="N9Epu2vrJO5eogd7IfLmRw">"https://httpbin.org/post"</span>,<span class="ann">⟳ r = requests.post(…/post, json={"user":"tom"}, …)：发登录请求。动机：拿到响应供断言。</span>
                      json={<span class="str" data-page-node-id="gMQA66700Gs0ex18tZak1w">"user"</span>:<span class="str" data-page-node-id="quNVOMmvIwCUwAy7FQKg3J">"tom"</span>}, timeout=<span class="num" data-page-node-id="rMR5XqA3OfTvqym7fKCiki">10</span>)
-    assert_status(r)                 <span class="cmt" data-page-node-id="QlBnjsPtJtoTGXHybHOAGz"># ① 状态码</span>
-    <span class="cmt" data-page-node-id="fUMkVlfeisLTjRdpGo8Foe"># httpbin 无业务码，这里演示字段断言</span>
-    assert_field(r, <span class="str" data-page-node-id="lsFFKdSCCTVib1BtqOS8S7">"json.user"</span> <span class="kw" data-page-node-id="I0VEEfuTygWWw91m0xhnsd">if</span> <span class="num" data-page-node-id="eogaIFutOu3IgtFTP1HZVO">0</span> <span class="kw" data-page-node-id="1YFmPptpatkvUhAA7NtB20">else</span> <span class="str" data-page-node-id="9ZI9SLMoMaLppz34O3AA5v">"json"</span>, <span class="str" data-page-node-id="pEGRUny0jujeDEc0OHtN7F">"tom"</span>)</code></pre>
+    assert_status(r)                 <span class="cmt" data-page-node-id="QlBnjsPtJtoTGXHybHOAGz"># ① 状态码</span><span class="ann">⟳ assert_status(r)：断言状态码。动机：调用封装函数，默认期望 200。</span>
+    <span class="cmt" data-page-node-id="fUMkVlfeisLTjRdpGo8Foe"># httpbin 无业务码，这里演示字段断言</span><span class="ann">⟳ 注释：说明 httpbin 无业务码。动机：提示这里改用字段断言演示。</span>
+    assert_field(r, <span class="str" data-page-node-id="lsFFKdSCCTVib1BtqOS8S7">"json.user"</span> <span class="kw" data-page-node-id="I0VEEfuTygWWw91m0xhnsd">if</span> <span class="num" data-page-node-id="eogaIFutOu3IgtFTP1HZVO">0</span> <span class="kw" data-page-node-id="1YFmPptpatkvUhAA7NtB20">else</span> <span class="str" data-page-node-id="9ZI9SLMoMaLppz34O3AA5v">"json"</span>, <span class="str" data-page-node-id="pEGRUny0jujeDEc0OHtN7F">"tom"</span>)<span class="ann">⟳ assert_field(r, …, "tom")：断言字段值。动机：验证响应里确实回显了我们提交的用户名。</span></code></pre>
   </div>
   <div class="card warning" data-page-node-id="KDfcNsC6sM3Bbuhp1zoqFD">
     <b data-page-node-id="5U4CY74RT9fDe5oIk7OR7H">⚠️【断言陷阱】</b>
@@ -726,44 +730,44 @@ ids = [c[<span class="str" data-page-node-id="T4U7dT36O71LJEASne25AM">'case'</sp
   <h3 data-page-node-id="WnPHV3n9YpEPHsGRhrWA5h">9.1 ⚙️ pytest.ini 配置文件</h3>
   <div class="code-block" data-page-node-id="qAhbLj0IVLusepCBNqB1pD">
     <div class="header" data-page-node-id="WXLMcrqF6jRUOqbI0vPDdY"><span class="lang lang-shell" data-page-node-id="73aN0OxRVOmknvrLnCs4ze">INI</span><span class="fname" data-page-node-id="lwsmrN6npUykXE1sabeDI3">pytest.ini</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="8OI4eMzcb6IKsTzCBDw8HL">📋 复制</button></div>
-    <pre data-page-node-id="Dt0tOBrjGG71NYya3OykT2"><code data-page-node-id="WRwJwCPb94GmcAUnoAez8Q">[pytest]
-<span class="cmt" data-page-node-id="Hk4cAaXWhsbHhtADQPVJSC"># 用例搜索路径</span>
-testpaths = testcases
-<span class="cmt" data-page-node-id="73VNEULplBZ8JE6ubmKJBR"># 默认运行参数</span>
-addopts = -v -s --tb=short
-<span class="cmt" data-page-node-id="bbGnuHMlPx43h6dwj0JaDs"># 自定义标记（可按模块/优先级筛选用例）</span>
-markers =
-    smoke: 冒烟测试
-    regression: 回归测试
-    P0: 最高优先级</code></pre>
+    <pre data-page-node-id="Dt0tOBrjGG71NYya3OykT2"><code data-page-node-id="WRwJwCPb94GmcAUnoAez8Q">[pytest]<span class="ann">⟳ [pytest]：配置文件根标记。动机：告诉 pytest 这是它的配置段。</span>
+<span class="cmt" data-page-node-id="Hk4cAaXWhsbHhtADQPVJSC"># 用例搜索路径</span><span class="ann">⟳ 注释：用例搜索路径。</span>
+testpaths = testcases<span class="ann">⟳ testpaths = testcases：指定用例目录。动机：pytest 只在该目录下找用例，避免误跑其他脚本。</span>
+<span class="cmt" data-page-node-id="73VNEULplBZ8JE6ubmKJBR"># 默认运行参数</span><span class="ann">⟳ 注释：默认运行参数。</span>
+addopts = -v -s --tb=short<span class="ann">⟳ addopts = -v -s --tb=short：默认每次都带这些参数。动机：省去每次手敲，--tb=short 让报错更精炼。</span>
+<span class="cmt" data-page-node-id="bbGnuHMlPx43h6dwj0JaDs"># 自定义标记（可按模块/优先级筛选用例）</span><span class="ann">⟳ 注释：自定义标记。动机：可按模块/优先级筛选用例。</span>
+markers =<span class="ann">⟳ markers =：标记声明开始。动机：注册后可用 -m 按标记运行。</span>
+    smoke: 冒烟测试<span class="ann">⟳ smoke: 冒烟测试：注册冒烟标记。动机：标记核心可用性的少量用例。</span>
+    regression: 回归测试<span class="ann">⟳ regression: 回归测试：注册回归标记。动机：标记全量回归用例。</span>
+    P0: 最高优先级<span class="ann">⟳ P0: 最高优先级：注册优先级标记。动机：标记最关键用例，便于分级执行。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="YyEOvgVOUxc2GSB5u1iuX6"><b data-page-node-id="w7VdtaVtleA7ty8dhNVDzR">🔑 知识点 · marker 标记：</b> 给用例打标签后，可用 <code data-page-node-id="Z9dSTnLleOUu4F7NhXNd6Z">pytest -m smoke</code> 只跑冒烟、<code data-page-node-id="b91h0jp760yoSpSVy9PUFx">pytest -m "P0"</code> 只跑高优先级。配合 <code data-page-node-id="6m0yxuEFjzEnbmFKDHPDuK">@pytest.mark.smoke</code> 装饰器使用，实现<b data-page-node-id="tEr0CmTUtKZtIwRDxjQ5op">按优先级/模块分批执行</b>。</div>
 
   <h3 data-page-node-id="pk8ObakFwhZ7ctK2AoIdYC">9.2 📝 日志记录（logging）</h3>
   <div class="code-block" data-page-node-id="csYkBr4HdEyd7BX02TDwVY">
     <div class="header" data-page-node-id="zFFWjC2GyXR2P7HWUoXVOM"><span class="lang lang-py" data-page-node-id="UuSeDLE4QTy16gG9xCtVYc">Python</span><span class="fname" data-page-node-id="ZxYZOJTwXdIfoPMHW9ZGou">common/logger.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="pHF4rQFLnP0VAdiGcC6UDK">📋 复制</button></div>
-    <pre data-page-node-id="tj9z7TOrPuFTzpyErZSync"><code data-page-node-id="KUuZZ4C7oThyS20RzOV4M4"><span class="kw" data-page-node-id="G5hwQorU9IFBnmyVQBf8UJ">import</span> logging
+    <pre data-page-node-id="tj9z7TOrPuFTzpyErZSync"><code data-page-node-id="KUuZZ4C7oThyS20RzOV4M4"><span class="kw" data-page-node-id="G5hwQorU9IFBnmyVQBf8UJ">import</span> logging<span class="ann">⟳ import logging：导入日志库。动机：记录运行过程，比 print 更专业、可控。</span>
 
-logging.basicConfig(
-    level=logging.INFO,
-    format=<span class="str" data-page-node-id="Fi2m3vAHcWXNdy0sxPZWIy">"%(asctime)s [%(levelname)s] %(message)s"</span>,
-    handlers=[
-        logging.FileHandler(<span class="str" data-page-node-id="m2BC0fybFnuR0eEEMtC43z">"reports/test.log"</span>, encoding=<span class="str" data-page-node-id="vkRI4WKjkJExBPQHW34tuI">"utf-8"</span>),
-        logging.StreamHandler(),
+logging.basicConfig(<span class="ann">⟳ logging.basicConfig(…)：全局配置日志。动机：一次配置，全项目 log.info() 即生效。</span>
+    level=logging.INFO,<span class="ann">⟳ level=logging.INFO：设日志级别。动机：INFO 及以上才记录，过滤调试噪音。</span>
+    format=<span class="str" data-page-node-id="Fi2m3vAHcWXNdy0sxPZWIy">"%(asctime)s [%(levelname)s] %(message)s"</span>,<span class="ann">⟳ format="%(asctime)s [%(levelname)s] %(message)s"：日志格式。动机：每条带时间、级别、内容，便于检索。</span>
+    handlers=[<span class="ann">⟳ handlers=[…]：指定输出目的地。动机：同时写文件和屏幕。</span>
+        logging.FileHandler(<span class="str" data-page-node-id="m2BC0fybFnuR0eEEMtC43z">"reports/test.log"</span>, encoding=<span class="str" data-page-node-id="vkRI4WKjkJExBPQHW34tuI">"utf-8"</span>),<span class="ann">⟳ logging.FileHandler("reports/test.log", …)：写文件。动机：日志落盘可长期留存、供追溯。</span>
+        logging.StreamHandler(),<span class="ann">⟳ logging.StreamHandler()：输出到控制台。动机：运行时实时可见。</span>
     ],
-)
-log = logging.getLogger(__name__)</code></pre>
+)<span class="ann">⟳ )：配置结束。</span>
+log = logging.getLogger(__name__)<span class="ann">⟳ log = logging.getLogger(__name__)：获取本模块 logger。动机：按模块名区分来源，定位更快。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="pFTJQWoKrOME0nK2RgArsQ"><b data-page-node-id="OCozQBtOvoPXmwf3pfGQYV">🔑 知识点 · logging vs print：</b> <code data-page-node-id="Li1ZlC6DGG463yrx3aBi6Q">logging</code> 能分级（DEBUG/INFO/WARNING/ERROR）、同时输出到文件和控制台、带时间戳，便于事后追溯。<code data-page-node-id="w3VMMOEddWmlBV7N8lxOEI">print</code> 调试图省事，正式框架请用 logging。</div>
 
   <h3 data-page-node-id="KQjthaOChPmCrqjNpxiQ21">9.3 📊 Allure 可视化报告</h3>
   <div class="code-block" data-page-node-id="VZDB8tlHKp9OG9gAV9ZAZi">
     <div class="header" data-page-node-id="GYomro5nPovloZU6MZCpCe"><span class="lang lang-shell" data-page-node-id="AzT2dVAc9LAGVxY26XBmId">Shell</span><span class="fname" data-page-node-id="48am7PqAuvgfNlWzOo4vyn">生成并查看 Allure 报告</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="AkyA1CQe7pQwhUQCN6G2sA">📋 复制</button></div>
-    <pre data-page-node-id="T9FO6fHXr1xB1SntnYkWoJ"><code data-page-node-id="j6fDELDCD7RHG6JIe30l4o"><span class="cmt" data-page-node-id="daWZkG3XFBxaQPr2K92quj"># 运行并生成 allure 数据</span>
-pytest -v --alluredir=reports/allure-results
+    <pre data-page-node-id="T9FO6fHXr1xB1SntnYkWoJ"><code data-page-node-id="j6fDELDCD7RHG6JIe30l4o"><span class="cmt" data-page-node-id="daWZkG3XFBxaQPr2K92quj"># 运行并生成 allure 数据</span><span class="ann">⟳ 注释：运行并生成 allure 数据。</span>
+pytest -v --alluredir=reports/allure-results<span class="ann">⟳ pytest -v --alluredir=reports/allure-results：跑用例并产出 allure 原始数据。动机：数据与报告分离，同一份数据可反复生成不同视图。</span>
 
-<span class="cmt" data-page-node-id="qMTQr6ayH1Idx6BhsVE0tc"># 本地起服务查看报告（需装 allure 命令行工具）</span>
-allure serve reports/allure-results</code></pre>
+<span class="cmt" data-page-node-id="qMTQr6ayH1Idx6BhsVE0tc"># 本地起服务查看报告（需装 allure 命令行工具）</span><span class="ann">⟳ 注释：本地起服务查看报告。</span>
+allure serve reports/allure-results<span class="ann">⟳ allure serve reports/allure-results：启动服务查看报告。动机：serve 会起本地服务器，报告更美观、可交互。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="8fSaMipCshug60vG156CdA"><b data-page-node-id="CuOBvH6Y7wovXjgUfli8Ye">🔑 知识点 · Allure：</b> 比 pytest-html 更强大的报告，能看通过率趋势、失败用例、步骤详情、附件截图。是团队汇报和缺陷定位的利器。<code data-page-node-id="hVYlrYBRiGiVLCB7AtbZSA">--alluredir</code> 指定数据目录，<code data-page-node-id="ofUxDLF2YtyvToW4aOa4tP">allure serve</code> 起本地服务实时预览。</div>
 
@@ -795,88 +799,88 @@ allure serve reports/allure-results</code></pre>
   <h3 data-page-node-id="kJfN0qqoInkpN5S89Xzrw1">10.2 🧱 步骤一：封装请求工具</h3>
   <div class="code-block" data-page-node-id="dx2cuN5PDKrAPOCUgGNip8">
     <div class="header" data-page-node-id="VQbYuMG9YG1EzBJQozSqyO"><span class="lang lang-py" data-page-node-id="4tIVbCjxJQuVdEghspHPKi">Python</span><span class="fname" data-page-node-id="iG48UHOXRRcwnicX8Z28EU">common/request_util.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="JZmE7VgiJDmJ922QTmZ6iP">📋 复制</button></div>
-    <pre data-page-node-id="pxh9OLAZcdrYR94OPRXHUm"><code data-page-node-id="GUDhVUCkliLjT2BAAUrkBL"><span class="kw" data-page-node-id="PfVPxmdNTAW9B6bIl8Y4oZ">import</span> requests
+    <pre data-page-node-id="pxh9OLAZcdrYR94OPRXHUm"><code data-page-node-id="GUDhVUCkliLjT2BAAUrkBL"><span class="kw" data-page-node-id="PfVPxmdNTAW9B6bIl8Y4oZ">import</span> requests<span class="ann">⟳ import requests：导入 HTTP 库。</span>
 
-<span class="kw" data-page-node-id="BP1dJy4mCsmH53jgCHxSpE">class</span> <span class="fn" data-page-node-id="yaYUOi3T3YBsfBHUCRHFOY">RequestUtil</span>:
-    <span class="str" data-page-node-id="ogBEK5Kj4nb3D4BNMR8Po6">"""统一请求封装：集中管理 base_url、超时、日志"""</span>
-    <span class="kw" data-page-node-id="S206z7Yp71287TDJyt1SNt">def</span> <span class="fn" data-page-node-id="UUttbqu0pCeOXVBqwf9NU6">__init__</span>(self, base_url):
-        self.base_url = base_url
-        self.session = requests.Session()
-        self.session.headers.update({<span class="str" data-page-node-id="I7DcaMQUpuKK4xeZMxqMzr">"Content-Type"</span>: <span class="str" data-page-node-id="sFvrt7kERzbwGKhiN1yNGq">"application/json"</span>})
+<span class="kw" data-page-node-id="BP1dJy4mCsmH53jgCHxSpE">class</span> <span class="fn" data-page-node-id="yaYUOi3T3YBsfBHUCRHFOY">RequestUtil</span>:<span class="ann">⟳ class RequestUtil:：定义请求工具类。动机：把请求相关能力封装成对象，集中管理。</span>
+    <span class="str" data-page-node-id="ogBEK5Kj4nb3D4BNMR8Po6">"""统一请求封装：集中管理 base_url、超时、日志"""</span><span class="ann">⟳ """统一请求封装：集中管理 base_url、超时、日志"""：类说明。动机：一句话说清这个工具的职责。</span>
+    <span class="kw" data-page-node-id="S206z7Yp71287TDJyt1SNt">def</span> <span class="fn" data-page-node-id="UUttbqu0pCeOXVBqwf9NU6">__init__</span>(self, base_url):<span class="ann">⟳ def __init__(self, base_url):：构造函数。动机：创建实例时传入域名，后续所有请求基于它。</span>
+        self.base_url = base_url<span class="ann">⟳ self.base_url = base_url：保存域名。动机：存成实例属性，各方法共享。</span>
+        self.session = requests.Session()<span class="ann">⟳ self.session = requests.Session()：建会话。动机：复用连接、统一配置，提升效率。</span>
+        self.session.headers.update({<span class="str" data-page-node-id="I7DcaMQUpuKK4xeZMxqMzr">"Content-Type"</span>: <span class="str" data-page-node-id="sFvrt7kERzbwGKhiN1yNGq">"application/json"</span>})<span class="ann">⟳ self.session.headers.update({"Content-Type": …})：统一请求头。动机：默认提交 JSON，省去每次设置。</span>
 
-    <span class="kw" data-page-node-id="l8ux74TM7VRJru0Lfwh9EP">def</span> <span class="fn" data-page-node-id="NqAEqBKX9Fq7ILvx9Vhlfz">_full_url</span>(self, path):
-        <span class="kw" data-page-node-id="1vapFXHrPiRlZbF6e1OHFi">return</span> self.base_url + path
+    <span class="kw" data-page-node-id="l8ux74TM7VRJru0Lfwh9EP">def</span> <span class="fn" data-page-node-id="NqAEqBKX9Fq7ILvx9Vhlfz">_full_url</span>(self, path):<span class="ann">⟳ def _full_url(self, path):：拼接完整 URL。动机：下划线前缀表示内部方法，供 get/post 复用。</span>
+        <span class="kw" data-page-node-id="1vapFXHrPiRlZbF6e1OHFi">return</span> self.base_url + path<span class="ann">⟳ return self.base_url + path：返回拼接结果。动机：调用方只需传相对路径，域名集中管理。</span>
 
-    <span class="kw" data-page-node-id="M1ek4ZWH0Nr3wlIPRG5ggc">def</span> <span class="fn" data-page-node-id="m2CnhYrXJFQMxzMfzGurSx">get</span>(self, path, params=<span class="kw" data-page-node-id="IhKoNMr0bUIQGpYtlDMxtH">None</span>):
-        <span class="kw" data-page-node-id="bVN49d8l6horfaLV30POAs">return</span> self.session.get(self._full_url(path), params=params, timeout=<span class="num" data-page-node-id="5Vjxvig465WtfllOhHvwjc">10</span>)
+    <span class="kw" data-page-node-id="M1ek4ZWH0Nr3wlIPRG5ggc">def</span> <span class="fn" data-page-node-id="m2CnhYrXJFQMxzMfzGurSx">get</span>(self, path, params=<span class="kw" data-page-node-id="IhKoNMr0bUIQGpYtlDMxtH">None</span>):<span class="ann">⟳ def get(self, path, params=None):：封装 GET。动机：对外暴露简洁接口，内部处理拼接与超时。</span>
+        <span class="kw" data-page-node-id="bVN49d8l6horfaLV30POAs">return</span> self.session.get(self._full_url(path), params=params, timeout=<span class="num" data-page-node-id="5Vjxvig465WtfllOhHvwjc">10</span>)<span class="ann">⟳ return self.session.get(self._full_url(path), …)：发 GET。动机：timeout=10 防卡死，路径自动补全域名。</span>
 
-    <span class="kw" data-page-node-id="iYcR1MwM52Kx13G4nnIl2q">def</span> <span class="fn" data-page-node-id="Vx74mKDOuOFJpHhYhANeQH">post</span>(self, path, json=<span class="kw" data-page-node-id="Ch3I8TkgR4FmDgmXHKKZqz">None</span>):
-        <span class="kw" data-page-node-id="rT0MxrnIpupmnhyDeQ0ume">return</span> self.session.post(self._full_url(path), json=json, timeout=<span class="num" data-page-node-id="oekk7h9HtfLWNY4ZgLWjxe">10</span>)
+    <span class="kw" data-page-node-id="iYcR1MwM52Kx13G4nnIl2q">def</span> <span class="fn" data-page-node-id="Vx74mKDOuOFJpHhYhANeQH">post</span>(self, path, json=<span class="kw" data-page-node-id="Ch3I8TkgR4FmDgmXHKKZqz">None</span>):<span class="ann">⟳ def post(self, path, json=None):：封装 POST。动机：与 get 对称，统一风格。</span>
+        <span class="kw" data-page-node-id="rT0MxrnIpupmnhyDeQ0ume">return</span> self.session.post(self._full_url(path), json=json, timeout=<span class="num" data-page-node-id="oekk7h9HtfLWNY4ZgLWjxe">10</span>)<span class="ann">⟳ return self.session.post(self._full_url(path), …)：发 POST。动机：同样自动补全域名、带超时。</span>
 
-    <span class="kw" data-page-node-id="avpJggyhNlIXsRage7MHgX">def</span> <span class="fn" data-page-node-id="fw3lXopNWFGI9tMhGfA3E3">close</span>(self):
-        self.session.close()</code></pre>
+    <span class="kw" data-page-node-id="avpJggyhNlIXsRage7MHgX">def</span> <span class="fn" data-page-node-id="fw3lXopNWFGI9tMhGfA3E3">close</span>(self):<span class="ann">⟳ def close(self):：关闭方法。动机：释放会话连接，避免资源泄漏。</span>
+        self.session.close()<span class="ann">⟳ self.session.close()：真正关闭。动机：调用会话的 close 释放底层连接。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="rh88MRlBNGIhJPNUXbSAtO"><b data-page-node-id="T57hkcWu5TSrTEzXMuUftz">🔑 知识点 · class 封装：</b> 用类把「base_url、超时、公共头」集中管理，用例只调 <code data-page-node-id="NEVWYZ8nKQktRnA5rk1bJH">self.ru.post(...)</code>，不用每次写域名和 timeout。接口地址变更时只改 <code data-page-node-id="rA0Giizf6xoJlebooZnEPk">base_url</code> 一处。<code data-page-node-id="VQOLcMIig4tGU36hAbdFlE">__init__</code> 是构造方法，<code data-page-node-id="gdF4R3h7PZvEaFYE39HHAe">self</code> 代表实例本身。</div>
 
   <h3 data-page-node-id="5J6OzUc8TfB37UNbyTr52t">10.3 🩹 步骤二：全局 fixture（conftest.py）</h3>
   <div class="code-block" data-page-node-id="8zntXqwL1nRnfaGvhuUAaK">
     <div class="header" data-page-node-id="KHwo58nYC01ZGqccYXRDg6"><span class="lang lang-py" data-page-node-id="bjsrO1vL5ZPSd0aB7dFc4E">Python</span><span class="fname" data-page-node-id="NGtwvWM3dAeXIB99eXoSDM">conftest.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="z6rMQZEEwkN97HVdJmjDPk">📋 复制</button></div>
-    <pre data-page-node-id="x4zRgOvNih5B3zo8d4ZqT8"><code data-page-node-id="Ll0cZ28G7AaudbFoL59JTI"><span class="kw" data-page-node-id="0MFN3UC5z3EfjXfhk0Kgsr">import</span> pytest
-<span class="kw" data-page-node-id="PDL2JsKlxRzx1yBzCzioVK">from</span> common.request_util <span class="kw" data-page-node-id="xYmqRU1Phw4cezXYfgKUWi">import</span> RequestUtil
+    <pre data-page-node-id="x4zRgOvNih5B3zo8d4ZqT8"><code data-page-node-id="Ll0cZ28G7AaudbFoL59JTI"><span class="kw" data-page-node-id="0MFN3UC5z3EfjXfhk0Kgsr">import</span> pytest<span class="ann">⟳ import pytest：导入测试框架。</span>
+<span class="kw" data-page-node-id="PDL2JsKlxRzx1yBzCzioVK">from</span> common.request_util <span class="kw" data-page-node-id="xYmqRU1Phw4cezXYfgKUWi">import</span> RequestUtil<span class="ann">⟳ from common.request_util import RequestUtil：导入请求工具。动机：夹具里用它创建全局工具。</span>
 
-BASE = <span class="str" data-page-node-id="p1JlhSWTKFdkcHnYwKVWt2">"https://httpbin.org"</span>
+BASE = <span class="str" data-page-node-id="p1JlhSWTKFdkcHnYwKVWt2">"https://httpbin.org"</span><span class="ann">⟳ BASE = "https://httpbin.org"：定义基础域名。动机：全局常量，各夹具复用。</span>
 
-<span class="dec" data-page-node-id="et2yxiu7PMI3tjEtA6OYBY">@pytest.fixture</span>(scope=<span class="str" data-page-node-id="4juXNYtWn4ZKn4mxdoCxm4">"session"</span>)
-<span class="kw" data-page-node-id="1gRqEmG5G1Tc3ZeiaHECV6">def</span> <span class="fn" data-page-node-id="xQ0jFxVmKpUWxJPF7jwGIC">ru</span>():
-    <span class="str" data-page-node-id="3DkDeqxFQmCyvoWraoMxTg">"""全局请求工具，整个测试会话复用"""</span>
-    r = RequestUtil(BASE)
-    <span class="kw" data-page-node-id="2vILDwGw4OrKuM1TtvNf4h">yield</span> r
-    r.close()
+<span class="dec" data-page-node-id="et2yxiu7PMI3tjEtA6OYBY">@pytest.fixture</span>(scope=<span class="str" data-page-node-id="4juXNYtWn4ZKn4mxdoCxm4">"session"</span>)<span class="ann">⟳ @pytest.fixture(scope="session")：会话级夹具。动机：scope=session 表示整个测试过程只创建一次，复用连接。</span>
+<span class="kw" data-page-node-id="1gRqEmG5G1Tc3ZeiaHECV6">def</span> <span class="fn" data-page-node-id="xQ0jFxVmKpUWxJPF7jwGIC">ru</span>():<span class="ann">⟳ def ru():：定义请求工具夹具。动机：ru 即 RequestUtil 实例，用例按名取用。</span>
+    <span class="str" data-page-node-id="3DkDeqxFQmCyvoWraoMxTg">"""全局请求工具，整个测试会话复用"""</span><span class="ann">⟳ """全局请求工具，整个测试会话复用"""：夹具说明。</span>
+    r = RequestUtil(BASE)<span class="ann">⟳ r = RequestUtil(BASE)：创建工具实例。动机：绑定全局域名。</span>
+    <span class="kw" data-page-node-id="2vILDwGw4OrKuM1TtvNf4h">yield</span> r<span class="ann">⟳ yield r：交给用例使用。动机：用例期间共享同一实例。</span>
+    r.close()<span class="ann">⟳ r.close()：会话结束关闭。动机：所有用例跑完后释放连接。</span>
 
-<span class="dec" data-page-node-id="tutcmKPceSFcDPqAv873RE">@pytest.fixture</span>(scope=<span class="str" data-page-node-id="Mp8gCSJmgiQBsnJ0VvAnFl">"session"</span>)
-<span class="kw" data-page-node-id="6NzPtG7jYFtFtyq9A4wzHN">def</span> <span class="fn" data-page-node-id="NAW2yvnjJPm5UKXXhuXgcY">token</span>(ru):
-    <span class="str" data-page-node-id="EmJkXRUSO5TAYKHL5Ayn51">"""模拟登录，拿到 token 供后续用例使用"""</span>
-    r = ru.post(<span class="str" data-page-node-id="taRrlNZSzK2vlPEuuyPoSH">"/post"</span>, json={<span class="str" data-page-node-id="1Uy0GDfuhk31Bt7BFKMwKX">"user"</span>: <span class="str" data-page-node-id="qJ2vVp7p60Q77EX4BaWPI2">"tom"</span>})
-    <span class="kw" data-page-node-id="qY2wtPfvjwAyTNICbApC4x">return</span> <span class="str" data-page-node-id="A0voGR5Q69sL3ctUAZkQFC">"fake-token-"</span> + r.json()[<span class="str" data-page-node-id="fdwiSL4CNQLZYNoCGnLRMc">"json"</span>][<span class="str" data-page-node-id="t7AEDYxLTKDfmP6UVDgpcC">"user"</span>]</code></pre>
+<span class="dec" data-page-node-id="tutcmKPceSFcDPqAv873RE">@pytest.fixture</span>(scope=<span class="str" data-page-node-id="Mp8gCSJmgiQBsnJ0VvAnFl">"session"</span>)<span class="ann">⟳ @pytest.fixture(scope="session")：又一个会话级夹具。动机：token 也只需登录一次。</span>
+<span class="kw" data-page-node-id="6NzPtG7jYFtFtyq9A4wzHN">def</span> <span class="fn" data-page-node-id="NAW2yvnjJPm5UKXXhuXgcY">token</span>(ru):<span class="ann">⟳ def token(ru):：定义 token 夹具，依赖 ru。动机：参数名对应 ru 夹具，pytest 自动先注入它。</span>
+    <span class="str" data-page-node-id="EmJkXRUSO5TAYKHL5Ayn51">"""模拟登录，拿到 token 供后续用例使用"""</span><span class="ann">⟳ """模拟登录，拿到 token 供后续用例使用"""：夹具说明。</span>
+    r = ru.post(<span class="str" data-page-node-id="taRrlNZSzK2vlPEuuyPoSH">"/post"</span>, json={<span class="str" data-page-node-id="1Uy0GDfuhk31Bt7BFKMwKX">"user"</span>: <span class="str" data-page-node-id="qJ2vVp7p60Q77EX4BaWPI2">"tom"</span>})<span class="ann">⟳ r = ru.post("/post", json={"user":"tom"})：用工具发登录请求。动机：真实项目里这里换取正式 token。</span>
+    <span class="kw" data-page-node-id="qY2wtPfvjwAyTNICbApC4x">return</span> <span class="str" data-page-node-id="A0voGR5Q69sL3ctUAZkQFC">"fake-token-"</span> + r.json()[<span class="str" data-page-node-id="fdwiSL4CNQLZYNoCGnLRMc">"json"</span>][<span class="str" data-page-node-id="t7AEDYxLTKDfmP6UVDgpcC">"user"</span>]<span class="ann">⟳ return "fake-token-" + ….json()["json"]["user"]：返回 token。动机：从响应取字段造 token，供受保护用例使用。</span></code></pre>
   </div>
   <div class="kp" data-page-node-id="otTIbf2d7fYcd50VCnBaBp"><b data-page-node-id="AznB4dLlSoXEziC7DkMjO3">🔑 知识点 · scope：</b> fixture 的 <code data-page-node-id="QSXQTkPDZk28rJ50gDWvGd">scope="session"</code> 表示整个测试会话只执行一次（登录拿 token 只需一次）；默认 <code data-page-node-id="pcOqbnUMiUYDJ4Rv3DQH1a">scope="function"</code> 是每条用例都执行。登录这类昂贵操作务必用 session 级，避免重复请求。</div>
 
   <h3 data-page-node-id="13cetqCcfhUGrFIVUZqS1T">10.4 🧪 步骤三：编写用例</h3>
   <div class="code-block" data-page-node-id="YE36BjgZDMHyyyICPCMMRp">
     <div class="header" data-page-node-id="z8r5SLiX4eJz49ExKTcL0k"><span class="lang lang-py" data-page-node-id="RDAmyP9LOsWSY7kSnsvzEd">Python</span><span class="fname" data-page-node-id="PgsmABQTBEfBoNQXrSuwHu">testcases/test_user.py</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="MMaERHftvOxCqYECMZCbtP">📋 复制</button></div>
-    <pre data-page-node-id="ELK5G228a1UyZZuPm3yAGw"><code data-page-node-id="0LiKSfKDofxsVzliXCSaXa"><span class="kw" data-page-node-id="UJRBnjIAnJ2yYajHrlVXNh">import</span> pytest
-<span class="kw" data-page-node-id="OJqXcYeQtesIt3tlROicTL">from</span> common.assert_util <span class="kw" data-page-node-id="IxMX8q2yprNCoQtDYcPcAJ">import</span> assert_status, assert_biz_code
+    <pre data-page-node-id="ELK5G228a1UyZZuPm3yAGw"><code data-page-node-id="0LiKSfKDofxsVzliXCSaXa"><span class="kw" data-page-node-id="UJRBnjIAnJ2yYajHrlVXNh">import</span> pytest<span class="ann">⟳ import pytest：导入测试框架。</span>
+<span class="kw" data-page-node-id="OJqXcYeQtesIt3tlROicTL">from</span> common.assert_util <span class="kw" data-page-node-id="IxMX8q2yprNCoQtDYcPcAJ">import</span> assert_status, assert_biz_code<span class="ann">⟳ from common.assert_util import assert_status, assert_biz_code：导入断言工具。动机：复用友好断言。</span>
 
-<span class="dec" data-page-node-id="HbuxOIDIhXs7WBjfl0sgRa">@pytest.mark.smoke</span>
-<span class="kw" data-page-node-id="5p28WJlf6ZpIJUWw2PEobT">def</span> <span class="fn" data-page-node-id="KqloGyEyH36cKXphHy2dEA">test_get_with_token</span>(ru, token):
-    <span class="str" data-page-node-id="rdyo0jxABK1p2oBt5a4YHl">"""用例：带 token 请求受保护接口，验证链路打通"""</span>
-    headers = {<span class="str" data-page-node-id="4fFWE1TaY75ZVUylPELsgw">"Authorization"</span>: <span class="str" data-page-node-id="M0y6hj2ah8AThnIcwDRiiD">"Bearer "</span> + token}
-    r = ru.session.get(ru.base_url + <span class="str" data-page-node-id="6fU1GdEcS8T95rGMsLBLuI">"/get"</span>, headers=headers, timeout=<span class="num" data-page-node-id="4VJXxMKG4O7nkaFIJLoZjI">10</span>)
-    assert_status(r)
-    <span class="builtin" data-page-node-id="kfhlOEoUSlv3vlX3CSEGVS">print</span>(<span class="str" data-page-node-id="Nk5I7GMYdOvMhGlSUDNi7H">"链路打通，token="</span>, token)
+<span class="dec" data-page-node-id="HbuxOIDIhXs7WBjfl0sgRa">@pytest.mark.smoke</span><span class="ann">⟳ @pytest.mark.smoke：打冒烟标记。动机：可用 pytest -m smoke 只跑这条核心用例。</span>
+<span class="kw" data-page-node-id="5p28WJlf6ZpIJUWw2PEobT">def</span> <span class="fn" data-page-node-id="KqloGyEyH36cKXphHy2dEA">test_get_with_token</span>(ru, token):<span class="ann">⟳ def test_get_with_token(ru, token):：用例注入 ru 与 token。动机：一次拿到工具和凭证，验证完整链路。</span>
+    <span class="str" data-page-node-id="rdyo0jxABK1p2oBt5a4YHl">"""用例：带 token 请求受保护接口，验证链路打通"""</span><span class="ann">⟳ """用例：带 token 请求受保护接口，验证链路打通"""：用例说明。</span>
+    headers = {<span class="str" data-page-node-id="4fFWE1TaY75ZVUylPELsgw">"Authorization"</span>: <span class="str" data-page-node-id="M0y6hj2ah8AThnIcwDRiiD">"Bearer "</span> + token}<span class="ann">⟳ headers = {"Authorization": "Bearer " + token}：构造鉴权头。动机：标准 Bearer 格式带令牌。</span>
+    r = ru.session.get(ru.base_url + <span class="str" data-page-node-id="6fU1GdEcS8T95rGMsLBLuI">"/get"</span>, headers=headers, timeout=<span class="num" data-page-node-id="4VJXxMKG4O7nkaFIJLoZjI">10</span>)<span class="ann">⟳ r = ru.session.get(ru.base_url + "/get", …)：带 token 发请求。动机：直接用工具的内部会话，验证受保护接口。</span>
+    assert_status(r)<span class="ann">⟳ assert_status(r)：断言状态码。动机：200 即链路打通。</span>
+    <span class="builtin" data-page-node-id="kfhlOEoUSlv3vlX3CSEGVS">print</span>(<span class="str" data-page-node-id="Nk5I7GMYdOvMhGlSUDNi7H">"链路打通，token="</span>, token)<span class="ann">⟳ print("链路打通，token=", token)：打印结果。动机：-s 运行时可见，确认 token 已生效。</span>
 
-<span class="dec" data-page-node-id="LFvoagDHvMD62Au2y8B7Kl">@pytest.mark.parametrize</span>(<span class="str" data-page-node-id="yG9IKD1R36j53hkY5h4FHn">"page,expect"</span>, [
-    (<span class="num" data-page-node-id="aZUJTf88XA76wTYVRsgbG8">1</span>, <span class="num" data-page-node-id="AMNzY3XGwvIb5USjVv0EMQ">200</span>),
-    (<span class="num" data-page-node-id="seRBlzH5bFJFBuox2aIz5D">2</span>, <span class="num" data-page-node-id="TFUvYtDNYQuH7FbeTIP40J">200</span>),
-])
-<span class="kw" data-page-node-id="lsokQRrpztyjIpGQzZFG1P">def</span> <span class="fn" data-page-node-id="BG8Hxga8xDZUenrZEP0CqR">test_get_paging</span>(ru, page, expect):
-    <span class="str" data-page-node-id="uMthM8zfS92HojNPpRbdGp">"""用例：分页参数化"""</span>
-    r = ru.get(<span class="str" data-page-node-id="IXjUOqphtRW636rXwfM77H">"/get"</span>, params={<span class="str" data-page-node-id="DGikNl25cH4N6jmJCAxr7W">"page"</span>: page})
-    assert_status(r, expect)</code></pre>
+<span class="dec" data-page-node-id="LFvoagDHvMD62Au2y8B7Kl">@pytest.mark.parametrize</span>(<span class="str" data-page-node-id="yG9IKD1R36j53hkY5h4FHn">"page,expect"</span>, [<span class="ann">⟳ @pytest.mark.parametrize("page,expect", […])：参数化分页用例。动机：多组页码各跑一次。</span>
+    (<span class="num" data-page-node-id="aZUJTf88XA76wTYVRsgbG8">1</span>, <span class="num" data-page-node-id="AMNzY3XGwvIb5USjVv0EMQ">200</span>),<span class="ann">⟳ (1, 200)：第一组。动机：第 1 页期望 200。</span>
+    (<span class="num" data-page-node-id="seRBlzH5bFJFBuox2aIz5D">2</span>, <span class="num" data-page-node-id="TFUvYtDNYQuH7FbeTIP40J">200</span>),<span class="ann">⟳ (2, 200)：第二组。动机：第 2 页同样期望 200。</span>
+])<span class="ann">⟳ ])：参数列表结束。</span>
+<span class="kw" data-page-node-id="lsokQRrpztyjIpGQzZFG1P">def</span> <span class="fn" data-page-node-id="BG8Hxga8xDZUenrZEP0CqR">test_get_paging</span>(ru, page, expect):<span class="ann">⟳ def test_get_paging(ru, page, expect):：分页用例。动机：形参接收参数化输入。</span>
+    <span class="str" data-page-node-id="uMthM8zfS92HojNPpRbdGp">"""用例：分页参数化"""</span><span class="ann">⟳ """用例：分页参数化"""：用例说明。</span>
+    r = ru.get(<span class="str" data-page-node-id="IXjUOqphtRW636rXwfM77H">"/get"</span>, params={<span class="str" data-page-node-id="DGikNl25cH4N6jmJCAxr7W">"page"</span>: page})<span class="ann">⟳ r = ru.get("/get", params={"page": page})：按页码发请求。动机：把参数化输入真正打出去。</span>
+    assert_status(r, expect)<span class="ann">⟳ assert_status(r, expect)：按期望断言。动机：把参数里的 expect 作为目标状态码传入。</span></code></pre>
   </div>
 
   <h3 data-page-node-id="iBf0kSgHfslz1Eyol63Ofh">10.5 ▶️ 步骤四：运行与出报告</h3>
   <div class="code-block" data-page-node-id="sQaztLc5fkEwNswumqNAVZ">
     <div class="header" data-page-node-id="IUOILQLNfZTFDEYmHsbYo6"><span class="lang lang-shell" data-page-node-id="2cmRZJ5KFjHeE3yijUxqrZ">Shell</span><span class="fname" data-page-node-id="80kjxiZT0taF12MJrgDsKd">命令行</span><button class="copy-btn" onclick="copyCode(this)" data-page-node-id="i7wBzcwKzqj9X71LWt4Klw">📋 复制</button></div>
-    <pre data-page-node-id="RudmTfYwciPUDwplLBXkg6"><code data-page-node-id="pXTuXjaD4BI6UZObFv1Dgn"><span class="cmt" data-page-node-id="HylsrwI4c58DEEpegCa3gE"># 跑冒烟</span>
-pytest -m smoke -v
+    <pre data-page-node-id="RudmTfYwciPUDwplLBXkg6"><code data-page-node-id="pXTuXjaD4BI6UZObFv1Dgn"><span class="cmt" data-page-node-id="HylsrwI4c58DEEpegCa3gE"># 跑冒烟</span><span class="ann">⟳ 注释：跑冒烟。</span>
+pytest -m smoke -v<span class="ann">⟳ pytest -m smoke -v：只跑冒烟标记用例。动机：快速验证核心可用性，耗时最短。</span>
 
-<span class="cmt" data-page-node-id="s7blFC5EwoDiBbaAC5ASsf"># 全量 + HTML 报告</span>
-pytest -v --html=reports/report.html --self-contained-html
+<span class="cmt" data-page-node-id="s7blFC5EwoDiBbaAC5ASsf"># 全量 + HTML 报告</span><span class="ann">⟳ 注释：全量 + HTML 报告。</span>
+pytest -v --html=reports/report.html --self-contained-html<span class="ann">⟳ pytest -v --html=reports/report.html --self-contained-html：全量并生成单文件报告。动机：自包含报告可独立分享、归档。</span>
 
-<span class="cmt" data-page-node-id="JSF9FJBTCnwdhQZS7HCgnN"># 全量 + Allure 报告</span>
-pytest -v --alluredir=reports/allure-results
-allure serve reports/allure-results</code></pre>
+<span class="cmt" data-page-node-id="JSF9FJBTCnwdhQZS7HCgnN"># 全量 + Allure 报告</span><span class="ann">⟳ 注释：全量 + Allure 报告。</span>
+pytest -v --alluredir=reports/allure-results<span class="ann">⟳ pytest -v --alluredir=reports/allure-results：产出 allure 数据。动机：供后续生成更美观的交互报告。</span>
+allure serve reports/allure-results<span class="ann">⟳ allure serve reports/allure-results：起服务查看。动机：serve 提供可交互的可视化报告。</span></code></pre>
   </div>
 
   <h3 data-page-node-id="Xn5tmQzPUjMveOMhhLqL2P">10.6 🔄 完整执行流程回顾</h3>
