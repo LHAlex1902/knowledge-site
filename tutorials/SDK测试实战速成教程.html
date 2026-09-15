@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDK 测试实战速成教程</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%2358a6ff'/><stop offset='1' stop-color='%233fb950'/></linearGradient></defs><rect width='100' height='100' rx='22' fill='url(%23g)'/><text x='50' y='68' font-size='58' text-anchor='middle' dominant-baseline='central'>🧰</text></svg>" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --card:#161b22; --border:#30363d;
+    --text:#c9d1d9; --text-muted:#8b949e; --heading:#f0f6fc;
+    --accent:#58a6ff; --accent-green:#3fb950; --accent-orange:#d29922;
+    --accent-red:#f85149; --accent-purple:#a371f7; --accent-cyan:#39d2c0;
+    --kai-color:#f85149; --radius:8px;
+    --ui-font:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:var(--ui-font); line-height:1.75; font-size:15px}
+  a{color:var(--accent); text-decoration:none}
+  strong,b{color:var(--accent-red); font-weight:700}
+  code{font-family:"Cascadia Code","Fira Code",Consolas,monospace; background:rgba(110,118,129,0.15); color:var(--accent); padding:1px 6px; border-radius:4px; font-size:13px}
+
+  /* 顶部导航 */
+  .topnav{position:sticky; top:0; z-index:100; background:rgba(13,17,23,0.95); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); padding:10px 20px; display:flex; gap:16px; flex-wrap:wrap; align-items:center}
+  .topnav .brand{font-weight:700; color:var(--heading); margin-right:auto; font-size:15px}
+  .topnav a{color:var(--text-muted); font-size:13px; padding:4px 8px; border-radius:5px; transition:all .15s}
+  .topnav a:hover{color:var(--accent); background:rgba(88,166,255,0.1)}
+
+  /* Hero */
+  .hero{text-align:center; padding:56px 20px 40px; background:radial-gradient(circle at 50% 0, rgba(88,166,255,0.12), transparent 60%)}
+  .hero .emoji{font-size:56px}
+  .hero h1{color:var(--heading); font-size:34px; margin:12px 0 8px}
+  .hero .subtitle{color:var(--text-muted); font-size:16px; margin:0 auto; max-width:640px}
+  .badges{margin-top:18px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+  .badge{background:var(--bg2); border:1px solid var(--border); color:var(--text); padding:5px 14px; border-radius:20px; font-size:13px}
+  .badge.green{background:rgba(88,166,255,0.12); color:var(--accent); border-color:rgba(88,166,255,0.25)}
+  .badge.orange{background:rgba(210,153,34,0.12); color:var(--accent-orange); border-color:rgba(210,153,34,0.25)}
+
+  .container{max-width:900px; margin:0 auto; padding:20px}
+  section{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px 26px; margin:20px 0}
+  section h2{color:var(--heading); font-size:22px; margin:0 0 16px; display:flex; align-items:center; gap:10px}
+  section h2 .num{display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:var(--accent); color:#0d1117; border-radius:50%; font-size:15px; flex:0 0 auto}
+  h3{color:var(--accent); font-size:17px; margin:22px 0 10px}
+  h4{color:var(--heading); font-size:15px; margin:16px 0 8px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0; padding-left:24px}
+  li{margin:6px 0}
+
+  /* 代码块 */
+  .code-block{background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); margin:14px 0; overflow:hidden}
+  .code-block .header{display:flex; justify-content:space-between; align-items:center; padding:8px 14px; background:var(--bg2); border-bottom:1px solid var(--border); font-size:12px}
+  .code-block .header .lang{color:var(--text-muted); font-family:var(--ui-font)}
+  .code-block .header .lang.lang-py{background:rgba(63,185,80,0.18); color:#7ee08a; border:1px solid rgba(63,185,80,0.45); padding:2px 10px; border-radius:12px}
+  .code-block .header .lang.lang-shell{background:rgba(210,153,34,0.18); color:#e2b84a; border:1px solid rgba(210,153,34,0.45); padding:2px 10px; border-radius:12px}
+  .code-block .header .lang.lang-text{background:rgba(88,166,255,0.18); color:#79b8ff; border:1px solid rgba(88,166,255,0.45); padding:2px 10px; border-radius:12px}
+  .code-block .copy-btn{background:none; border:1px solid var(--border); color:var(--text-muted); padding:2px 10px; border-radius:4px; cursor:pointer; font-size:11px; transition:all .15s}
+  .code-block .copy-btn:hover{color:var(--accent); border-color:var(--accent)}
+  .code-block .copy-btn.copied{color:var(--accent-green); border-color:var(--accent-green)}
+  .code-block pre{padding:14px 16px; overflow-x:auto; margin:0; font-family:"Cascadia Code","Fira Code","JetBrains Mono",Consolas,monospace; font-size:13px; line-height:1.55}
+  .code-block pre code{display:block; color:#d4d4d4; background:none; padding:0}
+  .kw{color:#569cd6} .fn{color:#dcdcaa} .str{color:#ce9178}
+  .cmt{color:#8b949e; font-style:normal} .num{color:#b5cea8}
+  .dec{color:#d7ba7d} .builtin{color:#4ec9b0}
+  .cl{display:flex; align-items:baseline; gap:20px}
+  .cl>.cd{white-space:pre; flex:0 0 auto}
+  .code-ann{color:#6a9955; font-family:"SimSun","宋体","Noto Serif SC",serif; font-style:normal; font-weight:normal; font-size:12.5px; white-space:normal; text-align:right; flex:0 0 auto; max-width:45%; margin-left:auto; padding-left:24px}
+
+  /* 卡片 */
+  .card{border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:6px; padding:12px 16px; margin:14px 0; background:rgba(88,166,255,0.04)}
+  .card.tip{border-left-color:var(--accent)}
+  .card.warning{border-left-color:var(--accent-orange); background:rgba(210,153,34,0.05)}
+  .card.success{border-left-color:var(--accent); background:rgba(88,166,255,0.05)}
+  .card.info{border-left-color:var(--accent)}
+  .kp{border:1px dashed var(--accent); border-radius:6px; padding:12px 16px; margin:14px 0; background:rgba(88,166,255,0.04)}
+  .kp b{color:var(--accent)}
+
+  /* 表格 */
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px}
+  th,td{border:1px solid var(--border); padding:9px 12px; text-align:left; vertical-align:top}
+  th{background:var(--bg2); color:var(--accent); font-weight:600}
+  tr:nth-child(even){background:rgba(255,255,255,0.02)}
+
+  /* 步骤列表 */
+  .step-list{counter-reset:step; list-style:none; padding-left:0}
+  .step-list li{position:relative; padding:8px 0 8px 40px; margin:10px 0}
+  .step-list li::before{counter-increment:step; content:counter(step); position:absolute; left:0; top:8px; width:26px; height:26px; background:var(--accent); color:#0d1117; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px}
+
+  /* 流程图 */
+  .flow{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:16px 0}
+  .flow-box{background:var(--bg2); border:1px solid var(--border); padding:8px 14px; border-radius:8px; font-size:13px; text-align:center}
+  .flow-box.accent{border-color:var(--accent); color:var(--accent)}
+  .flow-arrow{color:var(--text-muted); font-size:18px}
+
+  /* 面试题 */
+  .qa{border:1px solid var(--border); border-radius:6px; margin:12px 0; overflow:hidden}
+  .qa .q{background:var(--bg2); padding:12px 16px; cursor:pointer; display:flex; gap:10px; align-items:flex-start; font-weight:600; color:var(--heading)}
+  .qa .q .qno{background:var(--accent); color:#0d1117; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:13px; flex:0 0 auto}
+  .qa .q .qtag{margin-left:auto; font-size:11px; color:var(--text-muted); border:1px solid var(--border); padding:2px 8px; border-radius:10px}
+  .qa .a{display:none; padding:14px 16px; border-top:1px solid var(--border)}
+  .qa .a.open{display:block}
+  .qa .row{display:flex; gap:10px; margin:8px 0; align-items:baseline}
+  .qa .lab{font-size:12px; padding:2px 10px; border-radius:10px; flex:0 0 auto; font-weight:600}
+  .qa .lab.key{background:rgba(88,166,255,0.15); color:var(--accent)}
+  .qa .lab.ans{background:rgba(88,166,255,0.15); color:var(--accent)}
+  .qa .lab.line{background:rgba(248,81,73,0.15); color:var(--accent-red)}
+  .qa .line-text{color:var(--text); font-size:14px}
+  .qa .a .ans-text{background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:4px; padding:10px 12px; color:var(--text); font-size:14px}
+
+  @media (max-width:640px){
+    .hero h1{font-size:26px}
+    .container{padding:14px}
+    section{padding:18px 16px}
+    .topnav{gap:8px; padding:8px 12px}
+    .topnav a{font-size:12px; padding:3px 6px}
+    .code-ann{display:none}
+  }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <span class="brand">🧰 SDK 测试实战</span>
+  <a href="#ch1">认识</a>
+  <a href="#ch2">准备</a>
+  <a href="#ch3">环境</a>
+  <a href="#ch4">工具链</a>
+  <a href="#ch5">功能测试</a>
+  <a href="#ch6">链路集成</a>
+  <a href="#ch7">异常稳定</a>
+  <a href="#ch8">兼容性</a>
+  <a href="#ch9">性能</a>
+  <a href="#ch10">缺陷定位</a>
+  <a href="#ch11">速查</a>
+  <a href="#ch12">面试题</a>
+</nav>
+
+<header class="hero">
+  <div class="emoji">🧰</div>
+  <h1>SDK 测试实战速成教程</h1>
+  <p class="subtitle">从"接入方开发者视角"系统掌握 SDK 测试——流程、环境、工具链、功能/链路/异常/兼容/性能测试与缺陷定位，多端示例（Android / iOS / Unity / 通用）</p>
+  <div class="badges">
+    <span class="badge green">🧪 全程可落地</span>
+    <span class="badge orange">🎯 上手即用</span>
+    <span class="badge">📦 多端示例</span>
+    <span class="badge">🧠 面试 36 题</span>
+  </div>
+</header>
+
+<div class="container">
+
+<section id="ch1">
+  <h2><span class="num">1</span> 第 1 章 🧰 认识 SDK 测试</h2>
+  <h3>1.1 📌 SDK 是什么</h3>
+  <p>SDK（Software Development Kit，软件开发工具包）是<strong>给开发者用的工具箱</strong>，而非给最终用户的产品。它把某项能力（登录、支付、推送、统计、广告等）封装成可调用的接口，让 App 快速集成。</p>
+  <div class="kp"><b>🔑 知识点 · SDK 的组成：</b> 一个 SDK 通常包含——库文件（<code>.aar</code>/<code>.jar</code>/<code>.framework</code>/<code>.dll</code>）、API 接口、官方文档、示例 Demo、调试工具。测试的核心就是验证这五样东西"能不能用、好不好用"。</div>
+
+  <h3>1.2 🎯 SDK 测试与普通软件测试的区别</h3>
+  <table>
+    <tr><th>维度</th><th>普通 App / 软件测试</th><th>SDK 测试</th></tr>
+    <tr><td>用户是谁</td><td>最终用户</td><td>接入方开发者</td></tr>
+    <tr><td>测试视角</td><td>功能好不好用</td><td>集成顺不顺畅 + 调用稳不稳</td></tr>
+    <tr><td>可见性</td><td>多为白盒/灰盒</td><td>多为<strong>黑盒</strong>（只给编译好的库）</td></tr>
+    <tr><td>运行依赖</td><td>可独立运行</td><td>必须集成进宿主 App 才能跑</td></tr>
+    <tr><td>致命缺陷</td><td>功能 bug</td><td>文档错、示例跑不通、报错不清晰（开发者体验）</td></tr>
+  </table>
+
+  <h3>1.3 🧭 测试的六大维度</h3>
+  <div class="flow">
+    <div class="flow-box accent">功能</div><span class="flow-arrow">·</span>
+    <div class="flow-box accent">集成</div><span class="flow-arrow">·</span>
+    <div class="flow-box accent">兼容性</div><span class="flow-arrow">·</span>
+    <div class="flow-box accent">稳定性</div><span class="flow-arrow">·</span>
+    <div class="flow-box accent">性能</div><span class="flow-arrow">·</span>
+    <div class="flow-box accent">安全/文档</div>
+  </div>
+  <div class="card tip">💡 SDK 测试的本质：<strong>站在接入方开发者的视角做质量把关</strong>。凡是"让开发者踩坑"的地方（文档错、示例跑不通、报错看不懂、弱网就崩），都是测试重点。</div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>挑一个你熟悉的 SDK（如微信开放平台、Bugly、友盟），列出它包含哪些组成（库/文档/示例/工具）。</li>
+      <li>思考：如果这个 SDK 的文档写错了一个参数，接入方会遇到什么后果？</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch2">
+  <h2><span class="num">2</span> 第 2 章 📋 测试准备（文档评审 + 计划）</h2>
+  <h3>2.1 📖 第一步：自己先集成一遍</h3>
+  <p>SDK 测试的起点不是写用例，而是<strong>以接入方身份，照官方文档从零集成一遍</strong>。这一步直接验证"文档可用性"——最容易被忽略、却最影响开发者体验的测试项。</p>
+  <ol class="step-list">
+    <li><strong>跑通 Hello World</strong>：按文档把 SDK 引入 Demo 工程，调用最简单的接口（如初始化 + 打印日志），确认能编译、能运行。</li>
+    <li><strong>跑通官方示例</strong>：官方 Demo 能否直接编译运行？若连示例都跑不起来，这是 P0 级文档/包问题。</li>
+    <li><strong>记录每一步的卡点</strong>：缺依赖、版本冲突、权限没写、参数名对不上——全部记录，都是缺陷。</li>
+  </ol>
+
+  <h3>2.2 🗂️ 拆解 API 清单</h3>
+  <p>把 SDK 暴露的每个公开接口列成一张表，作为用例设计的"地图"。每个接口至少覆盖：正常调用、参数异常、边界值、依赖前置。</p>
+  <table>
+    <tr><th>接口</th><th>作用</th><th>前置依赖</th><th>关键测试点</th></tr>
+    <tr><td><code>init(config)</code></td><td>初始化</td><td>无</td><td>缺 appId、重复初始化、非法 key</td></tr>
+    <tr><td><code>login()</code></td><td>登录鉴权</td><td>init 成功</td><td>未初始化调用、token 过期、取消授权</td></tr>
+    <tr><td><code>pay(order)</code></td><td>支付</td><td>login 成功</td><td>未登录、金额为 0、重复下单、断网</td></tr>
+    <tr><td><code>logout()</code></td><td>登出</td><td>login 成功</td><td>未登录登出、登出后再调业务</td></tr>
+  </table>
+
+  <div class="card warning">
+    <b>⚠️【避坑：SDK 有调用顺序】</b>
+    <ul>
+      <li>多数 SDK 的接口有<strong>依赖顺序</strong>（init→login→业务→logout），乱序调用是高频缺陷来源。</li>
+      <li>用例里务必设计"跳过前置直接调后续接口"的场景，验证 SDK 是否优雅报错而非崩溃。</li>
+    </ul>
+  </div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>为你熟悉的某个 SDK 列一张 API 清单表（至少 5 个接口，含前置依赖列）。</li>
+      <li>针对 <code>login()</code> 接口，写出 3 个正常场景 + 3 个异常场景。</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch3">
+  <h2><span class="num">3</span> 第 3 章 🏗️ 搭建测试环境</h2>
+  <h3>3.1 🧩 宿主工程（Demo App）</h3>
+  <p>SDK <strong>不能脱离 App 单独运行</strong>，必须集成进一个"测试宿主工程"。建议单独建一个干净的 Demo App，只集成被测 SDK，避免业务代码干扰定位。</p>
+
+  <h3>3.2 📱 平台/版本矩阵</h3>
+  <p>兼容性测试的前提是有一份"机型 × 系统版本"矩阵。不必全买真机，用云真机平台补齐长尾。</p>
+  <table>
+    <tr><th>端</th><th>需覆盖的维度</th><th>建议</th></tr>
+    <tr><td>Android</td><td>系统版本（API 21~34）、厂商 ROM（小米/华为/OPPO/vivo）、分辨率</td><td>主流真机 + 云真机补长尾</td></tr>
+    <tr><td>iOS</td><td>iOS 版本、机型（SE~Pro Max）、刘海屏适配</td><td>真机为主，模拟器兜底</td></tr>
+    <tr><td>Unity/游戏</td><td>引擎版本、打包渠道、Android/iOS 双端</td><td>真机抓包，模拟器对 SDK 兼容性差</td></tr>
+  </table>
+
+  <h3>3.3 🌐 网络环境</h3>
+  <p>SDK 大多依赖网络与服务端通信，网络环境是必测项：</p>
+  <ul>
+    <li><strong>正常网</strong>：WiFi / 4G / 5G</li>
+    <li><strong>弱网</strong>：限速、高延迟、丢包（Charles 限速 / Clumsy）</li>
+    <li><strong>异常网</strong>：断网、飞行模式、网络切换（WiFi↔4G）、DNS 失败</li>
+  </ul>
+
+  <h3>3.4 🖥️ 服务端环境</h3>
+  <ul>
+    <li><strong>联调服/沙箱</strong>：SDK 厂商提供的测试环境（如微信沙箱、支付宝沙箱）。</li>
+    <li><strong>Mock 环境</strong>：服务端没就绪时，用 Mock 服务模拟正常/异常返回，不阻塞测试。</li>
+  </ul>
+  <div class="card tip">💡 <strong>真机优先原则</strong>：涉及相机、蓝牙、推送、支付、传感器、生物识别的 SDK，模拟器/仿真器兼容性差，务必用真机测。</div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>新建一个空的 Demo 工程，集成一个你熟悉的 SDK，跑通初始化。</li>
+      <li>列一份你手头能用的机型/系统版本矩阵（至少 5 台设备或云真机型号）。</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch4">
+  <h2><span class="num">4</span> 第 4 章 🛠️ 工具链全景</h2>
+  <p>SDK 测试的工具按"用途"分成几类，下面这张表是核心工具链，后面章节会逐一实操。</p>
+  <table>
+    <tr><th>用途</th><th>工具</th><th>典型场景</th></tr>
+    <tr><td>抓包 / 接口验证</td><td>Charles、Fiddler、Whistle、Wireshark</td><td>看 SDK 发了什么请求、返回什么、通信是否加密</td></tr>
+    <tr><td>日志采集</td><td>adb logcat、Xcode Console、SDK 日志开关</td><td>抓 SDK 内部日志、崩溃堆栈</td></tr>
+    <tr><td>性能 / 内存</td><td>Android Profiler、PerfDog、Instruments、MAT</td><td>内存泄漏、CPU/耗电、启动耗时</td></tr>
+    <tr><td>兼容性</td><td>WeTest、优测、BrowserStack（云真机）</td><td>机型/系统版本矩阵批量跑</td></tr>
+    <tr><td>弱网模拟</td><td>Charles 限速、Clumsy、网络损伤仪</td><td>弱网/丢包/延迟下的健壮性</td></tr>
+    <tr><td>自动化</td><td>Appium、UI Automator、Airtest</td><td>回归、多机型批量、冒烟</td></tr>
+    <tr><td>崩溃监控</td><td>Bugly、CrashSight、Sentry</td><td>线上崩溃聚合、堆栈还原</td></tr>
+    <tr><td>打桩 / Mock</td><td>自建 Mock 服务、RespServer</td><td>模拟服务端异常返回</td></tr>
+  </table>
+
+  <h3>4.1 🔌 抓包工具：以 Charles 为例</h3>
+  <p>抓包是 SDK 测试最常用的手段——验证"SDK 到底和服务端说了什么"。以 Charles 设置代理抓 HTTPS 为例：</p>
+  <div class="code-block">
+    <div class="header"><span class="lang lang-shell">Shell · Charles 代理</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
+    <pre><code><div class="cl"><span class="cd"><span class="cmt"># 1. 手机与电脑连同一 WiFi，手机 WiFi 设置手动代理</span></span><span class="code-ann">⟳ 手机代理指向电脑 IP+Charles 端口；动机：让 SDK 的网络请求先过 Charles 才能被抓到</span></div><div class="cl"><span class="cd">代理地址 = 电脑局域网 IP（如 192.168.1.100）</span><span class="code-ann">⟳ 填电脑 IP；动机：Charles 跑在电脑上，手机请求要能路由到它</span></div><div class="cl"><span class="cd">端口 = 8888（Charles 默认）</span><span class="code-ann">⟳ 用默认 8888；动机：与 Charles 监听端口一致，改了就抓不到</span></div><div class="cl"><span class="cd">&nbsp;</span></div><div class="cl"><span class="cd"><span class="cmt"># 2. 手机浏览器访问 chls.pro/ssl 安装证书</span></span><span class="code-ann">⟳ 装 Charles 根证书；动机：HTTPS 流量必须信任证书才能解密，否则全是乱码 &lt;unknown&gt;</span></div><div class="cl"><span class="cd"><span class="cmt"># 3. Android 7+ 需在 res/xml/network_security_config.xml 配置</span></span><span class="code-ann">⟳ 配网络安全策略；动机：高版本默认不信任用户证书，抓 HTTPS 要在清单里放行</span></div></code></pre>
+  </div>
+  <div class="card warning">
+    <b>⚠️【抓不到包排查】</b>
+    <ul>
+      <li>全是 <code>&lt;unknown&gt;</code>：证书没装或没信任 → 重装证书 + 配网络安全策略。</li>
+      <li>完全没请求：代理地址/端口填错，或 SDK 用了证书绑定（SSL Pinning）→ 需让开发关闭 Pinning 或走 Hook。</li>
+      <li>请求能看到但内容加密：SDK 做了二次加密 → 抓到的只是密文，需结合日志或逆向。</li>
+    </ul>
+  </div>
+
+  <h3>4.2 📜 日志采集：adb logcat</h3>
+  <div class="code-block">
+    <div class="header"><span class="lang lang-shell">Shell · adb 日志</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
+    <pre><code><div class="cl"><span class="cd">adb logcat -v time | grep <span class="str">"SDK_TAG"</span></span><span class="code-ann">⟳ 按标签过滤日志；动机：SDK 日志量大，用统一 TAG 过滤才能快速定位关键行</span></div><div class="cl"><span class="cd">adb logcat *:E            <span class="cmt"># 只看 Error 级</span></span><span class="code-ann">⟳ 只看错误级；动机：崩溃/异常排查时先聚焦 E 级，减少噪音</span></div><div class="cl"><span class="cd">adb logcat -c             <span class="cmt"># 清空缓冲</span></span><span class="code-ann">⟳ 清日志缓冲；动机：复现前清空，才能拿到"本次操作"的干净日志</span></div><div class="cl"><span class="cd">adb logcat -d &gt; sdk.log   <span class="cmt"># 导出到文件</span></span><span class="code-ann">⟳ 导出日志文件；动机：提 bug 时要附日志，-d 一次性 dump 便于存档</span></div></code></pre>
+  </div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>用 Charles 抓取你 Demo App 里某 SDK 的一次网络请求，截图请求与返回。</li>
+      <li>用 adb logcat 过滤出该 SDK 的日志，找到初始化成功/失败的关键行。</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch5">
+  <h2><span class="num">5</span> 第 5 章 ✅ 功能测试（单接口）</h2>
+  <p>功能测试验证<strong>每个接口"输入→输出"是否正确</strong>。SDK 是黑盒，主要靠"传参→看返回→看副作用"来验证。方法等价类 + 边界值 + 异常输入。</p>
+
+  <h3>5.1 🔍 等价类与边界值</h3>
+  <p>以 <code>init(appId, key)</code> 为例，用等价类划分输入：</p>
+  <table>
+    <tr><th>输入项</th><th>有效等价类</th><th>无效等价类（异常）</th><th>边界值</th></tr>
+    <tr><td>appId</td><td>合法非空字符串</td><td>空、null、超长、含特殊字符、未注册</td><td>长度 1 / 最大长度 / 超长 1 位</td></tr>
+    <tr><td>key</td><td>合法密钥</td><td>空、错误、过期</td><td>—</td></tr>
+  </table>
+
+  <h3>5.2 🧪 用断言验证结果</h3>
+  <p>SDK 测试也要写断言。下面用 Python + pytest 模拟对 SDK 返回结果的校验（真实项目里通过桥接调用原生 SDK，这里聚焦断言逻辑）：</p>
+  <div class="code-block">
+    <div class="header"><span class="lang lang-py">Python · pytest 断言</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
+    <pre><code><div class="cl"><span class="cd"><span class="kw">import</span> pytest</span><span class="code-ann">⟳ import pytest：导入测试框架；动机：用它的断言和夹具组织 SDK 用例</span></div><div class="cl"><span class="cd">&nbsp;</span></div><div class="cl"><span class="cd"><span class="cmt"># 模拟 SDK 初始化接口的返回结构（真实项目从桥接层拿）</span></span><span class="code-ann">⟳ 注释：说明这是模拟返回；动机：SDK 是黑盒，测试先约定"期望的返回结构"</span></div><div class="cl"><span class="cd"><span class="kw">def</span> <span class="fn">call_init</span>(app_id, key):</span><span class="code-ann">⟳ def call_init：封装"调 SDK init"这一步；动机：把调用隔离成函数，用例只关心输入输出</span></div><div class="cl"><span class="cd">    <span class="cmt"># 实际这里通过桥接调原生 SDK，返回 dict</span></span><span class="code-ann">⟳ 注释：说明内部走桥接；动机：屏蔽平台差异，用例层拿到统一的 dict 结果</span></div><div class="cl"><span class="cd">    <span class="kw">return</span> {<span class="str">"code"</span>: <span class="num">0</span>, <span class="str">"msg"</span>: <span class="str">"ok"</span>, <span class="str">"token"</span>: <span class="str">"abc"</span>}</span><span class="code-ann">⟳ return 模拟成功返回；动机：功能测试先验证"合法输入应得到 code=0 和 token"</span></div><div class="cl"><span class="cd">&nbsp;</span></div><div class="cl"><span class="cd"><span class="kw">def</span> <span class="fn">test_init_success</span>():</span><span class="code-ann">⟳ def test_init_success：正常场景；动机：验证合法输入的核心路径通过</span></div><div class="cl"><span class="cd">    r = call_init(<span class="str">"app123"</span>, <span class="str">"key456"</span>)</span><span class="code-ann">⟳ 调合法参数；动机：作为基线，先保证主流程正确</span></div><div class="cl"><span class="cd">    <span class="kw">assert</span> r[<span class="str">"code"</span>] == <span class="num">0</span></span><span class="code-ann">⟳ 断言 code=0；动机：SDK 约定 0 表示成功，非 0 即失败</span></div><div class="cl"><span class="cd">    <span class="kw">assert</span> <span class="str">"token"</span> <span class="kw">in</span> r <span class="kw">and</span> r[<span class="str">"token"</span>]</span><span class="code-ann">⟳ 断言返回含非空 token；动机：登录类 SDK 必须下发凭证，空 token 是缺陷</span></div><div class="cl"><span class="cd">&nbsp;</span></div><div class="cl"><span class="cd"><span class="kw">def</span> <span class="fn">test_init_empty_appid</span>():</span><span class="code-ann">⟳ def test_init_empty_appid：异常场景；动机：验证空 appId 应被拒绝而非崩溃</span></div><div class="cl"><span class="cd">    r = call_init(<span class="str">""</span>, <span class="str">"key456"</span>)</span><span class="code-ann">⟳ 传空 appId；动机：构造无效等价类，看 SDK 是否优雅报错</span></div><div class="cl"><span class="cd">    <span class="kw">assert</span> r[<span class="str">"code"</span>] != <span class="num">0</span>          <span class="cmt"># 应返回错误码</span></span><span class="code-ann">⟳ 断言返回非 0；动机：非法输入必须被拦截，返回错误码而非 crash</span></div></code></pre>
+  </div>
+
+  <div class="card tip">💡 <strong>黑盒测试的核心心法</strong>：不关心 SDK 内部怎么实现，只验证"给定输入 → 得到期望输出 / 期望行为"。返回值、回调、异常、副作用（如是否写了本地缓存）都要纳入断言。</div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>为 <code>login()</code> 接口写 3 条 pytest 用例：正常登录、密码错误、账号为空。</li>
+      <li>思考：一个"设置用户昵称"的接口，边界值该测哪些？</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch6">
+  <h2><span class="num">6</span> 第 6 章 🔗 链路与集成测试</h2>
+  <p>SDK 的接口往往有<strong>依赖顺序</strong>，单接口通过不代表链路通过。链路测试验证"从头到尾走通一条完整业务流"。</p>
+
+  <h3>6.1 🧭 端到端链路</h3>
+  <p>以登录→支付为例，一条完整链路：</p>
+  <div class="flow">
+    <div class="flow-box">init</div><span class="flow-arrow">→</span>
+    <div class="flow-box">login</div><span class="flow-arrow">→</span>
+    <div class="flow-box">下单</div><span class="flow-arrow">→</span>
+    <div class="flow-box">pay</div><span class="flow-arrow">→</span>
+    <div class="flow-box accent">支付回调</div><span class="flow-arrow">→</span>
+    <div class="flow-box">logout</div>
+  </div>
+
+  <h3>6.2 🧩 用夹具管理前置状态</h3>
+  <p>链路用例要用 pytest 夹具（fixture）管理"初始化→登录"这些前置，保证每条用例都从干净状态出发：</p>
+  <div class="code-block">
+    <div class="header"><span class="lang lang-py">Python · fixture 管理链路</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
+    <pre><code><div class="cl"><span class="cd"><span class="kw">import</span> pytest</span><span class="code-ann">⟳ import pytest：用它的 fixture 管前置；动机：链路测试前置多，夹具能复用且自动清理</span></div><div class="cl"><span class="cd">&nbsp;</span></div><div class="cl"><span class="cd"><span class="dec">@pytest.fixture</span></span><span class="code-ann">⟳ @pytest.fixture：声明夹具；动机：把"初始化+登录"封装成可复用的前置</span></div><div class="cl"><span class="cd"><span class="kw">def</span> <span class="fn">logged_in_sdk</span>():</span><span class="code-ann">⟳ def logged_in_sdk：产出"已登录的 SDK 实例"；动机：用例直接拿来用，不用每条重复登录</span></div><div class="cl"><span class="cd">    sdk = call_init(<span class="str">"app123"</span>, <span class="str">"key456"</span>)   <span class="cmt"># 前置1：初始化</span></span><span class="code-ann">⟳ 先初始化；动机：login 依赖 init 成功，顺序不能乱</span></div><div class="cl"><span class="cd">    r = sdk.login(<span class="str">"user"</span>, <span class="str">"pwd"</span>)      <span class="cmt"># 前置2：登录</span></span><span class="code-ann">⟳ 再登录；动机：支付等业务依赖登录态，先拿到 token</span></div><div class="cl"><span class="cd">    <span class="kw">assert</span> r[<span class="str">"code"</span>] == <span class="num">0</span></span><span class="code-ann">⟳ 断言登录成功；动机：前置失败要立即暴露，别带着坏状态跑后续</span></div><div class="cl"><span class="cd">    <span class="kw">yield</span> sdk                          <span class="cmt"># 交给用例使用</span></span><span class="code-ann">⟳ yield sdk：把实例交给用例；动机：yield 前是前置、后是清理，一个夹具管两头</span></div><div class="cl"><span class="cd">    sdk.logout()                       <span class="cmt"># 后置：清理</span></span><span class="code-ann">⟳ 用例后登出；动机：清理登录态，避免污染下一条用例</span></div><div class="cl"><span class="cd">&nbsp;</span></div><div class="cl"><span class="cd"><span class="kw">def</span> <span class="fn">test_pay_flow</span>(logged_in_sdk):</span><span class="code-ann">⟳ def test_pay_flow：支付链路用例；动机：验证"已登录→下单→支付→回调"整条走通</span></div><div class="cl"><span class="cd">    order = logged_in_sdk.create_order(amount=<span class="num">1</span>)</span><span class="code-ann">⟳ 下单；动机：支付要有订单号，先创建订单拿到 order_id</span></div><div class="cl"><span class="cd">    <span class="kw">assert</span> order[<span class="str">"code"</span>] == <span class="num">0</span> <span class="kw">and</span> <span class="str">"order_id"</span> <span class="kw">in</span> order</span><span class="code-ann">⟳ 断言下单成功且返回订单号；动机：没有 order_id 就没法发起支付，是链路关键节点</span></div><div class="cl"><span class="cd">    pay = logged_in_sdk.pay(order[<span class="str">"order_id"</span>])</span><span class="code-ann">⟳ 发起支付；动机：用刚拿到的订单号支付，验证链路衔接正确</span></div><div class="cl"><span class="cd">    <span class="kw">assert</span> pay[<span class="str">"code"</span>] == <span class="num">0</span></span><span class="code-ann">⟳ 断言支付成功；动机：链路终点，code=0 才算整条链路通</span></div></code></pre>
+  </div>
+
+  <div class="card warning">
+    <b>⚠️【链路测试避坑】</b>
+    <ul>
+      <li><strong>数据污染</strong>：多条用例共用同一测试账号，前一条改了状态会影响后一条 → 用夹具保证每条用例前后状态干净。</li>
+      <li><strong>幂等性</strong>：支付/下单这类接口重复调用是否重复扣款？要专门测"同一订单号支付两次"。</li>
+    </ul>
+  </div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>用 fixture 写一条"初始化→登录→查用户信息→登出"的链路用例。</li>
+      <li>设计一个"未登录直接调支付接口"的用例，验证 SDK 是否正确拒绝。</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch7">
+  <h2><span class="num">7</span> 第 7 章 ⚡ 异常与稳定性测试</h2>
+  <p>SDK 在"正常路径"下通过只是及格，<strong>异常场景下的健壮性</strong>才是拉开质量差距的关键——崩溃、ANR、内存泄漏是 SDK 最致命的缺陷。</p>
+
+  <h3>7.1 🌪️ 异常输入与乱序调用</h3>
+  <table>
+    <tr><th>异常类型</th><th>怎么测</th><th>期望表现</th></tr>
+    <tr><td>参数异常</td><td>传 null/空/超长/错误类型</td><td>返回错误码，不崩溃</td></tr>
+    <tr><td>乱序调用</td><td>跳过 init 直接 login</td><td>明确报错，不 crash</td></tr>
+    <tr><td>重复调用</td><td>连续 init 两次、重复支付</td><td>幂等或明确拒绝，不重复扣款</td></tr>
+    <tr><td>并发调用</td><td>多线程同时调同一接口</td><td>线程安全，无数据错乱</td></tr>
+  </table>
+
+  <h3>7.2 📉 弱网与断网</h3>
+  <div class="code-block">
+    <div class="header"><span class="lang lang-shell">Shell · Charles 弱网</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
+    <pre><code><div class="cl"><span class="cd"><span class="cmt"># Charles 菜单 Proxy → Network Condition Settings</span></span><span class="code-ann">⟳ 打开弱网设置；动机：Charles 内置限速模板，模拟 3G/弱网/丢包</span></div><div class="cl"><span class="cd"><span class="cmt"># 勾选 Enable Throttling，选 "Very bad network"</span></span><span class="code-ann">⟳ 选极差网络档；动机：把延迟/带宽压到极限，暴露超时处理缺陷</span></div><div class="cl"><span class="cd"><span class="cmt"># 或自定义：Downlink 64kbps, Latency 500ms, 丢包 10%</span></span><span class="code-ann">⟳ 自定义参数；动机：贴近真实弱网（电梯/地铁），验证超时重试是否合理</span></div></code></pre>
+  </div>
+  <div class="card tip">💡 弱网测试重点看：是否有<strong>超时机制</strong>（不能无限等待）、是否有<strong>重试</strong>（且重试次数有限）、超时后是否<strong>友好提示</strong>而非转圈卡死。</div>
+
+  <h3>7.3 🧠 内存泄漏与稳定性</h3>
+  <p>反复调用 SDK（如反复进出含 SDK 的页面），观察内存是否持续上涨不回落——这是内存泄漏的典型信号。用 Android Profiler 或 PerfDog 监控：</p>
+  <ul>
+    <li>反复初始化/销毁 SDK 100 次，看内存曲线是否锯齿状回落（正常）还是阶梯上涨（泄漏）。</li>
+    <li>长时间挂机（Soak Test），看是否 OOM 或崩溃。</li>
+    <li>结合 MAT/LeakCanary 定位泄漏对象。</li>
+  </ul>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>用 Charles 把网络设为"Very bad"，跑一遍登录链路，观察超时表现。</li>
+      <li>写一个循环脚本，反复初始化/销毁 SDK 50 次，用 Profiler 看内存曲线。</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch8">
+  <h2><span class="num">8</span> 第 8 章 📱 兼容性测试</h2>
+  <p>兼容性测试验证 SDK 在<strong>不同设备、系统版本、厂商 ROM、分辨率</strong>下都能正常工作。这是 SDK 分发给大量接入方时最容易出问题的环节。</p>
+
+  <h3>8.1 🗺️ 机型矩阵策略</h3>
+  <p>不必全买真机，用"<strong>核心真机 + 云真机补长尾</strong>"的组合：</p>
+  <table>
+    <tr><th>层级</th><th>覆盖</th><th>手段</th></tr>
+    <tr><td>核心机型</td><td>主流销量机型、各厂商旗舰</td><td>本地真机，深度测</td></tr>
+    <tr><td>长尾机型</td><td>老旧系统、小众分辨率</td><td>云真机平台（WeTest/优测）批量跑</td></tr>
+    <tr><td>极限机型</td><td>最低支持版本、最小内存</td><td>专门验证下限</td></tr>
+  </table>
+
+  <h3>8.2 🔀 厂商 ROM 差异</h3>
+  <p>同一 Android 版本，不同厂商 ROM 行为差异大，是兼容性重灾区：</p>
+  <ul>
+    <li><strong>权限管理</strong>：小米/华为对后台、自启动、通知权限更严。</li>
+    <li><strong>推送</strong>：各厂商有自家推送通道（小米推送/华为 HMS），要分别测。</li>
+    <li><strong>后台保活</strong>：部分 ROM 杀后台激进，SDK 长连接易断。</li>
+  </ul>
+
+  <h3>8.3 🎮 游戏引擎场景（Unity）</h3>
+  <p>游戏 SDK 测试的特殊性：SDK 集成在 Unity 工程里，打包成 APK/IPA 后真机测试。重点：</p>
+  <ul>
+    <li>引擎版本兼容（不同 Unity 版本 SDK 插件可能冲突）。</li>
+    <li>Unity 主线程 vs 子线程回调（SDK 回调线程不对会崩）。</li>
+    <li>真机抓包验证（模拟器对游戏 SDK 兼容性差）。</li>
+  </ul>
+
+  <div class="card warning">
+    <b>⚠️【兼容性缺陷特征】</b>
+    <ul>
+      <li><strong>"我这台机子没问题"</strong>：兼容性 bug 的典型表现——只在特定机型/系统复现。</li>
+      <li>提 bug 时必须带：机型、系统版本、ROM 版本、复现率（几台里有几台）。</li>
+    </ul>
+  </div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>为你的 SDK 列一份兼容性矩阵（至少 8 台设备，覆盖 3 个厂商 + 3 个系统大版本）。</li>
+      <li>思考：一个推送 SDK，在小米和华为上要分别测哪些差异点？</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch9">
+  <h2><span class="num">9</span> 第 9 章 📊 性能测试</h2>
+  <p>SDK 性能直接影响宿主 App 的体验。一个"重"的 SDK（初始化慢、占内存、耗电）会被接入方投诉甚至弃用。性能测试关注几个核心指标。</p>
+
+  <h3>9.1 📏 核心性能指标</h3>
+  <table>
+    <tr><th>指标</th><th>含义</th><th>关注点</th></tr>
+    <tr><td>包体积</td><td>SDK 引入后 APK/IPA 增大多少</td><td>是否可接受，能否按需引入</td></tr>
+    <tr><td>初始化耗时</td><td>init 调用到可用的时间</td><td>是否阻塞主线程、能否异步</td></tr>
+    <tr><td>内存占用</td><td>运行时常驻内存</td><td>是否泄漏、常驻是否过高</td></tr>
+    <tr><td>CPU / 耗电</td><td>运行时资源消耗</td><td>后台是否偷跑、长连接是否耗电</td></tr>
+    <tr><td>启动耗时</td><td>对 App 冷启动的拖累</td><td>SDK 初始化是否拖慢首屏</td></tr>
+  </table>
+
+  <h3>9.2 ⏱️ 初始化耗时测量</h3>
+  <div class="code-block">
+    <div class="header"><span class="lang lang-py">Python · 计时</span><button class="copy-btn" onclick="copyCode(this)">📋 复制</button></div>
+    <pre><code><div class="cl"><span class="cd"><span class="kw">import</span> time</span><span class="code-ann">⟳ import time：用它的计时函数；动机：测 init 耗时只需记录前后时间差</span></div><div class="cl"><span class="cd">&nbsp;</span></div><div class="cl"><span class="cd"><span class="kw">def</span> <span class="fn">measure_init</span>(sdk_factory, rounds=<span class="num">5</span>):</span><span class="code-ann">⟳ def measure_init：测初始化耗时；动机：单次有波动，跑多轮取平均更可靠</span></div><div class="cl"><span class="cd">    total = <span class="num">0.0</span></span><span class="code-ann">⟳ 累计耗时；动机：多轮求和后再平均，抹平单次抖动</span></div><div class="cl"><span class="cd">    <span class="kw">for</span> i <span class="kw">in</span> range(rounds):</span><span class="code-ann">⟳ 跑 5 轮；动机：样本太少不具代表性，5 轮是成本与可信的折中</span></div><div class="cl"><span class="cd">        t0 = time.time()</span><span class="code-ann">⟳ 记录起始时间；动机：在 init 前打点，才能算出纯初始化耗时</span></div><div class="cl"><span class="cd">        sdk_factory()</span><span class="code-ann">⟳ 执行初始化；动机：把被测动作夹在两个时间点中间</span></div><div class="cl"><span class="cd">        total += time.time() - t0</span><span class="code-ann">⟳ 累加本轮耗时；动机：把每轮差值累加，最后除以轮数得平均</span></div><div class="cl"><span class="cd">    <span class="kw">return</span> total / rounds * <span class="num">1000</span>  <span class="cmt"># 转毫秒</span></span><span class="code-ann">⟳ 返回平均毫秒数；动机：乘 1000 换算成 ms，符合"初始化耗时"的常用单位</span></div></code></pre>
+  </div>
+
+  <h3>9.3 🔋 耗电与后台行为</h3>
+  <p>涉及定位、长连接、定时上报的 SDK，要重点测耗电：用 PerfDog 或系统电量统计，观察后台运行时是否异常耗电（如定位频率过高、心跳太频繁）。</p>
+
+  <div class="card tip">💡 性能测试要有<strong>基线对比</strong>：测"接入 SDK 前"与"接入后"的启动耗时、内存、包体积差值，才能量化 SDK 的开销，而非看绝对值。</div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>测量你的 SDK 初始化平均耗时（跑 5 轮取平均）。</li>
+      <li>对比"接入 SDK 前后"的 App 冷启动耗时差值。</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch10">
+  <h2><span class="num">10</span> 第 10 章 🐞 缺陷定位与提单</h2>
+  <p>SDK 是黑盒，出了 bug 定位难、提单更难。测试人员的价值在于<strong>把"复现不了"的 bug 变成"开发能看懂、能复现"的缺陷单</strong>。</p>
+
+  <h3>10.1 🔎 定位三板斧</h3>
+  <ol class="step-list">
+    <li><strong>抓包</strong>：看 SDK 发出去的请求对不对、服务端返回对不对——区分"SDK 逻辑错"还是"服务端错"。</li>
+    <li><strong>看日志</strong>：adb logcat / Xcode Console 抓 SDK 内部日志和崩溃堆栈。</li>
+    <li><strong>缩小范围</strong>：二分法——注释掉一半调用，定位是哪一步、哪个参数触发。</li>
+  </ol>
+
+  <h3>10.2 📝 高质量缺陷单要素</h3>
+  <p>SDK 缺陷单必须让厂商开发能复现，要素缺一不可：</p>
+  <table>
+    <tr><th>要素</th><th>说明</th></tr>
+    <tr><td>环境信息</td><td>机型、系统版本、ROM、SDK 版本、App 版本</td></tr>
+    <tr><td>复现步骤</td><td>1.2.3. 精确到每一步操作</td></tr>
+    <tr><td>实际结果</td><td>发生了什么（附崩溃堆栈/抓包截图/日志）</td></tr>
+    <tr><td>期望结果</td><td>应该是什么</td></tr>
+    <tr><td>复现率</td><td>必现 / 偶现（几台里有几台、几次里有几次）</td></tr>
+    <tr><td>附件</td><td>logcat 日志、抓包文件、崩溃堆栈、录屏</td></tr>
+  </table>
+
+  <div class="card warning">
+    <b>⚠️【提单红线】</b>
+    <ul>
+      <li><strong>不要只写"崩溃了"</strong>：没有堆栈和复现步骤的 bug 单，开发无法定位，等于没提。</li>
+      <li><strong>区分责任方</strong>：抓包后能判断是 SDK 端错还是服务端错，帮开发少走弯路。</li>
+      <li><strong>偶现 bug 也要提</strong>：记录复现率，附长时间挂机日志，别因"我这边没复现"就忽略。</li>
+    </ul>
+  </div>
+
+  <div class="card success">
+    <strong>✎ 实操练习</strong>
+    <ol>
+      <li>假设你发现某 SDK 在弱网下登录偶发崩溃，写一份完整缺陷单（含 6 要素）。</li>
+      <li>练习用二分法：一段链路崩了，如何快速定位是哪一步的问题？</li>
+    </ol>
+  </div>
+</section>
+
+<section id="ch11">
+  <h2><span class="num">11</span> 第 11 章 📇 知识点速查</h2>
+  <table>
+    <tr><th>知识点</th><th>一句话速记</th></tr>
+    <tr><td>SDK 定义</td><td>给开发者用的工具包（库+API+文档+示例+工具），非终端产品</td></tr>
+    <tr><td>测试视角</td><td>站接入方开发者视角，验证"能集成、能调用、够稳定、文档准"</td></tr>
+    <tr><td>六大维度</td><td>功能 / 集成 / 兼容性 / 稳定性 / 性能 / 安全文档</td></tr>
+    <tr><td>黑盒特性</td><td>多为黑盒，只测输入→输出与集成行为</td></tr>
+    <tr><td>调用顺序</td><td>接口有依赖（init→login→业务），乱序是高频缺陷</td></tr>
+    <tr><td>抓包工具</td><td>Charles/Fiddler/Whistle；HTTPS 要装证书</td></tr>
+    <tr><td>日志工具</td><td>adb logcat（Android）/ Xcode Console（iOS）</td></tr>
+    <tr><td>性能工具</td><td>Android Profiler / PerfDog / Instruments / MAT</td></tr>
+    <tr><td>兼容性</td><td>核心真机 + 云真机补长尾；厂商 ROM 差异大</td></tr>
+    <tr><td>弱网</td><td>Charles 限速；看超时/重试/友好提示</td></tr>
+    <tr><td>内存泄漏</td><td>反复调看内存曲线，阶梯上涨=泄漏</td></tr>
+    <tr><td>幂等性</td><td>重复调用不重复扣款/不重复创建</td></tr>
+    <tr><td>真机优先</td><td>相机/蓝牙/推送/支付/传感器必须真机</td></tr>
+    <tr><td>缺陷单</td><td>环境+步骤+实际+期望+复现率+附件，缺一不可</td></tr>
+    <tr><td>性能基线</td><td>对比接入前后差值，量化 SDK 开销</td></tr>
+  </table>
+</section>
+
+<section id="ch12">
+  <h2><span class="num">12</span> 第 12 章 🧠 面试考核（36 题）</h2>
+  <p>点击每题展开，看回答要点、参考答案与回答红线。<span style="color:var(--text-muted);font-size:13px">（提示：一次展开多题后滚动查看）</span></p>
+  <div id="qaList"></div>
+</section>
+
+<script>
+var QA = [
+  {q:"什么是 SDK？SDK 测试和普通软件测试有什么区别？", tag:"概念",
+   key:"给开发者用的工具包；用户是开发者；多为黑盒；必须集成进宿主 App；致命缺陷是文档/示例问题。",
+   ans:"SDK 是软件开发工具包，把某项能力封装成可调用接口供 App 集成。区别：用户是接入方开发者而非终端用户；测试视角是集成顺不顺+调用稳不稳；多为黑盒只看输入输出；必须集成进宿主才能跑；最致命的缺陷是文档错、示例跑不通、报错不清晰。",
+   line:"不要只说'SDK 就是一堆库'；不能忽略'开发者体验'这一 SDK 测试的核心差异。"},
+  {q:"SDK 测试主要测哪些维度？", tag:"概念",
+   key:"功能、集成、兼容性、稳定性、性能、安全/文档六大维度。",
+   ans:"六大维度：功能（单接口输入输出正确）、集成（按文档集成能编译运行）、兼容性（不同机型/系统/ROM）、稳定性（弱网/异常/并发不崩溃不泄漏）、性能（包体积/初始化耗时/内存/耗电）、安全与文档（密钥不硬编码、文档准确）。",
+   line:"不要只答'功能测试'；漏掉兼容性/稳定性/性能是 SDK 测试最常见的失分点。"},
+  {q:"为什么说 SDK 测试多是黑盒测试？", tag:"概念",
+   key:"只给编译好的库，看不到源码，只能测输入→输出和集成行为。",
+   ans:"SDK 通常以编译好的库（aar/framework/dll）分发，接入方拿不到源码，只能通过公开 API 的输入输出、回调、副作用、集成行为来验证，无法审查内部实现，因此多为黑盒。",
+   line:"不要说'黑盒就是不用看代码'；要强调是'只给编译库、只能测外部行为'这一 SDK 特性决定的。"},
+  {q:"SDK 测试的第一步应该做什么？", tag:"流程",
+   key:"以接入方身份照文档从零集成一遍，验证文档可用性。",
+   ans:"第一步不是写用例，而是自己按官方文档从零集成一遍、跑通 Hello World 和官方示例。这一步直接验证文档可用性——最易被忽略却最影响开发者体验，连示例都跑不起来就是 P0 问题。",
+   line:"不要答'先写测试计划'；SDK 测试的起点是'自己先集成跑通'，这是它区别于其他测试的关键。"},
+  {q:"什么是 API 清单？它有什么用？", tag:"流程",
+   key:"列出 SDK 所有公开接口及前置依赖，作为用例设计地图。",
+   ans:"API 清单是把 SDK 每个公开接口列成表，标注作用、前置依赖、关键测试点。它是用例设计的地图，确保覆盖不遗漏，尤其能暴露接口间的依赖顺序。",
+   line:"不要只说'就是列接口'；要答出'含前置依赖、用于设计用例、暴露调用顺序'。"},
+  {q:"SDK 的调用顺序为什么重要？举例说明。", tag:"流程",
+   key:"接口有依赖（init→login→业务），乱序调用是高频缺陷。",
+   ans:"多数 SDK 接口有依赖顺序，如 init→login→pay→logout。跳过前置直接调后续（未初始化就登录、未登录就支付）是高频缺陷来源。用例必须设计乱序场景，验证 SDK 优雅报错而非崩溃。",
+   line:"不要只举一个例子；要答出'依赖顺序+乱序是缺陷来源+要专门测乱序'。"},
+  {q:"SDK 测试需要搭建什么样的环境？", tag:"环境",
+   key:"宿主 Demo 工程 + 机型矩阵 + 网络环境 + 服务端（沙箱/Mock）。",
+   ans:"需要四部分：宿主 Demo 工程（干净、只集成被测 SDK）、机型/系统版本矩阵、网络环境（正常/弱网/断网/切换）、服务端环境（厂商沙箱 + Mock 环境）。",
+   line:"不要只答'装个 App'；要覆盖宿主工程、机型矩阵、网络、服务端四块。"},
+  {q:"为什么 SDK 测试强调真机优先？", tag:"环境",
+   key:"模拟器对涉及硬件/系统能力的 SDK 兼容性差。",
+   ans:"涉及相机、蓝牙、推送、支付、传感器、生物识别的 SDK，模拟器/仿真器兼容性差，行为与真机不一致，容易漏测或误判，因此必须真机测。",
+   line:"不要答'真机更真实'这种空话；要点出具体能力（推送/支付/传感器）在模拟器上不可靠。"},
+  {q:"抓包在 SDK 测试中有什么用？", tag:"工具",
+   key:"验证 SDK 发什么请求、返回什么、通信是否加密、区分责任方。",
+   ans:"抓包能看 SDK 与服务端的真实通信：请求参数对不对、返回对不对、是否加密、超时怎么处理。还能区分是 SDK 端逻辑错还是服务端错，是定位和提单的关键手段。",
+   line:"不要只说'看请求'；要答出'验证正确性+判断加密+区分 SDK 错还是服务端错'。"},
+  {q:"Charles 抓 HTTPS 为什么要装证书？", tag:"工具",
+   key:"HTTPS 流量需信任 Charles 根证书才能被解密，否则是乱码。",
+   ans:"HTTPS 是加密的，Charles 要充当中间人解密，必须让设备信任它的根证书。不装证书抓到的都是乱码（unknown）。Android 7+ 还需在网络安全配置里放行用户证书。",
+   line:"不要答'因为要解密'就停；要补上'装根证书+高版本需配网络安全策略'。"},
+  {q:"抓不到 SDK 的包，可能是什么原因？", tag:"工具",
+   key:"证书没装/代理填错/SSL Pinning/二次加密。",
+   ans:"几种可能：全是 unknown 是证书没装或没信任；完全没请求是代理地址端口填错或 SDK 用了证书绑定（SSL Pinning）需让开发关闭或走 Hook；能看到请求但内容加密是 SDK 做了二次加密，抓到的是密文。",
+   line:"不要只答'证书问题'；要覆盖证书、代理、SSL Pinning、二次加密四种情况。"},
+  {q:"adb logcat 常用的过滤参数有哪些？", tag:"工具",
+   key:"grep 过滤 TAG、*:E 只看错误、-c 清空、-d 导出。",
+   ans:"常用：grep 按 TAG 过滤 SDK 日志、*:E 只看 Error 级、-c 清空缓冲（复现前清干净）、-d 导出到文件（提 bug 附日志）。",
+   line:"不要只答一个命令；至少答出过滤、看错误级、清空、导出四个。"},
+  {q:"SDK 性能测试关注哪些指标？", tag:"性能",
+   key:"包体积、初始化耗时、内存、CPU/耗电、启动耗时。",
+   ans:"核心指标：包体积（接入后增大多少）、初始化耗时（是否阻塞主线程）、内存占用（是否泄漏）、CPU/耗电（后台是否偷跑）、启动耗时（是否拖慢冷启动）。",
+   line:"不要只答'测速度'；要列出具体指标并说明关注点。"},
+  {q:"如何测 SDK 的初始化耗时？", tag:"性能",
+   key:"记录 init 前后时间差，多轮取平均。",
+   ans:"在 init 调用前后打时间点，求差值得单次耗时。单次有波动，跑多轮（如 5 次）取平均更可信，单位换算成毫秒。也可用 Profiler 直接看。",
+   line:"不要答'看一眼就知道'；要答出'前后打点+多轮取平均+毫秒单位'。"},
+  {q:"什么是内存泄漏？SDK 测试怎么发现？", tag:"稳定性",
+   key:"反复调用看内存曲线，阶梯上涨=泄漏。",
+   ans:"内存泄漏是对象用完不释放、内存持续上涨。测试方法：反复初始化/销毁 SDK 多次，用 Profiler/PerfDog 看内存曲线——锯齿状回落正常，阶梯式上涨是泄漏。还可结合 MAT/LeakCanary 定位。",
+   line:"不要只说'内存变多'；要答出'反复调用+看曲线形态（阶梯上涨）+定位工具'。"},
+  {q:"弱网测试怎么做？关注什么？", tag:"稳定性",
+   key:"Charles 限速模拟弱网；看超时/重试/友好提示。",
+   ans:"用 Charles 的 Network Condition 限速（选极差网络或自定义延迟/丢包）。重点关注：是否有超时机制（不无限等待）、是否有有限重试、超时后是否友好提示而非转圈卡死。",
+   line:"不要只答'用 Charles 限速'；要答出关注的三点：超时、重试、提示。"},
+  {q:"什么是幂等性？SDK 为什么要测？", tag:"稳定性",
+   key:"重复调用不产生副作用（如重复扣款）。",
+   ans:"幂等性是同一操作调用多次结果一致、不产生额外副作用。SDK 的支付/下单接口必须测幂等——同一订单号支付两次不能重复扣款，重复提交不能重复创建订单。",
+   line:"不要只说'重复调一次'；要答出'不重复扣款/不重复创建'这一实际风险。"},
+  {q:"并发调用 SDK 接口要测什么？", tag:"稳定性",
+   key:"线程安全，无数据错乱、无崩溃。",
+   ans:"多线程同时调同一接口（如并发下单、并发上报），验证线程安全：不崩溃、不数据错乱、不重复处理。SDK 内部若用了共享资源而无锁，高并发下易出问题。",
+   line:"不要只答'同时调用'；要答出'线程安全+数据不错乱+不崩溃'。"},
+  {q:"兼容性测试的机型矩阵怎么设计？", tag:"兼容性",
+   key:"核心真机 + 云真机补长尾 + 极限机型。",
+   ans:"分三层：核心机型（主流销量、各厂商旗舰，本地深度测）、长尾机型（老旧系统、小众分辨率，云真机批量跑）、极限机型（最低支持版本、最小内存，验证下限）。",
+   line:"不要答'多测几台'；要答出三层策略和云真机的作用。"},
+  {q:"厂商 ROM 差异会带来哪些兼容性问题？", tag:"兼容性",
+   key:"权限管理、推送通道、后台保活差异。",
+   ans:"同版本不同厂商 ROM 差异大：权限管理（小米/华为对后台、自启动、通知更严）、推送（各厂商自家通道需分别测）、后台保活（部分 ROM 杀后台激进，长连接易断）。",
+   line:"不要只说'各家不一样'；要具体答出权限、推送、保活三方面。"},
+  {q:"游戏（Unity）SDK 测试有什么特殊点？", tag:"兼容性",
+   key:"引擎版本兼容、回调线程、真机抓包。",
+   ans:"特殊性：引擎版本兼容（不同 Unity 版本插件可能冲突）、主线程 vs 子线程回调（SDK 回调线程不对会崩）、真机抓包验证（模拟器对游戏 SDK 兼容性差）。",
+   line:"不要答'和普通一样'；要答出引擎版本、线程回调、真机三点。"},
+  {q:"如何验证 SDK 的文档是否准确？", tag:"文档",
+   key:"照文档集成、核对参数与返回、示例能否跑通。",
+   ans:"方法：照文档逐步集成看是否顺畅；核对每个接口的参数名/类型/返回结构与文档是否一致；跑官方示例能否直接编译运行。文档与实现不符（参数名错、返回字段缺）都要作为缺陷提单。",
+   line:"不要只说'看文档对不对'；要答出'照做集成+核对参数返回+跑示例'。"},
+  {q:"SDK 缺陷单必须包含哪些要素？", tag:"缺陷",
+   key:"环境+步骤+实际+期望+复现率+附件。",
+   ans:"六要素：环境信息（机型/系统/ROM/SDK 版本）、复现步骤（精确到每步）、实际结果（附堆栈/抓包/日志）、期望结果、复现率（必现/偶现）、附件（logcat/抓包/录屏）。缺一不可，否则开发无法复现定位。",
+   line:"不要只答'写清楚问题'；必须答出六要素，尤其复现率和附件。"},
+  {q:"遇到偶现崩溃的 bug 怎么处理？", tag:"缺陷",
+   key:"记录复现率、附长时间日志、不轻易忽略。",
+   ans:"偶现 bug 也要提单：记录复现率（几次里有几次、几台里有几台），附长时间挂机日志和崩溃堆栈，尽量缩小触发条件。不能因'我这边没复现'就忽略——偶现往往和特定机型/时序相关。",
+   line:"不要答'复现不了就不提'；这是 SDK 测试大忌，要记录复现率并附日志。"},
+  {q:"如何区分 bug 是 SDK 端还是服务端的问题？", tag:"缺陷",
+   key:"抓包看请求和返回，判断哪一端错。",
+   ans:"抓包：若 SDK 发出的请求参数就错了，是 SDK 端逻辑问题；若请求正确但服务端返回错误，是服务端问题；若请求正确、服务端正常但 SDK 解析崩溃，是 SDK 端解析问题。抓包能明确责任方，帮开发少走弯路。",
+   line:"不要答'问开发'；要答出通过抓包对比请求/返回来判断的具体方法。"},
+  {q:"什么是回归测试？SDK 升级为什么要回归？", tag:"流程",
+   key:"SDK 升级可能破坏已有功能，需重跑核心用例。",
+   ans:"回归测试是修改后重跑已有用例，确认没引入新问题。SDK 升级（换版本、改接口）可能破坏接入方已有功能，必须回归核心链路和关键接口，确保升级不炸。",
+   line:"不要只说'再测一遍'；要答出'升级可能破坏已有功能+重跑核心用例'。"},
+  {q:"SDK 测试中 Mock 有什么用？", tag:"工具",
+   key:"服务端没就绪时模拟返回，不阻塞测试。",
+   ans:"Mock 是在服务端未就绪或需模拟异常时，用 Mock 服务返回约定的正常/异常数据，让测试不依赖真实服务端、不被阻塞。可模拟超时、错误码、异常结构等真实环境难构造的场景。",
+   line:"不要只说'模拟接口'；要答出'服务端没就绪不阻塞+模拟异常场景'。"},
+  {q:"如何测试 SDK 的安全性？", tag:"安全",
+   key:"密钥不硬编码、通信加密、权限最小化。",
+   ans:"安全测试重点：密钥/AppKey 是否硬编码在代码里（易被反编译窃取）、通信是否加密（HTTPS、防二次加密缺失）、权限是否最小化（不申请与功能无关的权限）、是否有越界收集用户信息。",
+   line:"不要只答'看有没有漏洞'；要具体答出密钥硬编码、加密、权限最小化。"},
+  {q:"SDK 初始化为什么要关注是否阻塞主线程？", tag:"性能",
+   key:"主线程阻塞会导致 ANR/卡顿。",
+   ans:"主线程（UI 线程）阻塞超过 5 秒会 ANR。SDK 初始化若做网络请求、大文件加载等同步耗时操作且在主线程，会卡界面甚至 ANR。应支持异步初始化，或提示接入方放子线程。",
+   line:"不要只说'会慢'；要答出'主线程阻塞→ANR/卡顿'及'应异步'。"},
+  {q:"什么是冒烟测试？SDK 测试里怎么做？", tag:"流程",
+   key:"上线前快速验证核心功能可用。",
+   ans:"冒烟测试是上线/发版前，快速跑一遍核心功能确认基本可用，通过才继续详细测试。SDK 冒烟就是验证'初始化→登录→核心业务'主链路能走通，通常自动化执行、多机型批量跑。",
+   line:"不要答'测最简单功能'；要答出'上线前快速验证核心链路+通过才继续'。"},
+  {q:"自动化测试在 SDK 测试中适合做什么？", tag:"工具",
+   key:"回归、多机型批量、冒烟，不适合探索性测试。",
+   ans:"自动化适合：回归测试（SDK 升级后重跑）、多机型批量兼容验证、冒烟测试。不适合探索性、一次性、UI 频繁变动的测试。常用 Appium/UI Automator/Airtest。",
+   line:"不要答'自动化就是自动跑'；要答出适用场景（回归/批量/冒烟）和不适用场景。"},
+  {q:"SDK 测试和 API 测试有什么区别？", tag:"概念",
+   key:"SDK 测试含集成/兼容/性能，API 测试只测接口。",
+   ans:"API 测试只测接口输入输出（服务端接口层面）。SDK 测试范围更大：除接口功能外，还包含集成（能否编译运行）、兼容性（机型/ROM）、稳定性（弱网/崩溃）、性能（包体积/耗电）、文档准确性——因为 SDK 是要集成进 App 的分发包。",
+   line:"不要答'差不多'；要答出 SDK 测试范围更大、含集成兼容性能。"},
+  {q:"接入方反馈'SDK 导致 App 崩溃'，你怎么排查？", tag:"缺陷",
+   key:"要堆栈+环境+复现步骤，先复现再定位。",
+   ans:"第一步要齐信息：崩溃堆栈、机型/系统/SDK 版本、复现步骤。然后在自己环境复现，用日志/抓包定位崩溃点，判断是 SDK 内部崩溃、接入方式错误还是服务端返回异常导致，再定位责任方。",
+   line:"不要答'让开发看'；要答出'先要信息→复现→定位→判责任'的完整思路。"},
+  {q:"什么是长尾机型？为什么要覆盖？", tag:"兼容性",
+   key:"销量小但总量大的老旧/小众机型，云真机覆盖。",
+   ans:"长尾机型是单款销量不大、但加起来占相当比例的老旧系统/小众分辨率机型。它们买真机不划算，但兼容性 bug 常在这里暴露，用云真机平台批量覆盖，性价比高。",
+   line:"不要只说'老旧手机'；要答出'单款少总量大+bug 常在此+云真机覆盖'。"},
+  {q:"SDK 测试中如何做版本管理？", tag:"流程",
+   key:"记录 SDK 版本、变更点、回归范围。",
+   ans:"记录每次测试的 SDK 版本号、该版本的变更点（新增/修改/废弃接口），据此确定回归范围。版本升级要对比新旧接口差异，重点测变更部分和可能受影响的旧功能。",
+   line:"不要答'保存安装包'；要答出'记版本+记变更+据变更定回归范围'。"},
+  {q:"SDK 测试报告应包含哪些内容？", tag:"流程",
+   key:"测试范围、环境、结果、缺陷、风险、结论。",
+   ans:"应包含：测试范围（测了哪些接口/维度）、测试环境（机型矩阵/系统/网络）、测试结果（通过率、覆盖度）、缺陷清单（按严重度）、遗留风险（未覆盖/已知问题）、测试结论（是否建议发布）。",
+   line:"不要只答'写了多少 bug'；要覆盖范围、环境、结果、缺陷、风险、结论。"}
+];
+
+var box = document.getElementById('qaList');
+var html = '';
+for(var i=0;i<QA.length;i++){
+  var item = QA[i];
+  html += '<div class="qa"><div class="q"><span class="qno">'+(i+1)+'</span><span>'+item.q+'</span><span class="qtag">'+item.tag+'</span></div>';
+  html += '<div class="a"><div class="row"><span class="lab key">回答要点</span><div class="line-text">'+item.key+'</div></div>';
+  html += '<div class="row"><span class="lab ans">参考答案</span><div class="ans-text">'+item.ans+'</div></div>';
+  html += '<div class="row"><span class="lab line">回答红线</span><div class="line-text">'+item.line+'</div></div>';
+  html += '</div></div>';
+}
+box.innerHTML = html;
+var qs = document.querySelectorAll('#qaList .q');
+for(var j=0;j<qs.length;j++){
+  qs[j].addEventListener('click', function(){
+    this.parentNode.querySelector('.a').classList.toggle('open');
+  });
+}
+</script>
+
+</div>
+
+<script>
+function copyCode(btn){
+  var pre = btn.closest('.code-block').querySelector('pre');
+  var text = pre.textContent;
+  var done = function(){ btn.textContent='✅ 已复制'; btn.classList.add('copied'); setTimeout(function(){ btn.textContent='📋 复制'; btn.classList.remove('copied'); },2000); };
+  var fail = function(){ btn.textContent='❌ 失败'; setTimeout(function(){ btn.textContent='📋 复制'; },2000); };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text); done(); }); }
+  else { fallbackCopy(text); done(); }
+}
+function fallbackCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+}
+var qaList = document.querySelectorAll('.qa .q');
+for(var i=0;i<qaList.length;i++){
+  qaList[i].addEventListener('click', function(){
+    var a = this.parentNode.querySelector('.a');
+    a.classList.toggle('open');
+  });
+}
+var sections = document.querySelectorAll('section[id]');
+var navLinks = document.querySelectorAll('.topnav a');
+window.addEventListener('scroll', function(){
+  var current = '';
+  for(var i=0;i<sections.length;i++){
+    if(window.scrollY >= sections[i].offsetTop - 90){ current = sections[i].getAttribute('id'); }
+  }
+  for(var j=0;j<navLinks.length;j++){
+    navLinks[j].classList.remove('active');
+    if(navLinks[j].getAttribute('href') === '#'+current){ navLinks[j].classList.add('active'); }
+  }
+});
+</script>
+</body>
+</html>
