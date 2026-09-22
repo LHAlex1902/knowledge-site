@@ -177,6 +177,11 @@
   .sec-move + .count{margin-left:0}          /* 有按钮组时，数量不再独占右推 */
   .sec-move .mv{padding:2px 8px;font-size:11px;line-height:1.5;border-radius:8px}
   .sec-move .mv:disabled{opacity:.3;cursor:not-allowed}
+  /* 折叠按钮（暂存板块）：折叠态高亮 */
+  .sec-collapse{margin-left:0}
+  .sec-collapse.is-collapsed{color:var(--accent);background:rgba(88,166,255,.15);border-color:rgba(88,166,255,.4)}
+  /* 折叠后占位提示 */
+  .stash-collapsed-tip{grid-column:1/-1;text-align:center;padding:14px;color:var(--text2);font-size:13px;background:rgba(255,255,255,.02);border:1px dashed var(--border);border-radius:var(--radius)}
 
   /* cards grid —— App 图标式小方块 */
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px;min-height:60px;
@@ -520,6 +525,7 @@ var GH_REPO  = 'knowledge-site';
 var LS_LAYOUT = 'zhishi-pulse-layout-v1';
 var LS_LINKS  = 'zhishi-pulse-links-v1';
 var LS_NOTES  = 'zhishi-pulse-notes-v1';
+var LS_COLLAPSE = 'zhishi-pulse-collapse-v1';   // 板块折叠状态：{secId:true} 表示该板块已折叠
 var LS_TOKEN  = 'zhishi-pulse-token-v1';   // 本设备记住的 GitHub PAT
 var DATA_FILE = 'site-data.json';          // 仓库里存放同步数据的文件
 var SYNC_BRANCH = 'main';
@@ -534,6 +540,7 @@ var LS_AI_CHAT = 'zhishi-pulse-ai-chat-v1'; // 对话历史本地存储
 
 var SECTIONS = [
   {id:'dev',     icon:'💻', name:'开发'},
+  {id:'stash',   icon:'📦', name:'暂存'},
   {id:'test',    icon:'🧪', name:'测试'},
   {id:'summary', icon:'📝', name:'总结与回顾'},
   {id:'links',   icon:'🔗', name:'常用网址'}
@@ -627,7 +634,7 @@ function canonFile(tk){
 }
 // 把整个 layout 的 token 批量规范化
 function canonLayout(layout){
-  var out = {dev:[],test:[],summary:[],links:[],inbox:[]};
+  var out = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
   SEC_IDS.forEach(function(id){ out[id] = (layout[id]||[]).map(canonFile); });
   out.inbox = (layout.inbox||[]).map(canonFile);
   // 兼容旧数据：已删除的板块（基础知识 basic / 速记手册 memo）里的条目并入「待分类」，避免丢失
@@ -673,12 +680,12 @@ function initLayout(){
   var saved = null;
   try{ saved = JSON.parse(localStorage.getItem(LS_LAYOUT)); }catch(e){}
   if(saved && typeof saved === 'object'){
-    var base = {dev:[],test:[],summary:[],links:[],inbox:[]};
+    var base = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(saved[id]) ? saved[id] : []; });
     base.inbox = Array.isArray(saved.inbox) ? saved.inbox : [];
     return canonLayout(base);
   }
-  var layout = {dev:[],test:[],summary:[],links:[],inbox:[]};
+  var layout = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
   Object.keys(META).forEach(function(file){
     var sec = NAME2SEC[file] || 'inbox';
     layout[sec].push(file);
@@ -686,6 +693,18 @@ function initLayout(){
   return layout;
 }
 function saveLayout(){ try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){} scheduleSync(); }
+
+// ===== 板块折叠状态 =====
+var COLLAPSED = {};   // {secId:true} 表示该板块内容已折叠，仅保留标题行
+function loadCollapse(){ try{ var s=JSON.parse(localStorage.getItem(LS_COLLAPSE)); COLLAPSED = (s && typeof s==='object') ? s : {}; }catch(e){ COLLAPSED = {}; } }
+function saveCollapse(){ try{ localStorage.setItem(LS_COLLAPSE, JSON.stringify(COLLAPSED)); }catch(e){} }
+// 切换某板块的折叠状态（折叠=隐藏内容网格，只留标题行）
+function toggleCollapse(id){
+  if(COLLAPSED[id]){ delete COLLAPSED[id]; } else { COLLAPSED[id] = true; }
+  saveCollapse();
+  render();
+  scheduleSync();   // 折叠状态改动也纳入云同步（多设备一致）
+}
 
 // ===== LINKS =====
 function loadLinks(){
@@ -703,7 +722,7 @@ function saveNotes(){ try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES))
 var _syncTimer = null;
 var _booted = false;          // 启动初始化阶段不触发推送（避免一开页面就推空改动）
 var _lastPushedFp = null;     // 上次成功推送/拉取的数据指纹（不含 updatedAt，用于跳过无变化的推送）
-function dataFp(){ return JSON.stringify({l:LAYOUT, k:LINKS, n:NOTES, s:sectionOrder()}); }
+function dataFp(){ return JSON.stringify({l:LAYOUT, k:LINKS, n:NOTES, s:sectionOrder(), c:COLLAPSED}); }
 function scheduleSync(){
   if(!_booted) return;               // 初始化阶段（boot 中）不推
   if(!getToken()) return;            // 未设令牌 → 只存本地
@@ -862,6 +881,11 @@ function render(){
     html += '<div class="cat-head">';
     html += '<span class="icon">'+sec.icon+'</span>';
     html += '<h2>'+esc(sec.name)+'</h2>';
+    // 折叠按钮（暂存板块专属：折叠后仅保留标题行）——紧贴标题右侧
+    var collapsed = (sec.id === 'stash') ? !!COLLAPSED[sec.id] : false;
+    if(sec.id === 'stash'){
+      html += '<button class="btn mini mv sec-collapse'+(collapsed?' is-collapsed':'')+'" title="'+(collapsed?'展开':'折叠')+'板块内容" aria-label="'+(collapsed?'展开':'折叠')+'板块内容" onclick="toggleCollapse(\''+sec.id+'\')">'+(collapsed?'▸':'▾')+'</button>';
+    }
     if(sec.id === 'links'){
       html += '<button class="btn mini" onclick="openLinkModal(null,\'links\')" style="margin-left:8px">＋ 添加网址</button>';
     }
@@ -874,8 +898,10 @@ function render(){
          +  '</span>';
     html += '<span class="count">'+(sec.id==='links' ? items.length+' 个' : items.length+' 份')+'</span>';
     html += '</div>';
-    html += '<div class="grid" data-sec="'+sec.id+'">';
-    if(items.length === 0){
+    html += '<div class="grid" data-sec="'+sec.id+'"'+(collapsed?' style="display:none"':'')+'>';
+    if(collapsed){
+      html += '<div class="stash-collapsed-tip">已折叠 · '+items.length+' 份内容已收起，点标题栏 ▸ 展开</div>';
+    } else if(items.length === 0){
       if(sec.id === 'links'){
         html += '<div class="empty"><span class="plus">＋</span>点上方「添加网址」录入常用网站，或把其他板块的网址卡片拖到这里</div>';
       } else {
@@ -1322,6 +1348,7 @@ function boot(){
   saveNotes();
   LAYOUT = initLayout();
   loadSectionOrder();   // 先套用本机保存的板块顺序，云端数据到达后可能再覆盖
+  loadCollapse();       // 加载板块折叠状态（暂存板块等）
   renderNotes();
   render();
   aiInitInput();   // 初始化 AI 问答输入框事件（回车发送、自适应高度）
@@ -1361,19 +1388,20 @@ function getToken(){ try{ return localStorage.getItem(LS_TOKEN) || ''; }catch(e)
 function setToken(v){ try{ if(v) localStorage.setItem(LS_TOKEN, v); else localStorage.removeItem(LS_TOKEN); }catch(e){} }
 
 function collectData(){
-  // 汇总需要同步的数据（含板块顺序 sections）
+  // 汇总需要同步的数据（含板块顺序 sections、折叠状态 collapsed）
   return {
     layout: LAYOUT,
     links: LINKS,
     notes: NOTES,
     sections: sectionOrder(),
+    collapsed: COLLAPSED,
     updatedAt: new Date().toISOString()
   };
 }
 function applyData(d){
   if(!d || typeof d !== 'object') return false;
   if(d.layout && typeof d.layout === 'object'){
-    var base = {dev:[],test:[],summary:[],links:[],inbox:[]};
+    var base = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(d.layout[id]) ? d.layout[id] : []; });
     base.inbox = Array.isArray(d.layout.inbox) ? d.layout.inbox : [];
     LAYOUT = canonLayout(base);
@@ -1386,6 +1414,9 @@ function applyData(d){
     applySectionOrder(d.sections);
     try{ localStorage.setItem(LS_SECTIONS, JSON.stringify(sectionOrder())); }catch(e){}
   }
+  // 折叠状态（云端为准），写回本机，使多设备折叠状态一致
+  COLLAPSED = (d.collapsed && typeof d.collapsed==='object') ? d.collapsed : {};
+  try{ localStorage.setItem(LS_COLLAPSE, JSON.stringify(COLLAPSED)); }catch(e){}
   _lastPushedFp = dataFp();   // 刚拉下来的内容即"已同步"，避免随即又推回去
   return true;
 }
@@ -1777,13 +1808,14 @@ function diag(msg){
 // 计算云端数据 d 的指纹，结构与 dataFp() 对齐（排除 updatedAt），用于乐观锁比对。
 function cloudFp(d){
   if(!d || typeof d !== 'object') return null;
-  var layout = {dev:[],test:[],summary:[],links:[],inbox:[]};
+  var layout = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
   SEC_IDS.forEach(function(id){
     layout[id] = (d.layout && Array.isArray(d.layout[id])) ? d.layout[id].map(canonFile) : [];
   });
   layout.inbox = (d.layout && Array.isArray(d.layout.inbox)) ? d.layout.inbox.map(canonFile) : [];
   var secs = (Array.isArray(d.sections) && d.sections.length) ? d.sections : sectionOrder();
-  return JSON.stringify({l:layout, k:(d.links||[]), n:(d.notes||[]), s:secs});
+  var col = (d.collapsed && typeof d.collapsed==='object') ? d.collapsed : {};
+  return JSON.stringify({l:layout, k:(d.links||[]), n:(d.notes||[]), s:secs, c:col});
 }
 // 纯函数：把 base（本机，优先保留顺序/同 id 值）与 inc（云端）按 id/token 取并集，
 // 返回合并后的普通数据对象 {layout,links,notes,sections}（不触碰内存，供两条路径复用）。
@@ -1807,7 +1839,7 @@ function unionMerge(base, inc){
   (inc.links||[]).forEach(function(l){ if(l && l.id && lIds.indexOf(l.id)===-1) lIds.push(l.id); });
   out.links = lIds.map(function(id){ return lMap[id]; }).filter(Boolean);
   // LAYOUT：每板块 token 并集，本机顺序在前、云端独有追加
-  var lay = {dev:[],test:[],summary:[],links:[],inbox:[]};
+  var lay = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
   SEC_IDS.forEach(function(id){
     var b = (base.layout && Array.isArray(base.layout[id])) ? base.layout[id].map(canonFile) : [];
     var c = (inc.layout && Array.isArray(inc.layout[id])) ? inc.layout[id].map(canonFile) : [];
@@ -1823,19 +1855,29 @@ function unionMerge(base, inc){
   out.layout = lay;
   // sections：以本机为准（板块顺序是用户主动排的，不参与合并）
   out.sections = (Array.isArray(base.sections) && base.sections.length) ? base.sections : (inc.sections || sectionOrder());
+  // 折叠状态：键并集（任一设备折叠了某板块，另一设备也跟随折叠），保证多设备一致
+  var col = {};
+  var bk = (base.collapsed && typeof base.collapsed==='object') ? base.collapsed : {};
+  var ck = (inc.collapsed && typeof inc.collapsed==='object') ? inc.collapsed : {};
+  Object.keys(bk).forEach(function(k){ col[k]=true; });
+  Object.keys(ck).forEach(function(k){ col[k]=true; });
+  out.collapsed = col;
   return out;
 }
 // 把云端数据 d 与本机内存数据合并（包装 unionMerge），写回内存 + localStorage + 重渲染。
 function mergeCloudIntoLocal(d){
   if(!d || typeof d !== 'object') return false;
-  var merged = unionMerge({layout:LAYOUT, links:LINKS, notes:NOTES, sections:sectionOrder()}, d);
-  var changed = (JSON.stringify(merged) !== JSON.stringify({layout:LAYOUT, links:LINKS, notes:NOTES}));
+  var merged = unionMerge({layout:LAYOUT, links:LINKS, notes:NOTES, sections:sectionOrder(), collapsed:COLLAPSED}, d);
+  var changed = (JSON.stringify(merged) !== JSON.stringify({layout:LAYOUT, links:LINKS, notes:NOTES, collapsed:COLLAPSED}));
   LAYOUT = canonLayout(merged.layout);
   LINKS = merged.links;
   NOTES = merged.notes;
+  // 折叠状态（键并集合并结果），写回本机
+  COLLAPSED = (merged.collapsed && typeof merged.collapsed==='object') ? merged.collapsed : {};
   try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){}
   try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){}
   try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){}
+  try{ localStorage.setItem(LS_COLLAPSE, JSON.stringify(COLLAPSED)); }catch(e){}
   if(typeof renderNotes === 'function') renderNotes();
   if(typeof render === 'function') render();
   return changed;
