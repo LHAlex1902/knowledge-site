@@ -796,6 +796,7 @@ function linkCardHtml(id){
   return '<a class="card is-link" draggable="true" data-item="link:'+esc(id)+'" href="'+esc(lk.url)+'" target="_blank" rel="noopener" title="'+esc(lk.url)+'">'+
       '<span class="grip">⠿</span>'+
       '<button class="card-edit" title="编辑" onclick="editLink(event,\''+id+'\')">✎</button>'+
+      '<button class="card-del" title="删除" onclick="delLink(event,\''+id+'\')">×</button>'+
       '<div class="c-emoji"><span class="fi-bg">🌐</span><img class="fi-img" src="'+esc(iconSrc)+'" loading="lazy" onerror="this.style.display=\'none\'"></div>'+
       '<div class="c-name">'+esc(shortName)+'</div>'+
       '<div class="c-tags">'+tags+'</div>'+
@@ -1242,6 +1243,26 @@ function editLink(e, id){
   e.preventDefault();
   e.stopPropagation();
   openLinkModal(id);
+}
+
+// 删除网址卡片（点 ×，与文件卡片 delCard 同款逻辑）
+function delLink(e, id){
+  if(e){ e.preventDefault(); e.stopPropagation(); }
+  if(!confirm('确定删除这个网址卡片？仅从本页移除，不会删除目标网站。')) return;
+  // 从 LINKS 数据里删
+  LINKS = LINKS.filter(function(x){ return x.id !== id; });
+  saveLinks();
+  // 从所有板块 + 待分类的布局里移除 link:<id> token
+  var tok = 'link:' + id;
+  SEC_IDS.forEach(function(sid){
+    var i = LAYOUT[sid].indexOf(tok);
+    if(i !== -1){ LAYOUT[sid].splice(i,1); }
+  });
+  var ii = LAYOUT.inbox.indexOf(tok);
+  if(ii !== -1){ LAYOUT.inbox.splice(ii,1); }
+  saveLayout();
+  render();
+  scheduleSync();
 }
 
 // 通过 CORS 代理抓取网页 title / description / favicon
