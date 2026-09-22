@@ -543,6 +543,7 @@ var SECTIONS = [
   {id:'stash',   icon:'📦', name:'暂存'},
   {id:'test',    icon:'🧪', name:'测试'},
   {id:'summary', icon:'📝', name:'总结与回顾'},
+  {id:'learn',   icon:'📚', name:'学无止境'},
   {id:'links',   icon:'🔗', name:'常用网址'}
 ];
 var SEC_IDS = SECTIONS.map(function(s){return s.id;});
@@ -634,7 +635,7 @@ function canonFile(tk){
 }
 // 把整个 layout 的 token 批量规范化
 function canonLayout(layout){
-  var out = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
+  var out = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
   SEC_IDS.forEach(function(id){ out[id] = (layout[id]||[]).map(canonFile); });
   out.inbox = (layout.inbox||[]).map(canonFile);
   // 兼容旧数据：已删除的板块（基础知识 basic / 速记手册 memo）里的条目并入「待分类」，避免丢失
@@ -680,12 +681,12 @@ function initLayout(){
   var saved = null;
   try{ saved = JSON.parse(localStorage.getItem(LS_LAYOUT)); }catch(e){}
   if(saved && typeof saved === 'object'){
-    var base = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
+    var base = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(saved[id]) ? saved[id] : []; });
     base.inbox = Array.isArray(saved.inbox) ? saved.inbox : [];
     return canonLayout(base);
   }
-  var layout = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
+  var layout = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
   Object.keys(META).forEach(function(file){
     var sec = NAME2SEC[file] || 'inbox';
     layout[sec].push(file);
@@ -1401,7 +1402,7 @@ function collectData(){
 function applyData(d){
   if(!d || typeof d !== 'object') return false;
   if(d.layout && typeof d.layout === 'object'){
-    var base = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
+    var base = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(d.layout[id]) ? d.layout[id] : []; });
     base.inbox = Array.isArray(d.layout.inbox) ? d.layout.inbox : [];
     LAYOUT = canonLayout(base);
@@ -1808,7 +1809,7 @@ function diag(msg){
 // 计算云端数据 d 的指纹，结构与 dataFp() 对齐（排除 updatedAt），用于乐观锁比对。
 function cloudFp(d){
   if(!d || typeof d !== 'object') return null;
-  var layout = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
+  var layout = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
   SEC_IDS.forEach(function(id){
     layout[id] = (d.layout && Array.isArray(d.layout[id])) ? d.layout[id].map(canonFile) : [];
   });
@@ -1839,7 +1840,7 @@ function unionMerge(base, inc){
   (inc.links||[]).forEach(function(l){ if(l && l.id && lIds.indexOf(l.id)===-1) lIds.push(l.id); });
   out.links = lIds.map(function(id){ return lMap[id]; }).filter(Boolean);
   // LAYOUT：每板块 token 并集，本机顺序在前、云端独有追加
-  var lay = {dev:[],stash:[],test:[],summary:[],links:[],inbox:[]};
+  var lay = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
   SEC_IDS.forEach(function(id){
     var b = (base.layout && Array.isArray(base.layout[id])) ? base.layout[id].map(canonFile) : [];
     var c = (inc.layout && Array.isArray(inc.layout[id])) ? inc.layout[id].map(canonFile) : [];
