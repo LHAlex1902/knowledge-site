@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>武汉出发 · 湘赣瓷都环线 | 4天3晚【住车方案】攻略（岳阳楼-长沙-南昌-景德镇）</title>
+<style>
+:root{
+  --brand:#0d9488; --brand-2:#059669; --brand-soft:#f0fdfa;
+  --card:#ffffff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+  --ok-bg:#f0fdf4; --ok-fg:#16a34a; --ok-line:#bbf7d0;
+  --warn-bg:#fffbeb; --warn-fg:#b45309; --warn-line:#fde68a;
+  --danger-bg:#fef2f2; --danger-fg:#dc2626; --danger-line:#fecaca;
+  --info-bg:#eff6ff; --info-fg:#2563eb; --info-line:#bfdbfe;
+  --note-bg:#fef9c3; --note-fg:#a16207;
+  --pending-bg:#fff7ed; --pending-fg:#ea580c; --pending-line:#fed7aa;
+  --radius:14px; --shadow:0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:#f3f4f6;color:var(--text);
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:15px;line-height:1.65;-webkit-text-size-adjust:100%}
+.wrap{max-width:768px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+.hero{background:linear-gradient(135deg,#0f766e,#065f46);color:#fff;
+  border-radius:var(--radius);padding:24px;margin-bottom:16px;overflow:hidden;position:relative}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;
+  border-radius:50%;background:rgba(255,255,255,.10)}
+.hero h1{margin:0 0 8px;font-size:24px;line-height:1.35;position:relative;z-index:1}
+.hero p.sub{margin:0 0 14px;font-size:14px;opacity:.95;position:relative;z-index:1}
+.tag{display:inline-block;background:rgba(255,255,255,.22);color:#fff;
+  border-radius:999px;padding:4px 12px;font-size:13px;margin:0 8px 8px 0;position:relative;z-index:1}
+h2.sec{display:flex;align-items:center;gap:10px;font-size:20px;margin:30px 0 12px}
+.num{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;
+  border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;font-size:15px;font-weight:700;flex:0 0 auto}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:640px){.grid2,.grid4{grid-template-columns:1fr}}
+.oitem{background:var(--brand-soft);border:1px solid #ccfbf1;border-radius:12px;padding:10px;text-align:center}
+.oitem b{display:block;font-size:16px;color:#0f766e}
+.oitem span{font-size:12.5px;color:var(--muted)}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok-fg);border:1px solid var(--ok-line)}
+.pill.warn{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-line)}
+.pill.danger{background:var(--danger-bg);color:var(--danger-fg);border:1px solid var(--danger-line)}
+.pill.info{background:var(--info-bg);color:var(--info-fg);border:1px solid var(--info-line)}
+.pill.pend{background:var(--pending-bg);color:var(--pending-fg);border:1px solid var(--pending-line)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{background:var(--brand-soft);color:#0f766e;font-weight:700}
+.tl{border-left:2px dashed #99f6e4;margin:4px 0 4px 7px;padding-left:16px}
+.tl .it{position:relative;margin-bottom:12px}
+.tl .it::before{content:"";position:absolute;left:-23px;top:6px;width:10px;height:10px;
+  border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+.tl .it.hi::before{background:linear-gradient(135deg,#f59e0b,#f97316);width:12px;height:12px;left:-24px}
+.tl .time{font-weight:700;color:var(--brand);font-size:13px}
+.tl .what{font-size:14px}
+.note{background:var(--note-bg);border-left:4px solid var(--note-fg);
+  border-radius:8px;padding:8px 10px;font-size:13px;color:#713f12;margin:8px 0}
+.rain{background:var(--info-bg);border-left:4px solid var(--info-fg);
+  border-radius:8px;padding:8px 10px;font-size:13px;color:#1e40af;margin:8px 0}
+.cost{color:var(--info-fg);font-weight:600;font-size:13.5px}
+.warnbox{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;
+  padding:8px 10px;font-size:13px;color:var(--warn-fg);margin:8px 0}
+.okbox{background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:10px;
+  padding:8px 10px;font-size:13px;color:#166534;margin:8px 0}
+.dangerbox{background:var(--danger-bg);border:2px solid var(--danger-line);border-radius:var(--radius);
+  padding:14px;margin-bottom:16px}
+.dangerbox h3{color:var(--danger-fg);margin:0 0 10px;font-size:17px}
+.dangerbox .di{font-size:13.5px;margin:7px 0;color:#7f1d1d}
+.pendbox{background:var(--pending-bg);border:1px solid var(--pending-line);border-radius:10px;
+  padding:8px 10px;font-size:13px;color:#9a3412;margin:8px 0}
+.ck{list-style:none;padding-left:0;margin:6px 0}
+.ck li{padding:3px 0 3px 26px;position:relative;font-size:13.5px}
+.ck li::before{content:"☐";position:absolute;left:4px;color:var(--brand);font-size:15px}
+.barbox{margin:8px 0}
+.barlabel{display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px}
+.bar{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+.bar.d2{background:linear-gradient(90deg,#f59e0b,#f97316)}
+.bar.d3{background:linear-gradient(90deg,#3b82f6,#2563eb)}
+.emg{border:1px solid var(--warn-line);border-radius:12px;padding:12px;margin-bottom:10px;background:#fffef7}
+.emg h4{margin:0 0 6px;font-size:15px;color:var(--warn-fg)}
+.emg .r{font-size:13px;margin:3px 0}
+.emg .k{font-weight:700;color:#92400e}
+.dayh{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-radius:12px;
+  padding:12px 14px;margin-bottom:12px}
+.dayh .d1{font-size:13px;opacity:.92}
+.dayh .d2{font-size:18px;font-weight:700}
+.foot{text-align:center;color:var(--muted);font-size:12.5px;padding:14px 0 26px}
+.routebar{background:linear-gradient(135deg,#0f766e,#0d9488);color:#fff;border-radius:12px;
+  padding:12px;font-size:14px;text-align:center;letter-spacing:.5px;line-height:2}
+.small{font-size:12.5px;color:var(--muted)}
+.big{font-size:22px;font-weight:800;color:#0f766e}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ① 头部 -->
+<div class="hero">
+  <h1>武汉出发 · 湘赣瓷都环线<br>4天3晚【住车方案】</h1>
+  <p class="sub">岳阳楼 → 长沙 → 南昌 → 景德镇 → 武汉｜白天玩到下午，40元开间钟点房洗完再上路</p>
+  <span class="tag">🗓 2026国庆 10.1-10.4</span>
+  <span class="tag">🎯 人均 ¥200</span>
+  <span class="tag">🛁 钟点房 ¥30-40/间</span>
+  <span class="tag">🎫 门票靠背诵全免</span>
+</div>
+
+<!-- ② 总览 -->
+<div class="card">
+  <div class="grid4">
+    <div class="oitem"><b>4天3晚</b><span>📅 10.1—10.4</span></div>
+    <div class="oitem"><b>5城环线</b><span>📍 岳阳·长沙·南昌·景德镇</span></div>
+    <div class="oitem"><b class="big">¥200</b><span>💰 人均目标（3人¥600）</span></div>
+    <div class="oitem"><b>下午收工</b><span>🛁 钟点房洗澡</span></div>
+  </div>
+  <div class="routebar" style="margin-top:12px">
+    武汉 → 岳阳 → 长沙 → 南昌 → 景德镇 → 武汉
+  </div>
+
+  <b style="display:block;margin-top:14px">人均¥200 是怎么算出来的</b>
+  <table>
+    <tr><th>项目</th><th>3人合计</th><th>人均</th><th>说明</th></tr>
+    <tr><td>🛁 钟点房 3间</td><td>¥120</td><td>¥40</td><td>青旅/小旅馆钟点房 ¥40/间</td></tr>
+    <tr><td>🎫 门票</td><td>¥120</td><td>¥40</td><td>只留岳麓书院（¥40/人）；其余全免</td></tr>
+    <tr><td>🍜 餐饮</td><td>¥360</td><td>¥120</td><td>3人×4天，人均¥30/天</td></tr>
+    <tr><td><b>合计</b></td><td><b>¥600</b></td><td><b class="big">¥200</b></td><td>不含车辆相关支出（你自理）</td></tr>
+  </table>
+  <div class="warnbox">⚠️ <b>本预算成立的两个前提</b>：① 钟点房必须走青旅/小旅馆路线（¥40档），不是快捷酒店（¥80-120）；② 岳阳楼、滕王阁必须靠<b>背诵免票</b>——背不出就要各花¥70、¥50，人均立刻涨¥120。这两条决定了能不能压到200。</div>
+</div>
+
+<!-- ③ 钟点房 -->
+<h2 class="sec"><span class="num">③</span>钟点房：¥30-40 怎么找（本方案关键）</h2>
+<div class="card">
+  <div class="okbox">✅ <b>结论先说</b>：¥30-40/2-4小时是成熟价格，出自<b>青年旅舍钟点房</b>——约是同地段快捷酒店钟点房的<b>一半</b>。而且青旅钟点房的使用时段通常限定 <b>6:00-18:00 且不能过夜</b>，跟"下午玩完洗个澡"的节奏天然契合。<span class="pill ok">🔎2026年OTA实测</span></div>
+
+  <b>四天安排</b>
+  <table>
+    <tr><th>日期</th><th>开几间</th><th>时段</th><th>片区</th></tr>
+    <tr><td><b>D1 · 10.1</b></td><td>1间（3人共用）</td><td>16:30-19:30</td><td>长沙五一广场/黄兴路一带</td></tr>
+    <tr><td><b>D2 · 10.2</b></td><td>1间</td><td>16:30-19:30</td><td>长沙（换一家或同家）</td></tr>
+    <tr><td><b>D3 · 10.3</b></td><td>1间</td><td>14:00-16:00</td><td>南昌万寿宫/滕王阁片区</td></tr>
+    <tr><td><b>D4 · 10.4</b></td><td>不开</td><td>—</td><td>下午结束行程返汉，到家洗</td></tr>
+  </table>
+
+  <b>找房四步（照着操作）</b>
+  <table>
+    <tr><th>步骤</th><th>具体操作</th></tr>
+    <tr><td>1. 筛选</td><td>美团/同程 搜「钟点房」→ <b>价格从低到高排序</b> → 再筛选<b>「青年旅舍」</b>标签或 <b>15-45元</b>价格区间</td></tr>
+    <tr><td>2. 找没上线的</td><td>约 <b>25% 的青旅在平台没有钟点房房型</b>——直接打电话问前台"白天能不能按小时租床位/房间"，往往还能再便宜（省掉平台佣金）</td></tr>
+    <tr><td>3. 致电确认三件事</td><td>① 最晚几点入住 ② 时长从登记算还是固定时段算 ③ 超时怎么收费（通常¥10-30/小时）</td></tr>
+    <tr><td>4. 蹲降价</td><td>每天 <b>14:00 后</b>刷新，常有临时甩卖单；周中比周末便宜30-50%（国庆例外，需提前锁）</td></tr>
+  </table>
+
+  <b>青旅钟点房 vs 快捷酒店（为什么能便宜一半）</b>
+  <table>
+    <tr><th></th><th>青旅钟点房（推荐）</th><th>快捷酒店钟点房</th></tr>
+    <tr><td>价格</td><td><b>¥30-80 / 2-4h</b></td><td>¥80-120 / 4h</td></tr>
+    <tr><td>卫浴</td><td>多为<b>公共淋浴间</b>（含一次免费淋浴）</td><td>独立卫浴</td></tr>
+    <tr><td>空间</td><td>床位或胶囊隔间</td><td>独立房间</td></tr>
+    <tr><td>适合谁</td><td>本方案：只要洗澡+短暂休息</td><td>需要安静补觉、带行李办公</td></tr>
+  </table>
+  <div class="warnbox">⚠️ 青旅淋浴高峰在 <b>14:00-18:00</b> 可能排队——建议错开，或选"床位数少的4人间以下"门店。另：青旅有偿洗漱包 ¥5-10，<b>自备洗漱用品最省</b>。</div>
+  <div class="note">📝 <b>三人共用一间怎么用</b>：① 轮流洗澡（一人洗时另两人整理行李/给设备充电）② 洗完顺手把当天衣服手洗晾上 ③ 剩下时间躺平歇一会儿。离店前5分钟设闹钟，检查充电器/证件——钟点房换手快最容易落东西。<br>💡 <b>省钱口诀</b>：平台比、致电确认、自备洗具。国庆价可能上浮到 ¥50-60/间，3间约¥150-180，人均多¥10-20——<b>提前电话锁定最稳</b>。</div>
+</div>
+
+<!-- ④ 每日行程 -->
+<h2 class="sec"><span class="num">④</span>每日行程（10.1-10.4）</h2>
+
+<div class="card">
+  <div class="dayh"><div class="d1">Day 1 · 10月1日（周四）</div><div class="d2">岳阳楼（背诵免票）· 40元钟点房 · 长沙夜市</div></div>
+  <div class="tl">
+    <div class="it"><div class="time">08:30-11:30</div><div class="what"><b>岳阳楼</b>：五朝楼观 → 登主楼（《岳阳楼记》雕屏+洞庭湖）→ 双公祠 → 岳阳门古城墙。<span class="pill ok">🔎冬令时起 7:30-18:00</span><br>🎁 <b>背诵《岳阳楼记》免门票</b>：支付宝搜「岳阳楼智能背记」提前抢号，80分以上通关。法定节假日每日300名 → <b>3人省¥210</b></div></div>
+    <div class="it"><div class="time">11:30-12:30</div><div class="what">汴河街午餐：岳阳米粉，人均约¥15。<b>景区门口纪念品别买</b>，街里更实惠。</div></div>
+    <div class="it"><div class="time">午后</div><div class="what">前往长沙 → <b>太平老街</b>（贾谊故居）慢慢逛，不赶时间。</div></div>
+    <div class="it hi"><div class="time">16:30-19:30</div><div class="what">🛁 <b>钟点房</b>（¥40，青旅/小旅馆）：轮流洗澡 → 洗衣服 → 全员歇一会儿。<b>开了大半天，这一趟很值。</b></div></div>
+    <div class="it"><div class="time">19:30-21:30</div><div class="what">晚餐+夜市：坡子街（臭豆腐¥15、糖油粑粑），人均¥25 → 五一广场 → IFS → 黄兴路步行街。</div></div>
+    <div class="it"><div class="time">22:00</div><div class="what">回车上休息过夜（安排自理）。</div></div>
+  </div>
+  <div class="rain">☔ 雨天提示：10.1长沙中雨。岳阳楼有廊檐可避，太平老街有骑楼；钟点房正好躲过雨最大的时段。</div>
+  <div class="cost">💰 当日小计（3人）：钟点房¥40 + 门票¥0 + 餐饮¥90 ≈ ¥130</div>
+</div>
+
+<div class="card">
+  <div class="dayh"><div class="d1">Day 2 · 10月2日（周五）</div><div class="d2">橘子洲头 · 岳麓书院 · 第二晚钟点房</div></div>
+  <div class="tl">
+    <div class="it"><div class="time">08:00-10:30</div><div class="what"><b>橘子洲</b>（免费，提前3天小程序「岳麓山橘子洲旅游区」预约）：步行进洲，青年毛泽东雕像必打卡。<span class="pill warn">本方案步行进洲不坐小火车（省¥120），单程走到洲头约40分钟</span></div></div>
+    <div class="it"><div class="time">11:00-12:00</div><div class="what">午餐：公交新村粉店/肆姐面粉馆，<b>人均¥12</b>——长沙性价比之王。</div></div>
+    <div class="it"><div class="time">13:00-15:30</div><div class="what"><b>岳麓山</b>（免费预约）+ <b>岳麓书院</b>（¥40/人，<b>本次唯一付费门票</b>，千年学府值得进）：南门→书院→爱晚亭→徒步上山（不坐观光车，省¥60）。</div></div>
+    <div class="it"><div class="time">15:30-16:30</div><div class="what"><b>湖南博物院</b>（免费）：提前5天20:00「湖南博物院」公众号放票，极难抢 ⏳ 抢不到→简牍博物馆/谢子龙影像艺术馆（免费）。</div></div>
+    <div class="it hi"><div class="time">16:30-19:30</div><div class="what">🛁 <b>钟点房</b>（¥40）：完整游玩日，洗完澡+歇够，把疲劳清掉。顺便把两天的衣服一起洗了。</div></div>
+    <div class="it"><div class="time">19:30-21:30</div><div class="what">晚餐：南门口/文庙坪夜宵（本地学生区，<b>人均¥20</b>，比五一广场便宜一半）→ 湘江风光带散步。</div></div>
+    <div class="it"><div class="time">22:00</div><div class="what">回车上休息过夜。</div></div>
+  </div>
+  <div class="rain">☔ 雨天版：橘子洲照走；岳麓山改湖南博物院+谢子龙艺术馆（全室内）。</div>
+  <div class="cost">💰 当日小计（3人）：钟点房¥40 + 门票¥120 + 餐饮¥90 ≈ ¥250</div>
+</div>
+
+<div class="card">
+  <div class="dayh"><div class="d1">Day 3 · 10月3日（周六）</div><div class="d2">滕王阁（背诵免票）· 南昌夜</div></div>
+  <div class="tl">
+    <div class="it"><div class="time">上午</div><div class="what">前往南昌（早出发，中午前到）。</div></div>
+    <div class="it"><div class="time">12:00-13:30</div><div class="what">午餐：<b>大士院老街</b>——瓦罐汤+南昌拌粉，<b>人均¥18</b>，一咸一淡刚好。</div></div>
+    <div class="it"><div class="time">13:30-14:00</div><div class="what"><b>八一广场</b>打卡（免费）。</div></div>
+    <div class="it hi"><div class="time">14:00-16:00</div><div class="what">🛁 <b>钟点房</b>（¥40，万寿宫/滕王阁片区）：<b>今天提前洗</b>——要赶 16:00 滕王阁最佳入园时段（白天登阁+日落+亮灯一次全收）。洗完换身干净衣服再去拍照。</div></div>
+    <div class="it"><div class="time">16:00-19:00</div><div class="what"><b>滕王阁</b>：主阁1-6层（5楼观景台俯瞰赣江）→ 北园 → 赣江边看日落 → <b>18:30亮灯</b>。<br>🎁 <b>背诵《滕王阁序》免日场票</b>（每日限100人，南门游客中心）→ <b>3人省¥150</b> <span class="pill pend">⏳</span></div></div>
+    <div class="it"><div class="time">19:00-20:30</div><div class="what">晚餐：万寿宫/珠宝街小吃（白糖糕、水煮），<b>人均¥20</b> → 秋水广场看赣江夜景（免费）。</div></div>
+    <div class="it"><div class="time">21:30</div><div class="what">回车上休息过夜。</div></div>
+  </div>
+  <div class="rain">☔ 雨天版：滕王阁室内登楼不受影响，雨天反而人少；秋水广场改万寿宫街区（有顶棚）。</div>
+  <div class="warnbox">⚠️ 滕王阁 <b>17:15停止售票、17:30停止检票</b>——16:00前必须入园。D3行程已按此倒排，别在钟点房睡过头。</div>
+  <div class="cost">💰 当日小计（3人）：钟点房¥40 + 门票¥0 + 餐饮¥90 ≈ ¥130</div>
+</div>
+
+<div class="card">
+  <div class="dayh"><div class="d1">Day 4 · 10月4日（周日）</div><div class="d2">瓷都半日 · 免费看国宝 · 返程</div></div>
+  <div class="tl">
+    <div class="it"><div class="time">早餐</div><div class="what"><b>抚州弄小吃街</b>（本地人宝藏）：油条包麻糍（趁热吃）、冷粉、饺子粑，<b>人均¥12</b>。</div></div>
+    <div class="it"><div class="time">09:30-11:30</div><div class="what"><b>御窑博物馆</b>（<b>免费</b>，「畅游景德镇」公众号提前3天预约，周一闭馆⏳）：红砖拱券是全场最佳机位。<br>⚠️ 馆内<b>禁用闪光灯、禁止自拍杆</b>。<br>💡 <b>陶阳里景区（¥51/人）本次不进</b>——从中山北路步行街一侧可以拍到外围古建筑，省¥153。</div></div>
+    <div class="it"><div class="time">12:00-13:00</div><div class="what">午餐：抚州弄小吃街，<b>人均¥15</b>。</div></div>
+    <div class="it"><div class="time">13:30-15:30</div><div class="what"><b>中国陶瓷博物馆</b>（<b>免费</b>，「畅游景德镇」抢票）：「无语佛」+ 历代名瓷，元青花、明永乐甜白釉。2小时看懂千年瓷史。</div></div>
+    <div class="it"><div class="time">15:30-16:00</div><div class="what">最后逛：<b>雕塑瓷厂</b>（免费）淘小瓷器，小巷里能谈到8折；或陶溪川拍红砖厂房外景。<b>下午结束，启程返汉。</b></div></div>
+    <div class="it"><div class="time">晚间</div><div class="what">抵达武汉，行程结束 🎉</div></div>
+  </div>
+  <div class="rain">☔ 雨天版：御窑博物馆+陶瓷博物馆都是室内，雨天反而最适合逛馆。</div>
+  <div class="warnbox">⚠️ 今天要跑完全程返汉，前一晚务必早睡；状态不佳就砍掉陶瓷博物馆，逛完御窑+午餐后走人。<b>安全永远比多逛一个点重要。</b></div>
+  <div class="cost">💰 当日小计（3人）：门票¥0 + 餐饮¥90 ≈ ¥90</div>
+</div>
+
+<!-- ⑤ 门票与免票 -->
+<h2 class="sec"><span class="num">⑤</span>门票策略：能免的全免（省钱核心）</h2>
+<div class="card">
+  <table>
+    <tr><th>景点</th><th>正常票价</th><th>本方案怎么免/怎么省</th><th>实付</th></tr>
+    <tr><td><b>岳阳楼</b></td><td>¥70/人 = ¥210</td><td>🎁 <b>背诵《岳阳楼记》</b>免票（法定节假日每日300名，支付宝「岳阳楼智能背记」抢号）</td><td><b>¥0</b></td></tr>
+    <tr><td><b>橘子洲 + 岳麓山</b></td><td>免费（小火车¥40/人）</td><td>预约免费；<b>不坐小火车</b>，步行进洲（省¥120）</td><td><b>¥0</b></td></tr>
+    <tr><td><b>岳麓书院</b></td><td>¥40/人 = ¥120</td><td>无免票路径。<b>这是本次唯一保留的付费门票</b>（千年学府，值得进）</td><td>¥120</td></tr>
+    <tr><td><b>湖南博物院</b></td><td>免费</td><td>提前5天20:00抢票（极难）</td><td><b>¥0</b></td></tr>
+    <tr><td><b>滕王阁</b></td><td>¥50/人 = ¥150</td><td>🎁 <b>背诵《滕王阁序》</b>免日场票（每日限100人，南门游客中心）</td><td><b>¥0</b></td></tr>
+    <tr><td><b>八一广场 / 秋水广场</b></td><td>免费</td><td>—</td><td><b>¥0</b></td></tr>
+    <tr><td><b>御窑博物馆</b></td><td>免费</td><td>「畅游景德镇」预约</td><td><b>¥0</b></td></tr>
+    <tr><td><b>中国陶瓷博物馆</b></td><td>免费</td><td>「畅游景德镇」抢票</td><td><b>¥0</b></td></tr>
+    <tr><td><b>陶溪川 / 雕塑瓷厂</b></td><td>免费</td><td>—</td><td><b>¥0</b></td></tr>
+    <tr><td><b>陶阳里景区</b></td><td>¥51/人 = ¥153</td><td>❌ <b>本次不进</b>：从中山北路步行街一侧拍外围古建筑</td><td><b>¥0</b></td></tr>
+    <tr><td colspan="3"><b>门票合计</b></td><td><b>¥120</b></td></tr>
+  </table>
+  <div class="dangerbox" style="margin-top:12px">
+    <h3>🎯 两篇古文 = ¥360（本预算的命门）</h3>
+    <div class="di"><b>《岳阳楼记》约368字</b>（岳阳楼，5分钟内背完、80分以上过关）｜<b>《滕王阁序》</b>（滕王阁，每日限100人）</div>
+    <div class="di">👉 <b>现在就开始背</b>。这两篇背下来，3人省 ¥360，等于把整趟行程的钟点房钱+门票钱全省了；背不出来，门票预算会从¥120涨到¥480，人均从¥200涨到¥320。</div>
+    <div class="di">💡 抢号技巧：岳阳楼用支付宝「岳阳楼智能背记」预约（法定节假日每日300名，分场次放号）；滕王阁在南门游客中心现场参与（每日100人，建议一早就去问）。</div>
+  </div>
+</div>
+
+<!-- ⑥ 美食 -->
+<h2 class="sec"><span class="num">⑥</span>餐饮：人均¥30/天怎么吃</h2>
+<div class="card">
+  <table>
+    <tr><th>城市</th><th>吃什么</th><th>人均</th></tr>
+    <tr><td rowspan="2"><b>长沙</b></td><td>米粉（公交新村粉店/肆姐面粉馆）</td><td>¥12</td></tr>
+    <tr><td>坡子街/南门口小吃（臭豆腐、糖油粑粑）</td><td>¥20-25</td></tr>
+    <tr><td rowspan="2"><b>南昌</b></td><td>大士院老街（瓦罐汤+拌粉）</td><td>¥18</td></tr>
+    <tr><td>珠宝街小吃（水煮、白糖糕）</td><td>¥20</td></tr>
+    <tr><td rowspan="2"><b>景德镇</b></td><td>抚州弄小吃街（油条包麻糍、冷粉、饺子粑）</td><td>¥12-15</td></tr>
+    <tr><td>浙江路美食街（牛骨粉、碱水粑）</td><td>¥25</td></tr>
+    <tr><td><b>岳阳</b></td><td>汴河街（岳阳米粉）</td><td>¥15</td></tr>
+  </table>
+  <div class="note">📝 <b>¥30/天的吃法</b>：早餐粉店（¥12）+ 午餐小吃街（¥10）+ 晚餐小吃/街边（¥12）。<b>核心原则：不进正餐馆，吃本地粉面和小吃</b>——不仅是省钱，这恰恰是湘赣最好吃的东西。自带保温杯，酒店/便利店接热水，饮料钱全省。<br>⚠️ 口径说明：¥30/天是<b>紧凑下限</b>；若每天放开到 ¥35-40（多一份小吃/饮料），餐饮总额约¥420-480，总预算约¥660-720，<b>人均¥220-240</b>。想严格卡¥200就按¥30执行。</div>
+  <div class="warnbox">⚠️ 辣度预警：湘菜、赣菜都比江浙辣两三档，点单说「微辣」≈中辣；带肠胃药。</div>
+</div>
+
+<!-- ⑦ 预算 -->
+<h2 class="sec"><span class="num">⑦</span>费用预算（人均 ¥200）</h2>
+<div class="card">
+  <table>
+    <tr><th>分类</th><th>项目</th><th>3人合计</th><th>人均</th><th>备注</th></tr>
+    <tr><td>🛁 钟点房</td><td>3间 × ¥40</td><td>¥120</td><td>¥40</td><td>青旅/小旅馆；国庆上浮到¥50-60则+¥30-60 <span class="pill pend">⏳</span></td></tr>
+    <tr><td>🎫 门票</td><td>岳麓书院 3×¥40</td><td>¥120</td><td>¥40</td><td>其余全免（靠背诵）</td></tr>
+    <tr><td>🍜 餐饮</td><td>3人 × 4天 × ¥30</td><td>¥360</td><td>¥120</td><td>粉店+小吃街，不进正餐馆</td></tr>
+    <tr><td colspan="2"><b>合计</b></td><td><b>¥600</b></td><td><b class="big">¥200</b></td><td>不含车辆相关支出</td></tr>
+  </table>
+
+  <b style="display:block;margin-top:14px">钱花在哪了</b>
+  <div class="barbox"><div class="barlabel"><span>🍜 餐饮</span><span>¥360 · 60%</span></div><div class="bar d2" style="width:60%"></div></div>
+  <div class="barbox"><div class="barlabel"><span>🛁 钟点房</span><span>¥120 · 20%</span></div><div class="bar" style="width:20%"></div></div>
+  <div class="barbox"><div class="barlabel"><span>🎫 门票</span><span>¥120 · 20%</span></div><div class="bar d3" style="width:20%"></div></div>
+
+  <div class="okbox" style="margin-top:12px">💡 <b>还能再降</b>：① 不进岳麓书院（外围岳麓山照逛）→ 人均降到 <b>¥160</b>；② 两顿并一顿/自带干粮 → 人均再降约¥30。但说实话，¥200 已经是"玩得完整+洗得干净"的下限了——再往下就要牺牲体验。</div>
+  <div class="warnbox">⚠️ <b>预算风险提示</b>：① 国庆钟点房可能上浮（+¥10-20/人）② 两篇古文背不出来 → 门票 ¥120→¥480（+¥120/人）。建议出发前把这两件事都落实，预算才稳。</div>
+  <div class="small">💡 行程中把每笔消费报给我，可实时更新账本并算 AA。</div>
+</div>
+
+<!-- ⑧ 清单 -->
+<h2 class="sec"><span class="num">⑧</span>行前必备清单</h2>
+<div class="card">
+  <div class="grid2">
+    <div>
+      <b>🪪 证件类</b>
+      <ul class="ck">
+        <li>身份证 ×3（景区/钟点房全实名）</li>
+        <li>学生证（岳麓书院/滕王阁半价）</li>
+        <li>老人身份证（60+/65+优惠）</li>
+        <li>驾驶证+行驶证</li>
+      </ul>
+      <b>🛁 钟点房自带包（青旅必备）</b>
+      <ul class="ck">
+        <li>洗漱包（牙具/洗发沐浴分装）×3</li>
+        <li><b>拖鞋</b>（青旅公共卫浴，必带）</li>
+        <li>毛巾/速干浴巾 ×3</li>
+        <li>换洗衣物（压缩袋收纳）</li>
+        <li>小瓶洗衣液（顺手洗衣服）</li>
+        <li>充电器/充电宝（离店设闹钟检查）</li>
+      </ul>
+    </div>
+    <div>
+      <b>📱 电子类</b>
+      <ul class="ck">
+        <li>手机×3 + 车载充电 + 充电宝</li>
+        <li>高德/百度地图 + 湘赣离线地图包</li>
+      </ul>
+      <b>🧥 衣物 & 药品</b>
+      <ul class="ck">
+        <li>薄外套（长沙17-26℃、南昌19-27℃）</li>
+        <li>雨伞/雨衣（全程有雨）</li>
+        <li>感冒药、肠胃药（防辣）、创可贴</li>
+        <li>保温杯（接热水省饮料钱）</li>
+      </ul>
+      <b>📲 出发前必办（按优先级）</b>
+      <ul class="ck">
+        <li><b>背《岳阳楼记》《滕王阁序》</b>（省钱命门）</li>
+        <li>支付宝「岳阳楼智能背记」抢号</li>
+        <li>小程序「岳麓山橘子洲旅游区」（提前3天）</li>
+        <li>公众号「湖南博物院」（提前5天20:00）</li>
+        <li>公众号「滕王阁旅游区」</li>
+        <li>公众号「畅游景德镇」</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ⑨ 避坑 -->
+<h2 class="sec"><span class="num">⑨</span>避坑总结</h2>
+<div class="dangerbox">
+  <h3>🚫 10条避坑清单</h3>
+  <div class="di">❌ <b>青旅钟点房超时是最常见的坑</b>——部分店超时30分钟就按1小时算（¥10-30/小时），下单前务必打电话确认计时规则是"从登记算"还是"固定时段算"。</div>
+  <div class="di">❌ <b>别默认平台上能订到</b>——约25%的青旅没上线钟点房房型，但前台实际接受短时入住，<b>打个电话往往更便宜</b>（省平台佣金）。</div>
+  <div class="di">❌ <b>青旅淋浴高峰 14:00-18:00 要排队</b>——要么错开时段，要么选床位数少的门店（4人间以下）。</div>
+  <div class="di">❌ <b>别买青旅的有偿洗漱包（¥5-10）</b>——自备洗漱用品，拖鞋一定要带（公共卫浴刚需）。</div>
+  <div class="di">❌ <b>景区门口「代排队/内部票/优惠票」全别信</b>——岳阳楼、滕王阁、湖南博物院、御窑博物馆全部官方实名预约，没人能"操作"。</div>
+  <div class="di">❌ <b>长沙「一日游低价团」「免费接送」不要上</b>——含购物店，投诉打12345。</div>
+  <div class="di">⚠️ <b>滕王阁 17:15停售、17:30停止检票</b>——16:00前必须入园，否则当天白跑。</div>
+  <div class="di">⚠️ <b>湖南博物院/中国陶瓷博物馆都极难抢</b>——设闹钟提前录入身份证；抢不到用免费备选（简牍博物馆/谢子龙艺术馆/雕塑瓷厂）。</div>
+  <div class="di">⚠️ <b>陶阳里 ¥51/人不进</b>——外围中山北路步行街一侧能看到古建筑外观，省¥153；买瓷器去雕塑瓷厂（可谈8折），"祖传老瓷"话术别信。</div>
+  <div class="di">💡 <b>本预算的命门就是两篇古文</b>：岳阳楼背《岳阳楼记》、滕王阁背《滕王阁序》，3人省¥360。出发前一周开始背，性价比远超任何省钱技巧。</div>
+  <div class="small" style="margin-top:10px;color:#991b1b">📌 反幻觉提示：标注 ⏳ 的信息（钟点房实价、放票时间、营业状态）为平台参考或通用经验，出行前请通过官方渠道复核；标注 🔎 为本次已联网核实项。</div>
+</div>
+
+<!-- ⑩ 应急 -->
+<h2 class="sec"><span class="num">⑩</span>应急备用方案（Plan B）</h2>
+<div class="card">
+  <div class="warnbox">📌 出行前把本页截图存相册（或Ctrl+P存PDF），没信号时也能看。</div>
+
+  <div class="emg">
+    <h4>🛁 情景1：¥40的青旅钟点房订不到</h4>
+    <div class="r"><span class="k">🚨 触发信号：</span>平台上搜不到；价格都超¥60；到店说没钟点房</div>
+    <div class="r"><span class="k">⚡ 立刻做什么：</span>① 换平台搜（美团→同程→去哪儿，同房源差价可达¥20）② <b>直接打电话问前台</b>（25%的青旅没上线钟点房，电话能订到且更便宜）③ 换片区（离核心区远一点更便宜）</div>
+    <div class="r"><span class="k">🔄 备选方案：</span>转洗浴中心/汗蒸馆（¥30-60/人，可洗澡+泡澡+休息区）；或那天改用大车店/公共澡堂；最差开一间快捷酒店钟点房（¥80-120，人均多¥15-25）</div>
+    <div class="r"><span class="k">💰 额外花费：</span>约 +¥15-25/人</div>
+    <div class="r"><span class="k">📞 求助渠道：</span>美团/携程客服；青旅前台直拨</div>
+  </div>
+
+  <div class="emg">
+    <h4>🚿 情景2：青旅热水不行 / 淋浴排队太久</h4>
+    <div class="r"><span class="k">🚨 触发信号：</span>没热水、淋浴间排长队、卫生太差</div>
+    <div class="r"><span class="k">⚡ 立刻做什么：</span>要求退款或换到隔壁门店；若只是排队，先休息等高峰过去（18:00后明显缓解）</div>
+    <div class="r"><span class="k">🔄 备选方案：</span>转洗浴中心（专业洗浴、不用排）；或就近找快捷酒店钟点房</div>
+    <div class="r"><span class="k">💰 额外花费：</span>约 +¥20-40/人</div>
+    <div class="r"><span class="k">📞 求助渠道：</span>前台；平台客服；华住400-820-3333</div>
+  </div>
+
+  <div class="emg">
+    <h4>📖 情景3：两篇古文背不出来（预算最大风险）</h4>
+    <div class="r"><span class="k">🚨 触发信号：</span>抢不到背记号；现场背记没过80分</div>
+    <div class="r"><span class="k">⚡ 立刻做什么：</span>算一笔账：岳阳楼¥70/人、滕王阁¥50/人，3人合计¥360——<b>决定是否现场买票</b></div>
+    <div class="r"><span class="k">🔄 备选方案：</span>① 只买一个（建议滕王阁，¥50/人，视野更好）；② 岳阳楼改为外围洞庭湖+汴河街游览（免费，看不到主楼内部）；③ 预算上调到人均¥320，接受现实</div>
+    <div class="r"><span class="k">💰 额外花费：</span>¥150-360（3人）</div>
+    <div class="r"><span class="k">📞 求助渠道：</span>景区售票处；建议出发前一周就开背</div>
+  </div>
+
+  <div class="emg">
+    <h4>🌧 情景4：连续下雨，行程体验崩坏</h4>
+    <div class="r"><span class="k">🚨 触发信号：</span>连下两天雨，衣物晾不干、户外没法走</div>
+    <div class="r"><span class="k">⚡ 立刻做什么：</span>① 钟点房延长1小时（¥10-30，烘衣+补觉）② 便利店补雨具 ③ 行程切全室内线路</div>
+    <div class="r"><span class="k">🔄 备选方案：</span>长沙→湖南博物院+IFS+文和友；南昌→滕王阁主阁+万寿宫街区；景德镇→御窑博物馆+陶瓷博物馆（全室内）</div>
+    <div class="r"><span class="k">💰 额外花费：</span>约 +¥20-50</div>
+    <div class="r"><span class="k">📞 求助渠道：</span>钟点房前台借伞；便利店</div>
+  </div>
+
+  <div class="emg">
+    <h4>⏰ 情景5：下午行程拖后，赶不上钟点房时段</h4>
+    <div class="r"><span class="k">🚨 触发信号：</span>景点排队/拍照超时，只剩半小时</div>
+    <div class="r"><span class="k">⚡ 立刻做什么：</span>先打电话说明晚到，问最晚保留时间；青旅钟点房时段多限制 6:00-18:00，<b>务必问清最晚入住</b></div>
+    <div class="r"><span class="k">🔄 备选方案：</span>改订更晚时段或临近门店；或顺延到当晚（选择少、可能加价）；实在不行那天不洗，第二天补</div>
+    <div class="r"><span class="k">💰 额外花费：</span>约 +¥0-30</div>
+    <div class="r"><span class="k">📞 求助渠道：</span>钟点房前台（提前告知比爽约好）</div>
+  </div>
+
+  <div class="emg">
+    <h4>🏛 情景6：景区闭馆 / 预约没抢到</h4>
+    <div class="r"><span class="k">🚨 触发信号：</span>湖南博物院/陶瓷博物馆/御窑博物馆约满或临时闭馆</div>
+    <div class="r"><span class="k">⚡ 立刻做什么：</span>多刷小程序（退票会回流，尤其放票后1-2小时和前一晚）；或启动免费备选</div>
+    <div class="r"><span class="k">🔄 备选方案：</span>长沙→简牍博物馆/谢子龙影像艺术馆；南昌→八一起义纪念馆/江西省博物馆；景德镇→雕塑瓷厂/三宝村/陶溪川（全免费）</div>
+    <div class="r"><span class="k">💰 额外花费：</span>多为 ¥0</div>
+    <div class="r"><span class="k">📞 求助渠道：</span>各馆公众号客服；携程95010</div>
+  </div>
+
+  <div class="emg">
+    <h4>🤒 情景7：身体不适 / 受伤</h4>
+    <div class="r"><span class="k">🚨 触发信号：</span>发烧、急性肠胃炎（吃辣引起）、扭伤、疲劳过度</div>
+    <div class="r"><span class="k">⚡ 立刻做什么：</span>就近药店/医院；打开医保电子凭证（异地门诊可直接结算⏳）；<b>状态不佳绝不上高速</b></div>
+    <div class="r"><span class="k">🔄 备选方案：</span>压缩行程（砍景点）；开一间全天房好好睡（¥150-250）；同行人接力驾驶</div>
+    <div class="r"><span class="k">💰 额外花费：</span>急诊+药¥100-300；全天房¥150-250</div>
+    <div class="r"><span class="k">📞 求助渠道：</span>120；长沙0731-120 / 南昌0791-120 / 景德镇0798-120</div>
+  </div>
+
+  <div class="emg">
+    <h4>📱 情景8：手机没电 / 断网 / 失联</h4>
+    <div class="r"><span class="k">🚨 触发信号：</span>手机没电关机；隧道/山区信号弱；同行人走散</div>
+    <div class="r"><span class="k">⚡ 立刻做什么：</span>离线地图（出发前下载湘赣离线包）；约定走散集合点（景点入口/钟点房/当晚休息地）</div>
+    <div class="r"><span class="k">🔄 备选方案：</span>钟点房是补电最佳时机（插座多）；充电宝轮换；打印纸质行程放随身包</div>
+    <div class="r"><span class="k">💰 额外花费：</span>≈¥0</div>
+    <div class="r"><span class="k">📞 求助渠道：</span>前台；便利店/商场服务台；紧急情况拨112</div>
+  </div>
+</div>
+
+<!-- ⑪ 导出 -->
+<h2 class="sec"><span class="num">⑪</span>导出与分享</h2>
+<div class="card">
+  <p style="font-size:14px;margin:4px 0">📄 浏览器按 <b>Ctrl+P</b>（Mac：⌘+P）→ 目标「另存为PDF」→ 离线也能看；手机可整页截图。</p>
+  <div class="okbox" style="margin-top:10px">🎯 <b>人均¥200 的心法</b>：钱花在"吃当地"和"洗干净"上，门票靠背古文挣——<b>这不叫抠，这叫把预算花在刀刃上</b>。</div>
+</div>
+
+<div class="foot">
+  行策 · 旅游攻略策划专家 v2.0｜住车方案（人均¥200版）｜生成日期：2026年9月28日<br>
+  行程：武汉-岳阳-长沙-南昌-景德镇 4天3晚环线（3人）<br>
+  信息来源：美团/同程/携程（钟点房价格与规则）、大众点评/美团（餐饮口碑）、抖音/头条博主实测（玩法与踩坑）、景区官方公众号（预约规则）、长沙气象台（天气研判）。<br>
+  标注 ⏳ 的信息请出行前复核；祝旅途顺利 🎒
+</div>
+
+</div>
+</body>
+</html>
