@@ -404,6 +404,9 @@
   <div class="toolbar" data-page-node-id="OqAUvMpN2IttX00klA9HAX">
     <button class="btn primary" id="scanBtn" onclick="scanRepo()" data-page-node-id="4ORMoFCqzq8xZV4gIzyymm">🔍 仓库检索</button>
     <button class="btn" id="uploadBtn" onclick="openUploadModal()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemU">📤 上传教程</button>
+    <button class="btn" id="delBtn" onclick="openDelModal()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemD">🗑 安全删除</button>
+    <button class="btn" id="trashBtn" onclick="openTrashModal()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemT">♻️ 回收站</button>
+    <button class="btn" id="secBtn" onclick="openSectionModal()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemS">➕ 新增板块</button>
     <button class="btn" id="syncBtn" onclick="openSyncModal()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemm">☁️ 云同步</button>
     <button class="btn" id="aiBtn" onclick="openAiChat()" data-page-node-id="4ORMoFCqzq8xZV4gIzyemz">🤖 AI 问答</button>
   </div>
@@ -445,6 +448,24 @@
       <button class="btn primary" id="linkSubmitBtn" onclick="submitLink()" data-page-node-id="7F0txHhA3nKIb9TinaW7OD">添加</button>
     </div>
     <div class="modal-status" id="linkModalStatus" data-page-node-id="WKMkAGEJDpQ1VGBkunicVO"></div>
+  </div>
+</div>
+
+<!-- 新增板块弹窗 -->
+<div class="modal-mask" id="sectionModal">
+  <div class="modal" style="max-width:420px">
+    <h3>➕ 新增板块</h3>
+    <label for="secNameInput">板块名称</label>
+    <input type="text" id="secNameInput" placeholder="如：读书笔记、算法练习" autocomplete="off" maxlength="16">
+    <label for="secIconInput">图标（emoji，可选）</label>
+    <input type="text" id="secIconInput" placeholder="📁" autocomplete="off" maxlength="4">
+    <div style="font-size:11.5px;color:var(--text2);margin-top:6px;line-height:1.6">
+      新增的板块会出现在列表末尾，可用板块右侧的 ▲▼ 调整位置；点板块的 🗑 可删除（卡片会并入「待分类」，不丢失）。自定义板块会随云同步在多设备间共享。
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn" onclick="closeSectionModal()">取消</button>
+      <button class="btn primary" onclick="saveSection()">创建板块</button>
+    </div>
   </div>
 </div>
 
@@ -497,6 +518,43 @@
   </div>
 </div>
 
+<!-- 安全删除弹窗 -->
+<div class="modal-mask" id="delModal">
+  <div class="modal" style="max-width:520px">
+    <h3>🗑 安全删除文件</h3>
+    <div class="up-dir-row" style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <label style="font-size:12.5px;color:var(--text2);white-space:nowrap">📁 目录</label>
+      <select id="delTargetDir" class="up-dir-select" style="flex:1;min-width:160px"></select>
+      <button class="btn small" type="button" onclick="loadDelFiles()" title="读取该目录文件">🔄 读取</button>
+    </div>
+    <div id="delFileList" class="up-filelist" style="max-height:240px"></div>
+    <div style="font-size:11.5px;color:var(--text2);margin-top:10px;line-height:1.6">
+      ☑️ 勾选要删除的文件。<b style="color:#f85149">删除前会自动备份到本地「回收站」</b>，误删可从回收站一键恢复；恢复期限为 <b>7 天</b>，逾期回收站自动清空。
+    </div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn primary" id="delExecBtn" onclick="execDelete()" disabled style="background:linear-gradient(135deg,#da3633,#f85149);border-color:transparent">🗑 删除所选</button>
+      <button class="btn" onclick="closeDelModal()">取消</button>
+    </div>
+    <div class="modal-status" id="delStatus"></div>
+  </div>
+</div>
+
+<!-- 回收站弹窗 -->
+<div class="modal-mask" id="trashModal">
+  <div class="modal" style="max-width:560px">
+    <h3>♻️ 回收站（可恢复）</h3>
+    <div style="font-size:12px;color:var(--text2);margin-top:6px;margin-bottom:12px">
+      以下为已删除文件的备份，点击「恢复」可将其写回仓库原位置。超过 7 天的记录会自动失效。
+    </div>
+    <div id="trashList" class="up-filelist" style="max-height:300px"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn" onclick="emptyTrash()">清空回收站</button>
+      <button class="btn" onclick="closeTrashModal()">关闭</button>
+    </div>
+    <div class="modal-status" id="trashStatus"></div>
+  </div>
+</div>
+
 <!-- AI 问答弹窗 -->
 <div class="modal-mask" id="aiModal">
   <div class="modal ai-modal">
@@ -538,7 +596,7 @@ var AI_CLIENT_KEY = '';
 var AI_MODEL = 'deepseek-chat';            // DeepSeek 模型名
 var LS_AI_CHAT = 'zhishi-pulse-ai-chat-v1'; // 对话历史本地存储
 
-var SECTIONS = [
+var BUILTIN_SECTIONS = [
   {id:'dev',     icon:'💻', name:'开发'},
   {id:'stash',   icon:'📦', name:'暂存'},
   {id:'test',    icon:'🧪', name:'测试'},
@@ -546,7 +604,38 @@ var SECTIONS = [
   {id:'learn',   icon:'📚', name:'学无止境'},
   {id:'links',   icon:'🔗', name:'常用网址'}
 ];
-var SEC_IDS = SECTIONS.map(function(s){return s.id;});
+// 自定义板块：存 localStorage + 云同步，运行时并入 SECTIONS，实现「页面内新增/删除板块」
+var LS_CUSTOM = 'zhishi-pulse-custom-sections-v1';
+var CUSTOM = [];   // [{id,name,icon}]
+var SECTIONS = [];
+var SEC_IDS = [];
+// 由 BUILTIN + CUSTOM 重建 SECTIONS 与 SEC_IDS（保持引用不变，供各处原地使用）
+function rebuildSections(){
+  SECTIONS.length = 0;
+  BUILTIN_SECTIONS.forEach(function(s){ SECTIONS.push({id:s.id, icon:s.icon, name:s.name}); });
+  (CUSTOM||[]).forEach(function(s){
+    if(s && s.id) SECTIONS.push({id:s.id, icon:s.icon||'📁', name:s.name||s.id});
+  });
+  SEC_IDS = SECTIONS.map(function(s){ return s.id; });
+}
+function loadCustomSections(){
+  try{ var s = JSON.parse(localStorage.getItem(LS_CUSTOM)); CUSTOM = Array.isArray(s) ? s : []; }catch(e){ CUSTOM = []; }
+  rebuildSections();
+}
+function saveCustomSections(){ try{ localStorage.setItem(LS_CUSTOM, JSON.stringify(CUSTOM)); }catch(e){} }
+// 生成一个空的板块布局对象（含所有板块 + inbox），替代写死的板块 id 列表
+function blankLayout(){
+  var o = {};
+  SECTIONS.forEach(function(s){ o[s.id] = []; });
+  o.inbox = [];
+  return o;
+}
+rebuildSections();   // 首次填充（此时 CUSTOM 为空，仅内置板块）
+// 判断某板块 id 是否为内置板块（自定义板块 = 非内置）
+function isBuiltinSec(id){
+  for(var i=0;i<BUILTIN_SECTIONS.length;i++){ if(BUILTIN_SECTIONS[i].id === id) return true; }
+  return false;
+}
 
 var NAME2SEC = {
   'tutorials/移动端抓包与日志分析实战教程.html':'test',
@@ -635,7 +724,7 @@ function canonFile(tk){
 }
 // 把整个 layout 的 token 批量规范化
 function canonLayout(layout){
-  var out = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
+  var out = blankLayout();
   SEC_IDS.forEach(function(id){ out[id] = (layout[id]||[]).map(canonFile); });
   out.inbox = (layout.inbox||[]).map(canonFile);
   // 兼容旧数据：已删除的板块（基础知识 basic / 速记手册 memo）里的条目并入「待分类」，避免丢失
@@ -681,12 +770,12 @@ function initLayout(){
   var saved = null;
   try{ saved = JSON.parse(localStorage.getItem(LS_LAYOUT)); }catch(e){}
   if(saved && typeof saved === 'object'){
-    var base = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
+    var base = blankLayout();
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(saved[id]) ? saved[id] : []; });
     base.inbox = Array.isArray(saved.inbox) ? saved.inbox : [];
     return canonLayout(base);
   }
-  var layout = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
+  var layout = blankLayout();
   Object.keys(META).forEach(function(file){
     var sec = NAME2SEC[file] || 'inbox';
     layout[sec].push(file);
@@ -697,8 +786,11 @@ function saveLayout(){ try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOU
 
 // ===== 板块折叠状态 =====
 var COLLAPSED = {};   // {secId:true} 表示该板块内容已折叠，仅保留标题行
+var TRASH = [];       // 回收站：[{path,name,dir,content_b64,sha,deletedAt}]，随 site-data.json 云同步
 function loadCollapse(){ try{ var s=JSON.parse(localStorage.getItem(LS_COLLAPSE)); COLLAPSED = (s && typeof s==='object') ? s : {}; }catch(e){ COLLAPSED = {}; } }
 function saveCollapse(){ try{ localStorage.setItem(LS_COLLAPSE, JSON.stringify(COLLAPSED)); }catch(e){} }
+function loadTrashLocal(){ try{ var t=JSON.parse(localStorage.getItem(LS_TRASH)); TRASH = (Array.isArray(t)?t:[]); }catch(e){ TRASH = []; } }
+function saveTrashLocal(){ try{ localStorage.setItem(LS_TRASH, JSON.stringify(TRASH)); }catch(e){} }
 // 切换某板块的折叠状态（折叠=隐藏内容网格，只留标题行）
 function toggleCollapse(id){
   if(COLLAPSED[id]){ delete COLLAPSED[id]; } else { COLLAPSED[id] = true; }
@@ -723,7 +815,7 @@ function saveNotes(){ try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES))
 var _syncTimer = null;
 var _booted = false;          // 启动初始化阶段不触发推送（避免一开页面就推空改动）
 var _lastPushedFp = null;     // 上次成功推送/拉取的数据指纹（不含 updatedAt，用于跳过无变化的推送）
-function dataFp(){ return JSON.stringify({l:LAYOUT, k:LINKS, n:NOTES, s:sectionOrder(), c:COLLAPSED}); }
+function dataFp(){ return JSON.stringify({l:LAYOUT, k:LINKS, n:NOTES, s:sectionOrder(), c:COLLAPSED, u:CUSTOM, t:TRASH.map(function(r){return {p:r.path,d:r.deletedAt};})}); }
 function scheduleSync(){
   if(!_booted) return;               // 初始化阶段（boot 中）不推
   if(!getToken()) return;            // 未设令牌 → 只存本地
@@ -868,6 +960,61 @@ function moveSection(id, dir){
   render();
 }
 
+// ===== 自定义板块：新增 / 删除 =====
+function openSectionModal(){
+  var nameEl = document.getElementById('secNameInput');
+  var iconEl = document.getElementById('secIconInput');
+  if(nameEl) nameEl.value = '';
+  if(iconEl) iconEl.value = '';
+  document.getElementById('sectionModal').classList.add('show');
+  if(nameEl) setTimeout(function(){ nameEl.focus(); }, 30);
+}
+function closeSectionModal(){
+  document.getElementById('sectionModal').classList.remove('show');
+}
+function saveSection(){
+  var name = (document.getElementById('secNameInput').value || '').trim();
+  var icon = (document.getElementById('secIconInput').value || '').trim();
+  if(!name){ alert('请填写板块名称'); return; }
+  // 重名检查（忽略大小写与首尾空格）
+  var dup = SECTIONS.some(function(s){ return s.name === name; });
+  if(dup){ alert('已存在同名板块「' + name + '」'); return; }
+  // 生成唯一 id：优先用名称拼音/英文，兜底用时间戳
+  var id = 'sec-' + uid();
+  CUSTOM = CUSTOM || [];
+  CUSTOM.push({ id: id, name: name, icon: icon || '📁' });
+  saveCustomSections();
+  rebuildSections();
+  // 确保布局里该板块有空数组
+  if(!LAYOUT[id]) LAYOUT[id] = [];
+  saveLayout();
+  closeSectionModal();
+  render();
+  scheduleSync();
+}
+function delSection(id){
+  if(isBuiltinSec(id)){ alert('内置板块不可删除'); return; }
+  var sec = null;
+  SECTIONS.forEach(function(s){ if(s.id === id) sec = s; });
+  var nm = sec ? sec.name : id;
+  if(!confirm('确定删除板块「' + nm + '」？\n该板块内的卡片不会丢失，会统一并入「待分类」，可另行归类。')) return;
+  // 从 CUSTOM 移除
+  CUSTOM = (CUSTOM || []).filter(function(s){ return s.id !== id; });
+  saveCustomSections();
+  // 该板块的卡片并入待分类
+  var cards = (LAYOUT[id] || []).slice();
+  delete LAYOUT[id];
+  cards.forEach(function(tk){
+    if(LAYOUT.inbox.indexOf(tk) === -1) LAYOUT.inbox.push(tk);
+  });
+  // 清理该板块的折叠状态
+  if(COLLAPSED && COLLAPSED[id]){ delete COLLAPSED[id]; saveCollapse(); }
+  rebuildSections();
+  saveLayout();
+  render();
+  scheduleSync();
+}
+
 // ===== 渲染：主区域板块 =====
 function render(){
   var main = document.getElementById('main');
@@ -897,6 +1044,10 @@ function render(){
          +  '<button class="btn mini mv" title="下移板块" aria-label="下移板块"'+(si === SECTIONS.length-1 ? ' disabled' : '')
          +  ' onclick="moveSection(\''+sec.id+'\',1)">▼</button>'
          +  '</span>';
+    // 自定义板块：删除按钮（内置板块不可删）
+    if(!isBuiltinSec(sec.id)){
+      html += '<button class="btn mini mv sec-del" title="删除板块" aria-label="删除板块" style="color:#f85149" onclick="delSection(\''+sec.id+'\')">🗑</button>';
+    }
     html += '<span class="count">'+(sec.id==='links' ? items.length+' 个' : items.length+' 份')+'</span>';
     html += '</div>';
     html += '<div class="grid" data-sec="'+sec.id+'"'+(collapsed?' style="display:none"':'')+'>';
@@ -1347,9 +1498,11 @@ function boot(){
   LINKS = loadLinks();
   NOTES = initNotes();
   saveNotes();
+  loadCustomSections();   // 先加载自定义板块，重建 SECTIONS/SEC_IDS（供 initLayout 用）
   LAYOUT = initLayout();
   loadSectionOrder();   // 先套用本机保存的板块顺序，云端数据到达后可能再覆盖
   loadCollapse();       // 加载板块折叠状态（暂存板块等）
+  loadTrashLocal();     // 加载回收站（云端数据到达后可能覆盖）
   renderNotes();
   render();
   aiInitInput();   // 初始化 AI 问答输入框事件（回车发送、自适应高度）
@@ -1389,20 +1542,28 @@ function getToken(){ try{ return localStorage.getItem(LS_TOKEN) || ''; }catch(e)
 function setToken(v){ try{ if(v) localStorage.setItem(LS_TOKEN, v); else localStorage.removeItem(LS_TOKEN); }catch(e){} }
 
 function collectData(){
-  // 汇总需要同步的数据（含板块顺序 sections、折叠状态 collapsed）
+  // 汇总需要同步的数据（含板块顺序 sections、折叠状态 collapsed、自定义板块 custom、回收站 trash）
   return {
     layout: LAYOUT,
     links: LINKS,
     notes: NOTES,
     sections: sectionOrder(),
     collapsed: COLLAPSED,
+    custom: CUSTOM,
+    trash: TRASH,
     updatedAt: new Date().toISOString()
   };
 }
 function applyData(d){
   if(!d || typeof d !== 'object') return false;
+  // 自定义板块：云端为准，先落地并重建 SECTIONS/SEC_IDS（后续 layout 依赖它）
+  if(Array.isArray(d.custom)){
+    CUSTOM = d.custom.filter(function(s){ return s && s.id; });
+    saveCustomSections();
+    rebuildSections();
+  }
   if(d.layout && typeof d.layout === 'object'){
-    var base = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
+    var base = blankLayout();
     SEC_IDS.forEach(function(id){ base[id] = Array.isArray(d.layout[id]) ? d.layout[id] : []; });
     base.inbox = Array.isArray(d.layout.inbox) ? d.layout.inbox : [];
     LAYOUT = canonLayout(base);
@@ -1418,6 +1579,11 @@ function applyData(d){
   // 折叠状态（云端为准），写回本机，使多设备折叠状态一致
   COLLAPSED = (d.collapsed && typeof d.collapsed==='object') ? d.collapsed : {};
   try{ localStorage.setItem(LS_COLLAPSE, JSON.stringify(COLLAPSED)); }catch(e){}
+  // 回收站（云端为准），写回本机，使多设备回收站一致；先清理过期项
+  if(Array.isArray(d.trash)){
+    var tr = d.trash.filter(function(r){ return r && r.path && (Date.now()-(r.deletedAt||0)) <= TRASH_TTL; });
+    TRASH = tr; try{ localStorage.setItem(LS_TRASH, JSON.stringify(TRASH)); }catch(e){}
+  }
   _lastPushedFp = dataFp();   // 刚拉下来的内容即"已同步"，避免随即又推回去
   return true;
 }
@@ -1569,11 +1735,13 @@ function pushCloudData(token, cb, data){
           try{ if(res._cloudContent) cloud = JSON.parse(b64ToUtf8(res._cloudContent)); }catch(e){}
           if(cloud){
             // 用云端实时内容与本机合并，合并结果替换 payloadData 后重试（两边改动都保留）
-            payloadData = unionMerge({layout:LAYOUT, links:LINKS, notes:NOTES, sections:sectionOrder()}, cloud);
+            payloadData = unionMerge({layout:LAYOUT, links:LINKS, notes:NOTES, sections:sectionOrder(), collapsed:COLLAPSED, custom:CUSTOM, trash:TRASH}, cloud);
             LAYOUT = canonLayout(payloadData.layout); LINKS = payloadData.links; NOTES = payloadData.notes;
+            TRASH = (Array.isArray(payloadData.trash)) ? payloadData.trash : [];
             try{ localStorage.setItem(LS_LAYOUT, JSON.stringify(LAYOUT)); }catch(e){}
             try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){}
             try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){}
+            try{ localStorage.setItem(LS_TRASH, JSON.stringify(TRASH)); }catch(e){}
             if(typeof renderNotes==='function') renderNotes();
             if(typeof render==='function') render();
           }
@@ -1800,6 +1968,256 @@ function upPutFile(token, f){
 }
 
 // 页脚诊断行：显示"云端数据是否读取成功"，便于快速定位（无令牌设备尤其有用）
+// ===== 安全删除文件 =====
+// 机制：读取目录文件 → 勾选 → 删除前先把内容备份到本地「回收站」→ 再调 GitHub DELETE 真正删除。
+// 备份保留 7 天，可从回收站一键恢复（重新写回仓库原位置），防误删。
+var LS_TRASH = 'zhishi-pulse-trash-v1';   // 回收站：[{path,name,dir,content_b64,sha,deletedAt}]
+var TRASH_TTL = 7 * 24 * 3600 * 1000;     // 7 天
+var DEL_FILES = [];   // 当前目录读到的文件：{path,name,size,sha,checked}
+var LS_DEL_DIR = 'zhishi-pulse-deldir-v1';
+
+function getTrash(){ return TRASH; }
+function saveTrash(t){ TRASH = Array.isArray(t)?t:[]; saveTrashLocal(); if(typeof scheduleSync==='function') scheduleSync(); }
+// 清理过期回收站记录（超过 TTL），云端同步时也触发，保证多设备一致
+function pruneTrash(){
+  var now=Date.now(), out=[];
+  TRASH.forEach(function(r){ if(now - (r.deletedAt||0) <= TRASH_TTL) out.push(r); });
+  if(out.length !== TRASH.length){
+    TRASH = out; saveTrashLocal();
+    if(typeof scheduleSync==='function') scheduleSync();   // 过期项清理也同步到云端
+  }
+  return out;
+}
+
+function openDelModal(){
+  var m=document.getElementById('delModal'); m.classList.add('show');
+  document.getElementById('delStatus').textContent='';
+  // 复用上传弹窗的目录读取思路：填目录下拉
+  loadDelDirs();
+}
+function closeDelModal(){ document.getElementById('delModal').classList.remove('show'); }
+
+function loadDelDirs(){
+  var sel=document.getElementById('delTargetDir');
+  if(!sel) return;
+  var token=getToken();
+  sel.disabled=true;
+  var saved=''; try{ saved=localStorage.getItem(LS_DEL_DIR)||''; }catch(e){}
+  sel.innerHTML='<option value="">⏳ 读取目录...</option>';
+  if(!token){
+    sel.disabled=false;
+    sel.innerHTML='<option value="">（根目录）</option><option value="tutorials/">tutorials/</option>';
+    if(saved) sel.value=saved;
+    return;
+  }
+  var url='https://api.github.com/repos/'+GH_USER+'/'+GH_REPO+'/contents/?ref='+SYNC_BRANCH+'&t='+Date.now();
+  fetch(url,{headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(items){
+      var dirs=[''];
+      (items||[]).forEach(function(it){ if(it.type==='dir'&&it.name!=='.git'){ dirs.push(it.name+'/'); } });
+      if(dirs.indexOf('tutorials/')===-1) dirs.push('tutorials/');
+      sel.disabled=false; sel.innerHTML='';
+      dirs.forEach(function(d){
+        var o=document.createElement('option'); o.value=d;
+        o.textContent=(d==='')?'（根目录）':d; sel.appendChild(o);
+      });
+      if(saved && dirs.indexOf(saved)!==-1) sel.value=saved;
+    })
+    .catch(function(err){
+      sel.disabled=false;
+      sel.innerHTML='<option value="">（根目录）</option><option value="tutorials/">tutorials/</option>';
+    });
+}
+
+// 读取选中目录下的文件，列出供勾选
+function loadDelFiles(){
+  var token=getToken();
+  var st=document.getElementById('delStatus');
+  var list=document.getElementById('delFileList');
+  if(!token){ st.textContent='⚠️ 尚未填入 GitHub PAT，无法读取目录。请先在「☁️ 云同步」里填入有 repo 权限的令牌。'; return; }
+  var sel=document.getElementById('delTargetDir');
+  var dir=sel?(sel.value||''):'';
+  if(dir && dir.charAt(dir.length-1)!=='/') dir+='/';
+  try{ localStorage.setItem(LS_DEL_DIR, dir); }catch(e){}
+  st.textContent='⏳ 正在读取文件列表...';
+  list.innerHTML='';
+  DEL_FILES=[];
+  var url='https://api.github.com/repos/'+GH_USER+'/'+GH_REPO+'/contents/'+dir+'?ref='+SYNC_BRANCH+'&t='+Date.now();
+  fetch(url,{headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(items){
+      var files=(items||[]).filter(function(it){ return it.type==='file'; });
+      if(!files.length){ st.textContent='该目录下没有文件。'; return; }
+      DEL_FILES=files.map(function(it){ return { path:it.path, name:it.name, size:it.size, sha:it.sha, checked:false }; });
+      renderDelFiles();
+      st.textContent='共 '+DEL_FILES.length+' 个文件，勾选后点「删除所选」。';
+    })
+    .catch(function(err){ st.textContent='⚠️ 读取失败：'+(err.message||''); });
+}
+
+function renderDelFiles(){
+  var list=document.getElementById('delFileList');
+  list.innerHTML='';
+  if(!DEL_FILES.length){ return; }
+  DEL_FILES.forEach(function(f, idx){
+    var item=document.createElement('label');
+    item.className='up-file-item'; item.style.cursor='pointer';
+    var sz=upFmtSize(f.size||0);
+    item.innerHTML='<input type="checkbox" data-idx="'+idx+'" style="margin:0 4px 0 0;cursor:pointer">'+
+      '<span class="up-fname">'+esc(f.name)+'</span>'+
+      '<span class="up-fsize">'+sz+'</span>';
+    item.querySelector('input').addEventListener('change', function(){
+      f.checked=this.checked; updateDelBtn();
+    });
+    list.appendChild(item);
+  });
+}
+function updateDelBtn(){
+  var n=DEL_FILES.filter(function(f){ return f.checked; }).length;
+  var btn=document.getElementById('delExecBtn');
+  btn.disabled=n===0;
+  btn.textContent=n>0?('🗑 删除所选（'+n+'）'):'🗑 删除所选';
+}
+
+// 执行删除：先备份 → 再 DELETE
+function execDelete(){
+  var token=getToken();
+  var st=document.getElementById('delStatus');
+  var picks=DEL_FILES.filter(function(f){ return f.checked; });
+  if(!picks.length){ st.textContent='⚠️ 请先勾选要删除的文件。'; return; }
+  if(!token){ st.textContent='⚠️ 尚未填入 GitHub PAT。'; return; }
+  // 二次确认
+  var names=picks.map(function(f){ return f.name; }).join('、');
+  if(picks.length>3) names=picks.slice(0,3).map(function(f){return f.name;}).join('、')+' 等 '+picks.length+' 个文件';
+  if(!confirm('确定删除以下文件？\n\n'+names+'\n\n删除前会自动备份到「回收站」，7 天内可恢复。')) return;
+
+  var btn=document.getElementById('delExecBtn');
+  btn.disabled=true;
+  var trash=getTrash();
+  var total=picks.length, done=0;
+  st.textContent='⏳ 正在备份并删除 0/'+total+' ...';
+
+  function next(i){
+    if(i>=picks.length){
+      pruneTrash();
+      st.textContent='✅ 已删除 '+total+' 个文件，并已备份到「回收站」（7 天内可恢复）。约 1 分钟后刷新页面生效。';
+      // 从列表移除已删项
+      DEL_FILES=DEL_FILES.filter(function(f){ return !f.checked; });
+      renderDelFiles(); updateDelBtn();
+      btn.disabled=false;
+      if(typeof scanRepo==='function'){ setTimeout(function(){ scanRepo(); }, 1500); }
+      return;
+    }
+    var f=picks[i];
+    st.textContent='⏳ 正在备份并删除 '+(done+1)+'/'+total+'：'+f.name;
+    // 1) 先读内容做备份
+    delFetchContent(token, f.path).then(function(b64){
+      // 2) 存入回收站
+      trash.push({ path:f.path, name:f.name, dir:f.path.split('/').slice(0,-1).join('/'), content_b64:b64, sha:f.sha, deletedAt:Date.now() });
+      saveTrash(trash);
+      // 3) 真正删除
+      return delDeleteFile(token, f);
+    }).then(function(res){
+      done++;
+      if(!res.ok){ f._err=(res.json&&res.json.message)||('HTTP '+res.status); }
+      next(i+1);
+    }).catch(function(err){
+      done++;
+      f._err=err.message||'网络错误';
+      next(i+1);
+    });
+  }
+  next(0);
+}
+
+// 读取文件内容（base64），用于备份
+function delFetchContent(token, path){
+  var url='https://api.github.com/repos/'+GH_USER+'/'+GH_REPO+'/contents/'+path+'?ref='+SYNC_BRANCH+'&t='+Date.now();
+  return fetch(url,{headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},cache:'no-store'})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(j){ return (j&&j.content)? j.content : ''; });
+}
+
+// 调 GitHub DELETE API 删除文件
+function delDeleteFile(token, f){
+  var url='https://api.github.com/repos/'+GH_USER+'/'+GH_REPO+'/contents/'+f.path;
+  var payload={ message:'delete: 安全删除 '+f.name+' '+new Date().toLocaleString('zh-CN'), branch:SYNC_BRANCH };
+  if(f.sha) payload.sha=f.sha;
+  return fetch(url,{
+      method:'DELETE',
+      headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},
+      body:JSON.stringify(payload)
+    }).then(function(rr){ return rr.json().then(function(j){ return { ok:rr.ok, status:rr.status, json:j }; }); });
+}
+
+/* ===== 回收站：查看 / 恢复 / 清空 ===== */
+function openTrashModal(){
+  pruneTrash();
+  document.getElementById('trashModal').classList.add('show');
+  renderTrash();
+}
+function closeTrashModal(){ document.getElementById('trashModal').classList.remove('show'); }
+function renderTrash(){
+  var list=document.getElementById('trashList');
+  var t=pruneTrash();
+  list.innerHTML='';
+  if(!t.length){ list.innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:30px 10px">回收站为空</div>'; return; }
+  t.forEach(function(r, idx){
+    var item=document.createElement('div');
+    item.className='up-file-item';
+    var ago=Math.floor((Date.now()-(r.deletedAt||0))/3600000);
+    var remain=Math.max(0, 7- Math.floor(ago/24));
+    item.innerHTML='<span class="up-fname">📄 '+esc(r.name)+'<div style="font-size:10.5px;color:var(--text2);margin-top:2px">原位置：'+esc(r.dir||'根目录')+' · 剩余 '+remain+' 天</div></span>'+
+      '<button class="btn mini" style="color:#3fb950" onclick="restoreTrash('+idx+')">↩ 恢复</button>'+
+      '<button class="up-fremove" title="彻底清除" onclick="purgeTrash('+idx+')">×</button>';
+    list.appendChild(item);
+  });
+}
+// 恢复：把备份内容重新写回仓库原位置
+function restoreTrash(idx){
+  var token=getToken();
+  var st=document.getElementById('trashStatus');
+  if(!token){ st.textContent='⚠️ 尚未填入 GitHub PAT，无法恢复。'; return; }
+  var t=pruneTrash();
+  var r=t[idx];
+  if(!r){ renderTrash(); return; }
+  st.textContent='⏳ 正在恢复 '+r.name+' ...';
+  var apiUrl='https://api.github.com/repos/'+GH_USER+'/'+GH_REPO+'/contents/'+r.path;
+  // 先查当前 sha（若已存在同名文件需更新）
+  fetch(apiUrl+'?ref='+SYNC_BRANCH+'&t='+Date.now(),{headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token},cache:'no-store'})
+    .then(function(rr){ return rr.status===404? null : rr.json().then(function(j){ return (j&&j.sha)||null; }); })
+    .then(function(sha){
+      var payload={ message:'restore: 从回收站恢复 '+r.name+' '+new Date().toLocaleString('zh-CN'), content:r.content_b64, branch:SYNC_BRANCH };
+      if(sha) payload.sha=sha;
+      return fetch(apiUrl,{ method:'PUT', headers:{'Accept':'application/vnd.github+json','Authorization':'token '+token}, body:JSON.stringify(payload) })
+        .then(function(rr2){ return rr2.json().then(function(j){ return { ok:rr2.ok, status:rr2.status }; }); });
+    })
+    .then(function(res){
+      if(res.ok){
+        // 从回收站移除该记录
+        var tt=pruneTrash(); tt.splice(idx,1); saveTrash(tt);
+        st.textContent='✅ 已恢复 '+r.name+' 到仓库原位置。';
+        renderTrash();
+        if(typeof scanRepo==='function'){ setTimeout(function(){ scanRepo(); }, 1500); }
+      } else {
+        st.textContent='⚠️ 恢复失败：'+((res.json&&res.json.message)||('HTTP '+res.status));
+      }
+    })
+    .catch(function(err){ st.textContent='⚠️ 恢复失败：'+(err.message||''); });
+}
+// 彻底清除单条
+function purgeTrash(idx){
+  if(!confirm('彻底清除这条备份？此操作不可恢复。')) return;
+  var t=pruneTrash(); t.splice(idx,1); saveTrash(t); renderTrash();
+}
+// 清空回收站
+function emptyTrash(){
+  if(!confirm('清空整个回收站？所有备份将被永久删除，不可恢复。')) return;
+  saveTrash([]); renderTrash();
+  document.getElementById('trashStatus').textContent='回收站已清空。';
+}
+
 function diag(msg){
   var el = document.getElementById('diagLine');
   if(el) el.textContent = msg ? ('· ' + msg) : '';
@@ -1809,14 +2227,18 @@ function diag(msg){
 // 计算云端数据 d 的指纹，结构与 dataFp() 对齐（排除 updatedAt），用于乐观锁比对。
 function cloudFp(d){
   if(!d || typeof d !== 'object') return null;
-  var layout = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
-  SEC_IDS.forEach(function(id){
+  var layout = blankLayout();
+  // 遍历本机板块 + 云端自定义板块 id（避免漏掉云端独有自定义板块的布局）
+  var ids = SEC_IDS.slice();
+  (Array.isArray(d.custom) ? d.custom : []).forEach(function(s){ if(s && s.id && ids.indexOf(s.id)===-1) ids.push(s.id); });
+  ids.forEach(function(id){
     layout[id] = (d.layout && Array.isArray(d.layout[id])) ? d.layout[id].map(canonFile) : [];
   });
   layout.inbox = (d.layout && Array.isArray(d.layout.inbox)) ? d.layout.inbox.map(canonFile) : [];
   var secs = (Array.isArray(d.sections) && d.sections.length) ? d.sections : sectionOrder();
   var col = (d.collapsed && typeof d.collapsed==='object') ? d.collapsed : {};
-  return JSON.stringify({l:layout, k:(d.links||[]), n:(d.notes||[]), s:secs, c:col});
+  var cus = Array.isArray(d.custom) ? d.custom : [];
+  return JSON.stringify({l:layout, k:(d.links||[]), n:(d.notes||[]), s:secs, c:col, u:cus});
 }
 // 纯函数：把 base（本机，优先保留顺序/同 id 值）与 inc（云端）按 id/token 取并集，
 // 返回合并后的普通数据对象 {layout,links,notes,sections}（不触碰内存，供两条路径复用）。
@@ -1840,7 +2262,7 @@ function unionMerge(base, inc){
   (inc.links||[]).forEach(function(l){ if(l && l.id && lIds.indexOf(l.id)===-1) lIds.push(l.id); });
   out.links = lIds.map(function(id){ return lMap[id]; }).filter(Boolean);
   // LAYOUT：每板块 token 并集，本机顺序在前、云端独有追加
-  var lay = {dev:[],stash:[],test:[],summary:[],learn:[],links:[],inbox:[]};
+  var lay = blankLayout();
   SEC_IDS.forEach(function(id){
     var b = (base.layout && Array.isArray(base.layout[id])) ? base.layout[id].map(canonFile) : [];
     var c = (inc.layout && Array.isArray(inc.layout[id])) ? inc.layout[id].map(canonFile) : [];
@@ -1863,13 +2285,33 @@ function unionMerge(base, inc){
   Object.keys(bk).forEach(function(k){ col[k]=true; });
   Object.keys(ck).forEach(function(k){ col[k]=true; });
   out.collapsed = col;
+  // 自定义板块：按 id 并集，本机顺序在前、云端独有追加（保证多设备板块定义一致）
+  var cMap = {};
+  (inc.custom||[]).forEach(function(s){ if(s && s.id) cMap[s.id] = s; });
+  (base.custom||[]).forEach(function(s){ if(s && s.id) cMap[s.id] = s; });
+  var cIds = [];
+  (base.custom||[]).forEach(function(s){ if(s && s.id) cIds.push(s.id); });
+  (inc.custom||[]).forEach(function(s){ if(s && s.id && cIds.indexOf(s.id)===-1) cIds.push(s.id); });
+  out.custom = cIds.map(function(id){ return cMap[id]; }).filter(Boolean);
+  // 回收站：按 path 并集，本机顺序在前、云端独有追加（同一文件以较新的 deletedAt 为准）
+  var trMap = {};
+  (inc.trash||[]).forEach(function(r){ if(r && r.path) trMap[r.path] = r; });
+  (base.trash||[]).forEach(function(r){ if(r && r.path) trMap[r.path] = r; });
+  var trIds = [];
+  (base.trash||[]).forEach(function(r){ if(r && r.path && trIds.indexOf(r.path)===-1) trIds.push(r.path); });
+  (inc.trash||[]).forEach(function(r){ if(r && r.path && trIds.indexOf(r.path)===-1) trIds.push(r.path); });
+  out.trash = trIds.map(function(p){ return trMap[p]; }).filter(Boolean);
   return out;
 }
 // 把云端数据 d 与本机内存数据合并（包装 unionMerge），写回内存 + localStorage + 重渲染。
 function mergeCloudIntoLocal(d){
   if(!d || typeof d !== 'object') return false;
-  var merged = unionMerge({layout:LAYOUT, links:LINKS, notes:NOTES, sections:sectionOrder(), collapsed:COLLAPSED}, d);
-  var changed = (JSON.stringify(merged) !== JSON.stringify({layout:LAYOUT, links:LINKS, notes:NOTES, collapsed:COLLAPSED}));
+  var merged = unionMerge({layout:LAYOUT, links:LINKS, notes:NOTES, sections:sectionOrder(), collapsed:COLLAPSED, custom:CUSTOM, trash:TRASH}, d);
+  var changed = (JSON.stringify(merged) !== JSON.stringify({layout:LAYOUT, links:LINKS, notes:NOTES, collapsed:COLLAPSED, custom:CUSTOM, trash:TRASH}));
+  // 自定义板块先落地并重建 SECTIONS（后续 layout 依赖它）
+  CUSTOM = (merged.custom && Array.isArray(merged.custom)) ? merged.custom : [];
+  saveCustomSections();
+  rebuildSections();
   LAYOUT = canonLayout(merged.layout);
   LINKS = merged.links;
   NOTES = merged.notes;
@@ -1879,6 +2321,9 @@ function mergeCloudIntoLocal(d){
   try{ localStorage.setItem(LS_LINKS, JSON.stringify(LINKS)); }catch(e){}
   try{ localStorage.setItem(LS_NOTES, JSON.stringify(NOTES)); }catch(e){}
   try{ localStorage.setItem(LS_COLLAPSE, JSON.stringify(COLLAPSED)); }catch(e){}
+  // 回收站（合并结果），写回本机，使多设备回收站一致
+  TRASH = (Array.isArray(merged.trash)) ? merged.trash : [];
+  try{ localStorage.setItem(LS_TRASH, JSON.stringify(TRASH)); }catch(e){}
   if(typeof renderNotes === 'function') renderNotes();
   if(typeof render === 'function') render();
   return changed;
