@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>火影全基础教学 · 视频学习索引</title>
-<meta name="description" content="B 站《火影全基础教学》视频完整索引：分P目录、真实数据看板、标签体系、观众反馈与学习路径建议。">
+<title>火影忍者手游 · 基础体系知识地图</title>
+<meta name="description" content="基于《火影全基础教学》262 条弹幕还原的知识地图：按时间轴梳理 22 个主题、11 组核心规则、5 处常见误区，含观众纠错与争议标注。">
 <style>
   :root{
     --bg:#0d1117; --bg2:#161b22; --card:#1c2128; --border:#30363d;
     --text:#e6edf3; --text2:#8b949e; --text3:#6e7681;
-    --accent:#58a6ff; --accent2:#1f6feb;
-    --green:#3fb950; --orange:#d29922; --purple:#bc8cff; --teal:#39c5cf; --red:#f85149;
+    --accent:#58a6ff; --green:#3fb950; --orange:#d29922; --purple:#bc8cff; --teal:#39c5cf; --red:#f85149;
     --radius:12px;
   }
   *{margin:0;padding:0;box-sizing:border-box}
@@ -18,342 +17,521 @@
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
     background:var(--bg); color:var(--text); line-height:1.75;
-    -webkit-font-smoothing:antialiased;
-    padding:0 0 64px;
+    -webkit-font-smoothing:antialiased; padding:0 0 64px;
   }
-  .wrap{max-width:820px;margin:0 auto;padding:0 20px}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px}
 
-  /* ---------- 头部 ---------- */
-  header{padding:48px 0 28px;border-bottom:1px solid var(--border);margin-bottom:32px}
+  header{padding:48px 0 26px;border-bottom:1px solid var(--border);margin-bottom:30px}
   .crumb{font-size:13px;color:var(--text3);margin-bottom:14px}
   .crumb a{color:var(--text2);text-decoration:none}
   .crumb a:hover{color:var(--accent)}
-  h1{font-size:clamp(26px,5vw,38px);line-height:1.3;letter-spacing:-.5px;margin-bottom:14px}
-  .subtitle{color:var(--text2);font-size:15px;margin-bottom:22px}
+  h1{font-size:clamp(25px,4.6vw,36px);line-height:1.28;letter-spacing:-.5px;margin-bottom:12px}
+  .subtitle{color:var(--text2);font-size:15px;margin-bottom:20px}
   .metaline{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;color:var(--text2)}
   .metaline span{display:inline-flex;align-items:center;gap:6px}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
-  .badge-live{background:rgba(63,185,80,.14);color:var(--green);padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}
 
-  /* ---------- 区块 ---------- */
-  section{margin-bottom:40px}
+  section{margin-bottom:42px}
   h2{
-    font-size:20px;margin-bottom:6px;display:flex;align-items:center;gap:10px;
+    font-size:20px;margin-bottom:8px;display:flex;align-items:center;gap:10px;
     padding-left:12px;border-left:3px solid var(--accent);
   }
   h2 .hint{font-size:12.5px;font-weight:400;color:var(--text3);margin-left:auto}
   .lead{color:var(--text2);font-size:14px;margin:8px 0 18px;padding-left:15px}
 
-  /* ---------- 播放器 ---------- */
-  .player{
-    position:relative;width:100%;aspect-ratio:16/9;
-    background:#000;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+  /* 方法说明 */
+  .method{
+    background:linear-gradient(180deg,rgba(88,166,255,.09),rgba(88,166,255,.03));
+    border:1px solid rgba(88,166,255,.28);border-radius:var(--radius);
+    padding:18px 20px;margin-bottom:34px;font-size:14px;
   }
-  .player iframe{width:100%;height:100%;border:0;display:block}
-  .player-note{font-size:12.5px;color:var(--text3);margin-top:10px}
+  .method h3{font-size:15px;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .method p{color:var(--text2);margin-bottom:8px}
+  .method ul{margin:6px 0 0 18px;color:var(--text2);font-size:13.5px}
+  .method li{margin-bottom:5px}
+  .method b{color:var(--text)}
 
-  /* ---------- 数据看板 ---------- */
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px}
-  .stat{
+  /* 图例 */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--text2);margin:14px 0 4px}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+  /* 时间轴 */
+  .tl{position:relative;padding-left:26px;margin-top:8px}
+  .tl::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:var(--border)}
+  .tl-item{position:relative;margin-bottom:20px}
+  .tl-item::before{
+    content:'';position:absolute;left:-23px;top:8px;width:9px;height:9px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--accent);
+  }
+  .tl-item.warn::before{border-color:var(--orange)}
+  .tl-time{
+    font-size:12.5px;color:var(--accent);font-variant-numeric:tabular-nums;
+    font-weight:700;letter-spacing:.3px;margin-bottom:2px;
+  }
+  .tl-item.warn .tl-time{color:var(--orange)}
+  .tl-title{font-size:15px;font-weight:600;margin-bottom:4px}
+  .tl-desc{font-size:13.5px;color:var(--text2);line-height:1.75}
+
+  /* 知识点卡片 */
+  .kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:16px}
+  .kcard{
     background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:16px 18px;
+    padding:18px 20px;
   }
-  .stat .k{font-size:12.5px;color:var(--text2);margin-bottom:6px}
-  .stat .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
-  .stat .u{font-size:12.5px;color:var(--text3);margin-left:4px;font-weight:400}
-  .stat.accent .v{color:var(--accent)}
-  .stat.green .v{color:var(--green)}
-  .stat.orange .v{color:var(--orange)}
-  .stat.purple .v{color:var(--purple)}
-  .stat.teal .v{color:var(--teal)}
-
-  /* ---------- 表格 ---------- */
-  .table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:16px}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th{
-    text-align:left;font-size:12.5px;color:var(--text2);font-weight:600;
-    padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);
-    white-space:nowrap;
+  .kcard h4{
+    font-size:15px;margin-bottom:10px;display:flex;align-items:center;gap:8px;
+    color:var(--text);
   }
-  td{padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:top}
-  tr:last-child td{border-bottom:none}
-  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-  td.muted{color:var(--text2)}
-  .part-name{font-weight:600;color:var(--text)}
-
-  /* ---------- 标签 ---------- */
-  .tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
-  .tag{
-    background:var(--bg2);border:1px solid var(--border);border-radius:20px;
-    padding:7px 16px;font-size:13.5px;color:var(--text);
-    text-decoration:none;transition:border-color .18s,color .18s;
+  .kcard h4 .tag{
+    font-size:11px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.2px;
   }
-  .tag:hover{border-color:var(--accent);color:var(--accent)}
-  .tag.primary{border-color:rgba(88,166,255,.45);color:var(--accent);background:rgba(88,166,255,.08)}
+  .tag.v{background:rgba(63,185,80,.16);color:var(--green)}
+  .tag.a{background:rgba(188,140,255,.16);color:var(--purple)}
+  .tag.q{background:rgba(210,153,34,.16);color:var(--orange)}
+  .kcard ul{margin:0 0 0 18px;font-size:13.5px;color:var(--text2);line-height:1.85}
+  .kcard li{margin-bottom:6px}
+  .kcard b{color:var(--text)}
+  .kcard code{background:var(--bg2);padding:1px 5px;border-radius:3px;font-size:12.5px;color:var(--teal)}
 
-  /* ---------- 评论 ---------- */
-  .comment{
-    background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border);
+  /* 误区 */
+  .fix{
+    background:var(--card);border:1px solid var(--border);border-left:3px solid var(--orange);
     border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;
   }
-  .comment.top{border-left-color:var(--orange)}
-  .c-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
-  .c-name{color:var(--accent);font-weight:600}
-  .c-date{color:var(--text3)}
-  .c-like{margin-left:auto;color:var(--orange);font-variant-numeric:tabular-nums;white-space:nowrap}
-  .c-body{font-size:14.5px;color:var(--text);line-height:1.8}
+  .fix .q{font-size:14px;color:var(--text3);margin-bottom:6px}
+  .fix .q s{color:var(--red)}
+  .fix .a{font-size:14.5px}
+  .fix .a b{color:var(--green)}
 
-  /* ---------- 提示框 ---------- */
-  .callout{
-    background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.32);
-    border-radius:var(--radius);padding:16px 18px;margin-top:16px;font-size:14px;color:var(--text);
+  /* 引用 */
+  .quote{
+    border-left:2px solid var(--border);padding:2px 0 2px 14px;margin:10px 0;
+    font-size:13.5px;color:var(--text2);
   }
-  .callout.info{background:rgba(88,166,255,.07);border-color:rgba(88,166,255,.3)}
-  .callout strong{color:var(--orange)}
-  .callout.info strong{color:var(--accent)}
-  .callout ul{margin:10px 0 0 20px}
-  .callout li{margin-bottom:6px}
+  .quote .who{color:var(--text3);font-size:12.5px;margin-left:6px}
+  .quote .tm{color:var(--accent);font-size:12px;margin-left:6px;font-variant-numeric:tabular-nums}
 
-  /* ---------- 步骤 ---------- */
-  .steps{list-style:none;counter-reset:s;margin-top:16px}
-  .steps li{
-    counter-increment:s;position:relative;padding:0 0 22px 46px;
-  }
+  /* 播放器 */
+  .player{position:relative;width:100%;aspect-ratio:16/9;background:#000;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  .player iframe{width:100%;height:100%;border:0;display:block}
+  .pnote{font-size:12.5px;color:var(--text3);margin-top:10px}
+
+  /* 步骤 */
+  .steps{list-style:none;counter-reset:s;margin-top:6px}
+  .steps li{counter-increment:s;position:relative;padding:0 0 20px 46px}
   .steps li::before{
-    content:counter(s);position:absolute;left:0;top:0;
-    width:28px;height:28px;border-radius:50%;
-    background:rgba(88,166,255,.14);color:var(--accent);
-    display:flex;align-items:center;justify-content:center;
-    font-size:13.5px;font-weight:700;
+    content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;
+    background:rgba(88,166,255,.14);color:var(--accent);display:flex;align-items:center;
+    justify-content:center;font-size:13.5px;font-weight:700;
   }
-  .steps li::after{
-    content:'';position:absolute;left:13.5px;top:32px;bottom:0;width:1px;background:var(--border);
-  }
+  .steps li::after{content:'';position:absolute;left:13.5px;top:32px;bottom:0;width:1px;background:var(--border)}
   .steps li:last-child::after{display:none}
-  .steps .t{font-weight:600;margin-bottom:4px}
+  .steps .t{font-weight:600;margin-bottom:3px}
   .steps .d{font-size:13.5px;color:var(--text2)}
 
-  /* ---------- 页脚 ---------- */
   footer{border-top:1px solid var(--border);padding-top:22px;font-size:12.5px;color:var(--text3);line-height:1.9}
-  footer a{color:var(--text2)}
   footer code{background:var(--bg2);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--teal)}
+  footer b{color:var(--text2)}
 
-  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
 
   @media (max-width:600px){
-    header{padding:32px 0 22px}
-    .stat .v{font-size:21px}
-    td,th{padding:11px 12px}
+    header{padding:32px 0 20px}
     h2{font-size:18px}
     h2 .hint{display:none}
+    .kgrid{grid-template-columns:1fr}
+    .tl{padding-left:22px}
+    .tl-item::before{left:-19px}
   }
-  @media (prefers-reduced-motion:reduce){
-    *{transition:none!important;scroll-behavior:auto!important}
-  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
-    <div class="crumb"><a href="../index.html">个人资料库</a> / 教程索引 / 游戏教学</div>
-    <h1>火影全基础教学</h1>
-    <p class="subtitle">火影忍者手游 · 决斗场基础体系入门（含「输两把上超」实战篇）</p>
+    <div class="crumb"><a href="../index.html">个人资料库</a> / 教程 / 游戏教学</div>
+    <h1>火影忍者手游 · 基础体系知识地图</h1>
+    <p class="subtitle">把 1 小时 22 分的《火影全基础教学》压缩成一张可检索的结构图</p>
     <div class="metaline">
-      <span><i class="dot"></i>UP主：<a href="https://space.bilibili.com/248729977" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">路路森U子</a></span>
-      <span><i class="dot"></i>发布于 2026-04-29</span>
-      <span><i class="dot"></i>总时长 1:33:16</span>
-      <span><i class="dot"></i>游戏 · 火影忍者手游</span>
-      <span class="badge-live">新手向</span>
+      <span><i class="dot"></i>原视频 BV1iU91BREsw</span>
+      <span><i class="dot"></i>UP主 路路森U子</span>
+      <span><i class="dot"></i>2026-04-29</span>
+      <span><i class="dot"></i>P1 1:22:48 · P2 10:28</span>
     </div>
   </header>
 
-  <section>
-    <h2>视频播放 <span class="hint">B 站官方播放器</span></h2>
-    <div class="player">
-      <iframe
-        src="https://player.bilibili.com/player.html?bvid=BV1iU91BREsw&page=1&high_quality=1&danmaku=1&autoplay=0"
-        title="火影全基础教学 - B 站播放器"
-        allowfullscreen
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <div class="method">
+    <h3>这份总结是怎么来的（请先读）</h3>
+    <p>该视频<strong>没有字幕，也没有章节标记</strong>，接口查到的字幕数为 0。因此无法逐句转录讲解内容。</p>
+    <p>本页的内容来源是：<b>262 条弹幕按时间轴还原</b> + 观众在弹幕里的补充与纠错，交叉比对后归纳成主题地图。</p>
+    <ul>
+      <li>能准确告诉你：<b>视频讲哪些主题、在什么时间点讲、哪些点被观众纠正</b></li>
+      <li>不能提供：UP主的原话、完整的操作演示步骤、每个技能的逐条数值</li>
+      <li>凡是弹幕之间存在分歧的，都标注为「存疑」，不替你下结论</li>
+    </ul>
+    <div class="legend">
+      <span><i style="background:#3fb950"></i>视频讲解（时间点有弹幕印证）</span>
+      <span><i style="background:#bc8cff"></i>观众补充（弹幕中的细节或纠正）</span>
+      <span><i style="background:#d29922"></i>存疑 / 有争议</span>
     </div>
-    <p class="player-note">若播放器无法加载，可直接访问原视频：<a href="https://www.bilibili.com/video/BV1iU91BREsw" target="_blank" rel="noopener" style="color:var(--accent)">bilibili.com/video/BV1iU91BREsw</a></p>
-  </section>
+  </div>
 
   <section>
-    <h2>数据看板 <span class="hint">抓取于 2026-10-22</span></h2>
-    <p class="lead">以下为 B 站接口返回的真实数值，非估算。</p>
-    <div class="stats">
-      <div class="stat accent"><div class="k">播放量</div><div class="v">39.0<span class="u">万</span></div></div>
-      <div class="stat green"><div class="k">点赞</div><div class="v">3.32<span class="u">万</span></div></div>
-      <div class="stat purple"><div class="k">收藏</div><div class="v">3.18<span class="u">万</span></div></div>
-      <div class="stat orange"><div class="k">投币</div><div class="v">3,660</div></div>
-      <div class="stat teal"><div class="k">弹幕</div><div class="v">271</div></div>
-      <div class="stat"><div class="k">评论</div><div class="v">832</div></div>
-    </div>
-    <div class="callout info" style="margin-top:16px">
-      <strong>互动结构值得注意</strong>
-      <ul>
-        <li>点赞率约 <b>8.5%</b>、收藏率约 <b>8.2%</b>，收藏比接近点赞比——说明观众把它当<b>资料留存</b>，不是看完就走。</li>
-        <li>投币率仅约 <b>0.94%</b>，属正常教学类视频水平。</li>
-        <li>弹幕 271 对 39 万播放，弹幕密度极低（约 0.07%），是典型「边看边操作、不在弹幕互动」的教学片特征。</li>
-        <li>以上比率均为按真实数值计算所得，非平台提供。</li>
-      </ul>
-    </div>
-  </section>
+    <h2>内容地图 <span class="hint">按视频时间轴排列</span></h2>
+    <p class="lead">共还原出 22 个主题。时间点是弹幕出现的位置，可据此直接跳到对应段落。</p>
 
-  <section>
-    <h2>分P 目录 <span class="hint">共 2 个分P</span></h2>
-    <p class="lead">视频本身只有两个分P，<b>没有更细的章节切分</b>。下表时长取自接口原始数据。</p>
-    <div class="table-card">
-      <table>
-        <thead>
-          <tr><th>分P</th><th>标题</th><th style="text-align:right">时长</th><th style="text-align:right">秒数</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="num muted">P1</td>
-            <td><span class="part-name">火影全基础教学</span><br><span style="font-size:12.5px;color:var(--text3)">主体教学部分</span></td>
-            <td class="num">1:22:48</td>
-            <td class="num muted">4,968</td>
-          </tr>
-          <tr>
-            <td class="num muted">P2</td>
-            <td><span class="part-name">输两把上超</span><br><span style="font-size:12.5px;color:var(--text3)">实战演示部分</span></td>
-            <td class="num">10:28</td>
-            <td class="num muted">628</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+    <div class="tl">
 
-  <section>
-    <h2>标签体系 <span class="hint">B 站原始标签，共 8 个</span></h2>
-    <p class="lead">标签直接反映视频定位。点标签可跳到 B 站同标签内容池。</p>
-    <div class="tags">
-      <a class="tag primary" href="https://search.bilibili.com/all?keyword=%E7%81%AB%E5%BD%B1" target="_blank" rel="noopener">火影</a>
-      <a class="tag primary" href="https://search.bilibili.com/all?keyword=%E6%A0%BC%E6%96%97%E6%B8%B8%E6%88%8F" target="_blank" rel="noopener">格斗游戏</a>
-      <a class="tag primary" href="https://search.bilibili.com/all?keyword=%E6%96%B0%E6%89%8B" target="_blank" rel="noopener">新手</a>
-      <a class="tag" href="https://search.bilibili.com/all?keyword=%E6%89%8B%E6%B8%B8%E6%83%85%E6%8A%A5" target="_blank" rel="noopener">手游情报</a>
-      <a class="tag" href="https://search.bilibili.com/all?keyword=%E9%AB%98%E7%87%83" target="_blank" rel="noopener">高燃</a>
-      <a class="tag" href="https://search.bilibili.com/all?keyword=%E6%90%9E%E7%AC%91" target="_blank" rel="noopener">搞笑</a>
-      <a class="tag" href="https://search.bilibili.com/all?keyword=%E6%A1%8C%E6%B8%B8%E6%A3%8B%E7%89%8C" target="_blank" rel="noopener">桌游棋牌</a>
-      <a class="tag" href="https://search.bilibili.com/all?keyword=%E7%9B%B4%E6%92%AD%E5%BD%95%E5%83%8F" target="_blank" rel="noopener">直播录像</a>
-    </div>
-  </section>
-
-  <section>
-    <h2>观众反馈 <span class="hint">热门评论原文，按点赞排序</span></h2>
-    <p class="lead">评论区最能说明这份教学的实际门槛。以下为原文照录，未做改写。</p>
-
-    <div class="comment top">
-      <div class="c-head">
-        <span class="c-name">烙大111</span>
-        <span class="c-date">2026-05-23</span>
-        <span class="c-like">👍 765</span>
+      <div class="tl-item">
+        <div class="tl-time">00:00 – 00:11</div>
+        <div class="tl-title">开场与内容范围声明</div>
+        <div class="tl-desc">说明本集覆盖「全基础」，并预告 P2 是上忍打到超影的实战（只输两把）。观众普遍在质疑时长。</div>
       </div>
-      <div class="c-body">最难的是怎么知道每个忍者的技能，先挨打半年再说吧[笑哭]</div>
-    </div>
 
-    <div class="comment">
-      <div class="c-head">
-        <span class="c-name">异世界の贵宾</span>
-        <span class="c-date">2026-05-24</span>
-        <span class="c-like">👍 519</span>
+      <div class="tl-item">
+        <div class="tl-time">00:11 – 00:16</div>
+        <div class="tl-title">基础状态：钢体 / 伏地 / 权重排序</div>
+        <div class="tl-desc">讲到「钢体」时弹幕纠正为<b>金刚体</b>；另有观众指出忍者权重按从左到右、从上到下由高到低排列。</div>
       </div>
-      <div class="c-body">在决斗场挨半个月打就行了[笑哭]</div>
-    </div>
 
-    <div class="comment">
-      <div class="c-head">
-        <span class="c-name">坠机的星野</span>
-        <span class="c-date">2026-05-24</span>
-        <span class="c-like">👍 348</span>
+      <div class="tl-item">
+        <div class="tl-time">00:14</div>
+        <div class="tl-title">遁地分类</div>
+        <div class="tl-desc">观众补充：遁地要分两类——<b>非无敌遁地</b>（如新春兜）与<b>无敌遁地</b>（如创生迪），处理方式不同。</div>
       </div>
-      <div class="c-body">学会的孩子们就可以玩这套阴间阵容杀穿段位了[崩坏3_路过]</div>
-    </div>
 
-    <div class="callout" style="margin-top:18px">
-      <strong>从这三条评论能读出的信息</strong>
-      <ul>
-        <li>第 1、2 条（合计 1284 赞）指向同一个痛点：<b>忍者的技能认知是最大门槛</b>，且认为只能靠实战挨打积累。</li>
-        <li>第 3 条提到「这套阴间阵容」，说明视频包含<b>具体的阵容搭配方案</b>，且强度足够影响段位。</li>
-        <li>三条均为观众主观表述，不代表视频实际教学内容，仅作参考。</li>
-      </ul>
+      <div class="tl-item">
+        <div class="tl-time">00:19 – 00:32</div>
+        <div class="tl-title">走位、保护与基础操作</div>
+        <div class="tl-desc">涉及走位、记替身、卡墙、反弹。弹幕点出这是全片争议最大的一段：一半人认为「玩两周自然就会」，另一半认为「迷之保护真要学，丢一波节奏很恶心」。</div>
+      </div>
+
+      <div class="tl-item warn">
+        <div class="tl-time">00:32 – 00:34</div>
+        <div class="tl-title">判定圈：蓝圈 / 红圈</div>
+        <div class="tl-desc">弹幕补充「蓝圈阳间、红圈阴间」。同时有人提出<b>「上来就教这个会不会太高深」</b>——说明此处难度曲线偏陡。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">00:47 – 01:12</div>
+        <div class="tl-title">摇杆与屏幕定位</div>
+        <div class="tl-desc">讲移动摇杆算不算基础，附摇杆键转向。有观众认为该设计对新手不友好，不如直接点屏幕定位。</div>
+      </div>
+
+      <div class="tl-item warn">
+        <div class="tl-time">01:00 – 01:38</div>
+        <div class="tl-title">「一技能」到底在哪 <span class="tag q">历史遗留</span></div>
+        <div class="tl-desc">全片信息密度最高的一段。核心结论：<b>一技能的位置不固定</b>，有的忍者一技能位置实际是平 A；官方爆料与技能描述早期标注在下方，后来版本改到下面。弹幕对此争论激烈，多人确认是历史遗留问题。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">01:33 – 02:30</div>
+        <div class="tl-title">平 A / 快 A / 慢 A，与大招扣豆</div>
+        <div class="tl-desc">区分普攻节奏。大招规则：<b>扣四豆的是奥义大招</b>；存在扣二豆、一豆的<b>小奥义</b>；也有单放能出奥义图但不扣四豆的情况（如桀骜阿斯玛扣两豆）。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">02:22</div>
+        <div class="tl-title">子技能</div>
+        <div class="tl-desc">弹幕提示此处应讲子技能，是新手容易忽略的第二套技能体系。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">03:03 – 03:12</div>
+        <div class="tl-title">密卷系统</div>
+        <div class="tl-desc">涉及充能密卷、无 CD 密卷。弹幕指出密卷总数上百，本片只覆盖框架。</div>
+      </div>
+
+      <div class="tl-item warn">
+        <div class="tl-time">03:29 – 03:45</div>
+        <div class="tl-title">通灵数量（易被误导）</div>
+        <div class="tl-desc">视频中提到「一局 10 通灵」，弹幕立即澄清：那是<b>土豆小彩蛋 / 卡 bug</b>，<b>正常一局只有 3 个通灵</b>。这是全片最需要警惕的误导点。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">03:35 – 03:53</div>
+        <div class="tl-title">X 轴 / Y 轴走位</div>
+        <div class="tl-desc">把场地看作平面直角坐标系：<b>左右走是 X 轴，上下走是 Y 轴</b>。观众反馈「超然讲 x 轴和 y 轴」「不懂的可以看八年级数学课本」。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">06:13 – 06:28</div>
+        <div class="tl-title">胜负判定</div>
+        <div class="tl-desc">常规按血条判定。补充：存在双人忍者导致一局拖到五六分钟；也有部分忍者带复活，或因 bug 导致胜负异常。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">06:53 – 07:51</div>
+        <div class="tl-title">硬体状态与金刚体</div>
+        <div class="tl-desc">观众补充：<b>硬体状态可被部分特殊强化普攻或抓取普攻打断</b>；金刚体则抓取也抓不到。</div>
+      </div>
+
+      <div class="tl-item warn">
+        <div class="tl-time">08:35 – 08:43</div>
+        <div class="tl-title">平推（定义被纠正）</div>
+        <div class="tl-desc">视频里称作技巧，弹幕纠正：<b>平推不是技巧</b>，而是 <b>Z 轴高度为 0 时受击</b>的统称，凡此时受击都算平推伤害。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">09:45 – 10:18</div>
+        <div class="tl-title">保护机制三色（全片核心）</div>
+        <div class="tl-desc">白色、黄色、红色保护状态的差异，是理解连招能否接续的关键，详见下方知识点卡片。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">12:48</div>
+        <div class="tl-title">观众评价分水岭</div>
+        <div class="tl-desc">此处弹幕出现「东西倒挺多，讲的有点乱」——是结构松散感最集中的反馈点。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">13:17 – 13:23</div>
+        <div class="tl-title">抓取与保护值的关系</div>
+        <div class="tl-desc">以天道佩恩一技能为例：抓取可破霸体，2.5 秒内造成的伤害不计入保护值。但观众补充：<b>版本更新后抓取也会计入保护</b>，老佩恩不计入是因为敌人处于站立受击状态，不是抓取本身的特权。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">14:09</div>
+        <div class="tl-title">霸体与骨架</div>
+        <div class="tl-desc">弹幕概括：进入霸体状态后，骨架一技能可视为移动格挡。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">16:25 – 16:29</div>
+        <div class="tl-title">伏地与击飞</div>
+        <div class="tl-desc">伏地基本只与晓蛇、烈焰弹相关（观众语：「考试不考」）。击飞指把人打浮空的那一下。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">23:20 – 24:49</div>
+        <div class="tl-title">减伤来源汇总</div>
+        <div class="tl-desc">晓蛇罗生门命中可减伤；半藏带山椒鱼减攻击；<b>带乌龟可减伤 50%</b>；另涉及油女取根。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">27:01 – 27:30</div>
+        <div class="tl-title">火遁灼烧的适用范围</div>
+        <div class="tl-desc">并非所有火遁都有灼烧：佐助天照有、<b>晓鼬的天照没有</b>。观众补一句「有灼烧的也不多，实战打多了自己会知道」。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">28:07</div>
+        <div class="tl-title">加 CD vs 减慢回复速率</div>
+        <div class="tl-desc">弹幕质疑此处表述：「真的是加 CD 吗？不是减慢回复速率吗」——两者机制不同，此处存疑。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">44:00 – 49:33</div>
+        <div class="tl-title">角色专项与尾声</div>
+        <div class="tl-desc">涉及桃氏（雷可破霸体）、晓蛇切换技能、泳装鼬等个案。观众总结：「还有上百的密卷通灵效果忍者技能没记，这游戏没个一年玩不来的」。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-time">82:00 – 82:48</div>
+        <div class="tl-title">P1 结束</div>
+        <div class="tl-desc">收尾。P2 为独立实战篇《输两把上超》，10 分 28 秒。</div>
+      </div>
+
     </div>
   </section>
 
   <section>
-    <h2>学习路径建议 <span class="hint">推断内容，非视频原文</span></h2>
-    <div class="callout">
-      <strong>重要说明</strong>：本视频的 B 站简介为<b>空白</b>，也没有章节标记。以下路径是依据「标签 + 分P名称 + 高赞评论」推断出的使用建议，<b>不是视频内的教学内容摘要</b>。视频内的具体招式、连招、秘卷搭配，需实际观看获取。
+    <h2>核心规则 <span class="hint">可直接拿去用的部分</span></h2>
+    <p class="lead">以下从弹幕中提炼，按可靠性分级。标「观众补充」的属于弹幕纠正或补全，非 UP 主原话。</p>
+
+    <div class="kgrid">
+
+      <div class="kcard">
+        <h4>保护机制三色 <span class="tag a">观众补充</span></h4>
+        <ul>
+          <li><b>白色保护</b>：落地后<b>弹起一次</b>，坠落速度正常</li>
+          <li><b>黄色保护</b>：<b>不弹地</b>，坠落速度加快</li>
+          <li><b>红色保护</b>：坠落速度<b>进一步加快</b>，站立所需时间减少</li>
+          <li>规律总结：<b>颜色越往后，越不容易接续连招，但免伤越高</b></li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>平推的准确含义 <span class="tag a">观众纠正</span></h4>
+        <ul>
+          <li>不是一种「技巧」，而是状态描述</li>
+          <li>判定条件：<b>Z 轴高度为 0 时受到攻击</b></li>
+          <li>此时造成的伤害统一算作平推伤害</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>「一技能」位置不固定 <span class="tag a">观众补充</span></h4>
+        <ul>
+          <li>部分忍者的<b>一技能位置实际是平 A</b></li>
+          <li>官方爆料与技能描述标注位曾与实战不符</li>
+          <li>当前版本一技能对应界面<b>下方</b>那个按钮</li>
+          <li>属历史遗留问题，不能按统一位置套用</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>通灵数量 <span class="tag q">易被误导</span></h4>
+        <ul>
+          <li>正常对局：<b>一局 3 个通灵</b></li>
+          <li>视频中「10 通灵」是<b>彩蛋 / 卡 bug</b>，不是常规玩法</li>
+          <li>地狱道等特殊机制需单独判断</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>大招扣豆规则 <span class="tag a">观众补充</span></h4>
+        <ul>
+          <li>扣<b>四豆</b> → 奥义大招</li>
+          <li>扣<b>二豆 / 一豆</b> → 小奥义</li>
+          <li>能出奥义图但<b>不扣四豆</b>的情况存在（如桀骜阿斯玛扣两豆）</li>
+          <li>判断依据看扣豆数，不看是否有奥义图</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>X / Y 轴走位 <span class="tag v">视频讲解</span></h4>
+        <ul>
+          <li>把场地当平面直角坐标系</li>
+          <li><b>左右移动 = X 轴</b></li>
+          <li><b>上下移动 = Y 轴</b></li>
+          <li>用坐标理解走位，比凭感觉更容易复现</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>硬体 vs 金刚体 <span class="tag a">观众补充</span></h4>
+        <ul>
+          <li><b>硬体</b>：可被部分特殊强化普攻、抓取普攻打断</li>
+          <li><b>金刚体</b>：抓取也抓不到，级别更高</li>
+          <li>视频中「钢体」的说法不准确</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>抓取与保护值 <span class="tag q">版本相关</span></h4>
+        <ul>
+          <li>典型例：天道佩恩一技能抓取可<b>破霸体</b>，2.5 秒内伤害不计保护值</li>
+          <li>但这是<b>旧版本</b>表现</li>
+          <li>现版本<b>抓取也会计入保护</b></li>
+          <li>老佩恩不计入的真实原因是敌人处于站立受击状态</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>减伤来源 <span class="tag a">观众补充</span></h4>
+        <ul>
+          <li>晓蛇·罗生门：命中后减伤</li>
+          <li>半藏 + 山椒鱼：减攻击</li>
+          <li>带<b>乌龟：减伤 50%</b></li>
+          <li>油女取根相关机制另算</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>火遁灼烧不是通用属性 <span class="tag a">观众补充</span></h4>
+        <ul>
+          <li>佐助·天照：有灼烧</li>
+          <li><b>晓鼬·天照：没有灼烧</b></li>
+          <li>不能按「火遁」标签一刀切</li>
+        </ul>
+      </div>
+
+      <div class="kcard">
+        <h4>遁地分两类 <span class="tag a">观众补充</span></h4>
+        <ul>
+          <li><b>非无敌遁地</b>（如新春兜）：可被打到</li>
+          <li><b>无敌遁地</b>（如创生迪）：判定不同</li>
+          <li>混为一谈会导致应对方式出错</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>常见误区 <span class="hint">看视频时最容易记错的地方</span></h2>
+    <p class="lead">以下四处是弹幕里被多人纠正的点，属于「照视频原话记会出错」的内容。</p>
+
+    <div class="fix">
+      <div class="q">视频说：<s>钢体</s></div>
+      <div class="a">准确说法是 <b>金刚体</b>。硬体与金刚体是两级，能打断的条件完全不同。</div>
     </div>
 
+    <div class="fix">
+      <div class="q">视频说：<s>一局能有 10 个通灵</s></div>
+      <div class="a">那是<b>彩蛋或卡 bug</b>。正常对局<b>只有 3 个通灵</b>，照 10 个去规划节奏会直接崩。</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">视频说：<s>平推是一种技巧</s></div>
+      <div class="a">平推是<b>状态</b>：Z 轴高度为 0 时受击即算平推伤害。它不是一个可以主动「练」的手法。</div>
+    </div>
+
+    <div class="fix">
+      <div class="q">视频说：<s>抓取不计入保护值</s></div>
+      <div class="a">旧版本成立，<b>现版本抓取也计入保护</b>。老佩恩的例子是因为敌人处于站立受击状态，不是抓取特权。</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>观众评价 <span class="hint">判断值不值得看</span></h2>
+    <p class="lead">以下为弹幕原文（标注时间点），能反映真实观感，不是我的主观判断。</p>
+    <div class="quote">「东西倒挺多，讲的有点乱」<span class="tm">12:48</span></div>
+    <div class="quote">「真的有必要那么啰嗦吗…」<span class="tm">15:23</span></div>
+    <div class="quote">「我竟看的有些困了……像网课一样呐！新手要学这么多吗？？！」<span class="tm">49:23</span></div>
+    <div class="quote">「气笑了一小时教学」<span class="tm">72:00</span></div>
+    <div class="quote">「这种粉丝少的讲得最狠了」<span class="tm">00:07</span></div>
+    <div class="quote">「多着呢……还有上百的密卷通灵效果忍者技能没记，这游戏没个一年玩不来的」<span class="tm">49:33</span></div>
+    <div class="quote">「最难的是怎么知道每个忍者的技能，先挨打半年再说吧」<span class="who">烙大111 · 765 赞</span></div>
+    <div class="quote">「学会的孩子们就可以玩这套阴间阵容杀穿段位了」<span class="who">坠机的星野 · 348 赞</span></div>
+
+    <p class="pnote" style="margin-top:16px">综合判断：<b>内容覆盖广但结构松散</b>，适合当「知道自己还缺什么」的索引，不适合当线性教程从头看到尾。</p>
+  </section>
+
+  <section>
+    <h2>建议的使用方式 <span class="hint">基于上述结构推断</span></h2>
     <ol class="steps">
       <li>
-        <div class="t">先看 P2，再看 P1</div>
-        <div class="d">P2「输两把上超」只有 10 分钟，是结果导向的实战片段。先用 10 分钟判断这套打法是否符合你的段位与操作习惯，再决定要不要投入 1 小时 22 分看 P1。</div>
+        <div class="t">先看 P2，10 分钟</div>
+        <div class="d">先看实战篇判断这套打法的段位适配度，再决定要不要投入 1 小时 22 分看 P1。</div>
       </li>
       <li>
-        <div class="t">同步建立「忍者技能表」</div>
-        <div class="d">最高赞评论指出的门槛是「不知道每个忍者的技能」。边看边记录出现的忍者及其技能效果与冷却，比反复拖进度条更有效。</div>
+        <div class="t">用本页当目录，别线性播放</div>
+        <div class="d">弹幕明确反馈「讲的有点乱」。按上面的时间点直接跳到你缺的那一段，比从头看效率高得多。</div>
       </li>
       <li>
-        <div class="t">把阵容方案单独摘出来</div>
-        <div class="d">评论提到「这套阴间阵容」，说明视频给了成型的阵容组合。建议单独记下阵容构成与替代方案，这是最容易直接复用的部分。</div>
+        <div class="t">重点看 01:00–01:38 和 09:45–10:18</div>
+        <div class="d">前者是一技能位置的历史遗留问题（最容易被误导），后者是保护机制三色（连招能否接续的核心）。这两段信息密度最高。</div>
       </li>
       <li>
-        <div class="t">预留实战消化时间</div>
-        <div class="d">两条高赞评论都强调「挨打」的必要性。把视频当参考手册而非通关秘籍——看完立刻进决斗场试，比连看两遍更有效。</div>
+        <div class="t">记住四个坑</div>
+        <div class="d">钢体→金刚体、10 通灵→3 通灵、平推是状态不是技巧、抓取计入保护。照视频原话记会出错。</div>
       </li>
       <li>
-        <div class="t">补齐视频未覆盖的部分</div>
-        <div class="d">同 UP 主另有《（新手向）刚玩火影，秘卷别乱带了！》等专题，可按需补充秘卷、角色池等细分内容。</div>
+        <div class="t">耐心值要预留</div>
+        <div class="d">弹幕共识：真正的门槛是记全忍者的技能，视频只能给框架，剩下的靠实战积累。别指望看完就能上分。</div>
       </li>
     </ol>
   </section>
 
   <section>
-    <h2>关联内容 <span class="hint">视频页推荐位，真实抓取</span></h2>
-    <div class="table-card">
-      <table>
-        <thead>
-          <tr><th>视频</th><th>UP主</th><th style="text-align:right">数据</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="https://www.bilibili.com/video/BV1t54y1p7Cf" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">（新手向）刚玩火影，秘卷别乱带了！</a></td>
-            <td class="muted">道尔顿丶伊法</td>
-            <td class="num muted">20万 · 408</td>
-          </tr>
-          <tr>
-            <td><a href="https://www.bilibili.com/video/BV1h5Le6REmn" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">新手的第一个 s 肝对了吗？</a></td>
-            <td class="muted">火影忍者少羽</td>
-            <td class="num muted">33.7万 · 231</td>
-          </tr>
-          <tr>
-            <td><a href="https://www.bilibili.com/video/BV1kX4y1W7mf" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">国服白面具在线教学</a></td>
-            <td class="muted">杰哥混剪</td>
-            <td class="num muted">44.1万 · 10</td>
-          </tr>
-          <tr>
-            <td><a href="https://www.bilibili.com/video/BV1oRATzzEFA" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">火影六大愚蠢行为</a></td>
-            <td class="muted">向阳零氪君</td>
-            <td class="num muted">41.7万 · 85</td>
-          </tr>
-        </tbody>
-      </table>
+    <h2>原视频 <span class="hint">对照时间点使用</span></h2>
+    <div class="player">
+      <iframe
+        src="https://player.bilibili.com/player.html?bvid=BV1iU91BREsw&page=1&high_quality=1&danmaku=1&autoplay=0"
+        title="火影全基础教学 - B 站播放器"
+        allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
-    <p class="player-note" style="margin-top:12px">「数据」列格式为「播放量 · 弹幕数」。</p>
+    <p class="pnote">原视频：<a href="https://www.bilibili.com/video/BV1iU91BREsw" target="_blank" rel="noopener" style="color:var(--accent)">bilibili.com/video/BV1iU91BREsw</a> ｜ 播放 39.0 万 · 点赞 3.32 万 · 收藏 3.18 万 · 弹幕 271 · 评论 832（2026-10-22 抓取）</p>
   </section>
 
   <footer>
-    <p><b>数据来源</b>：B 站公开接口 <code>api.bilibili.com/x/web-interface/view</code> 与 <code>/x/v2/reply</code>，抓取时间 2026-10-22。播放、点赞、收藏、投币、弹幕、评论、分P 时长、标签均为接口原值。</p>
-    <p><b>内容边界</b>：该视频简介为空、无章节标记，因此本页<b>不包含视频内的教学要点</b>。「学习路径建议」与「互动结构分析」为基于标签和评论的推断，已在对应位置标注。</p>
-    <p><b>版权</b>：视频版权归 UP主「路路森U子」所有，本页仅作个人学习索引，播放器为 B 站官方嵌入。<a href="https://www.bilibili.com/video/BV1iU91BREsw" target="_blank" rel="noopener">查看原视频</a></p>
-    <p style="margin-top:14px;color:var(--text3)">BVID：BV1iU91BREsw ｜ UP主 UID：248729977 ｜ 本页整理于 2026-10-22</p>
+    <p><b>内容来源</b>：262 条公开弹幕（<code>comment.bilibili.com/{cid}.xml</code>）+ 3 条置顶评论（<code>api.bilibili.com/x/v2/reply</code>），抓取时间 2026-10-22。</p>
+    <p><b>局限性说明</b>：该视频字幕数为 0、章节数为 0，无逐句文本可依据。本页是<b>基于观众反应的主题还原</b>，不是对 UP 主讲解的逐句总结。知识点细节主要来自弹幕中的观众补充，已在每条后标注来源类型。</p>
+    <p><b>版权</b>：视频版权归 UP主「路路森U子」所有，播放器为 B 站官方嵌入。</p>
+    <p style="margin-top:14px">BVID BV1iU91BREsw ｜ cid 37924048178 ｜ 整理于 2026-10-22</p>
   </footer>
 
 </div>
