@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f7f8fa">
+<title>大肥鱼 · 机器人手册</title>
+<style>
+  :root{
+    --ink:#191b20; --ink2:#4b515c; --ink3:#878d98;
+    --line:#e4e7ed; --bg:#f6f7f9; --card:#fff;
+    --accent:#2f6df6; --accentbg:#eef3ff;
+    --ok:#1b9260; --okbg:#e9f7f0;
+    --warn:#a9721c; --warnbg:#fdf5e6;
+    --danger:#b83b2c; --dangerbg:#fdeceb;
+  }
+  *{box-sizing:border-box;-webkit-text-size-adjust:100%}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:28px 18px 64px}
+  header{margin-bottom:24px}
+  .eyebrow{font-size:11px;letter-spacing:.16em;color:var(--ink3);text-transform:uppercase}
+  h1{font-size:26px;line-height:1.3;margin:8px 0 10px;letter-spacing:-.02em;font-weight:650}
+  .lede{color:var(--ink2);font-size:14.5px;margin:0}
+
+  /* 顶部导航 */
+  nav{display:flex;gap:8px;overflow-x:auto;padding:12px 0 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav a{
+    flex:none;font-size:13px;color:var(--ink2);text-decoration:none;
+    background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:6px 13px;white-space:nowrap;
+  }
+
+  h2{font-size:18px;margin:34px 0 12px;letter-spacing:-.01em;font-weight:650;
+     display:flex;align-items:center;gap:9px}
+  h2 .n{flex:none;width:24px;height:24px;border-radius:7px;background:var(--accentbg);
+        color:var(--accent);font-size:12.5px;font-weight:650;
+        display:flex;align-items:center;justify-content:center}
+  h3{font-size:15px;margin:20px 0 8px;font-weight:600;color:var(--ink)}
+  p{margin:8px 0;font-size:15px}
+  ul,ol{margin:8px 0;padding-left:20px;font-size:15px}
+  li{margin:6px 0}
+  b,strong{font-weight:620}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+        padding:18px 18px;margin:14px 0}
+  .card.tight{padding:14px 16px}
+
+  code{font-family:ui-monospace,Consolas,monospace;font-size:13px;
+       background:#f0f2f6;border:1px solid var(--line);border-radius:5px;padding:1px 6px;
+       word-break:break-all}
+
+  .pill{display:inline-block;font-size:11.5px;font-weight:650;padding:2px 9px;
+        border-radius:999px;white-space:nowrap}
+  .pill.on{background:var(--okbg);color:var(--ok)}
+  .pill.warn{background:var(--warnbg);color:var(--warn)}
+  .pill.off{background:#eef0f4;color:var(--ink3)}
+
+  /* 状态条 */
+  .status{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .status div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .status dt{font-size:12px;color:var(--ink3);margin:0 0 2px}
+  .status dd{margin:0;font-size:15px;font-weight:600}
+
+  /* 步骤 */
+  .steps{list-style:none;padding:0;margin:12px 0;counter-reset:s}
+  .steps li{position:relative;padding:10px 0 10px 38px;border-bottom:1px dashed var(--line);
+            font-size:15px;counter-increment:s}
+  .steps li:last-child{border-bottom:none}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:10px;
+    width:24px;height:24px;border-radius:8px;background:var(--accent);color:#fff;
+    font-size:12px;font-weight:650;display:flex;align-items:center;justify-content:center}
+
+  /* 表格：小屏自动改卡片 */
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0;
+        background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11.5px;letter-spacing:.06em;color:var(--ink3);text-transform:uppercase;
+     background:#fafbfc;font-weight:600}
+  tr:last-child td{border-bottom:none}
+
+  /* 插件条目 */
+  .pl{background:var(--card);border:1px solid var(--line);border-radius:13px;
+      padding:14px 16px;margin:10px 0}
+  .pl .t{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .pl .nm{font-size:15.5px;font-weight:650;letter-spacing:-.01em}
+  .pl .vr{font-size:11.5px;color:var(--ink3);flex:none}
+  .pl .ds{font-size:14px;color:var(--ink2);margin:5px 0 0}
+  .pl .mt{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+
+  .note{border-left:3px solid var(--accent);background:var(--accentbg);
+        padding:12px 15px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14.5px;color:#1d3460}
+  .note.warn{border-color:var(--warn);background:var(--warnbg);color:#63430f}
+  .note.danger{border-color:var(--danger);background:var(--dangerbg);color:#7a2820}
+
+  footer{margin-top:40px;text-align:center;font-size:12.5px;color:var(--ink3)}
+
+  @media (max-width:600px){
+    .wrap{padding:22px 14px 56px}
+    h1{font-size:23px}
+    .status{grid-template-columns:1fr}
+    /* 表格转竖排卡片 */
+    table,thead,tbody,tr,th,td{display:block;width:100%}
+    thead{display:none}
+    table{border:none;background:transparent;overflow:visible}
+    tr{background:var(--card);border:1px solid var(--line);border-radius:12px;
+       margin-bottom:10px;padding:6px 4px}
+    td{border-bottom:1px dashed var(--line);padding:9px 12px;font-size:14px}
+    td:last-child{border-bottom:none}
+    td::before{content:attr(data-l);display:block;font-size:11.5px;color:var(--ink3);
+               margin-bottom:2px;letter-spacing:.04em}
+    .pl .t{flex-direction:column;gap:2px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">AstrBot × NapCat · 本机部署</div>
+  <h1>大肥鱼 · 机器人手册</h1>
+  <p class="lede">操作、配置、插件、排查，全部在这一页。日常只需要记住一个入口：桌面的「大肥鱼控制台.bat」。</p>
+  <nav>
+    <a href="#s1">现在的状态</a>
+    <a href="#s2">日常操作</a>
+    <a href="#s3">已配好的东西</a>
+    <a href="#s4">插件清单</a>
+    <a href="#s5">出问题怎么办</a>
+    <a href="#s6">四个不要</a>
+    <a href="#s7">文件在哪</a>
+  </nav>
+</header>
+
+<h2 id="s1"><span class="n">1</span>现在的状态</h2>
+<div class="status">
+  <div><dt>AstrBot</dt><dd><span class="pill on">运行中</span></dd></div>
+  <div><dt>QQ 端（小号 3837721803）</dt><dd><span class="pill on">已登录</span></dd></div>
+  <div><dt>插件</dt><dd><span class="pill on">16 项全部加载</span></dd></div>
+  <div><dt>掉线守护</dt><dd><span class="pill on">在线</span></dd></div>
+</div>
+<div class="note">除了个别插件在等你自己补材料（见第四节），其余全部就位。QQ 端的登录票据已经存在本机，正常情况下开机不用再扫码。</div>
+
+<h2 id="s2"><span class="n">2</span>日常就三个动作</h2>
+
+<div class="card">
+  <h3>启动</h3>
+  <ol class="steps">
+    <li>双击桌面 <b>大肥鱼控制台.bat</b></li>
+    <li>输入 <code>1</code> 回车，一键启动 AstrBot 和 QQ 端</li>
+  </ol>
+  <p style="font-size:14px;color:var(--ink3);margin-bottom:0">开机也会自动启动：登录 Windows 后约 45 秒起 AstrBot，再过 30 秒起 QQ 端，两个窗口都最小化、不弹浏览器。</p>
+</div>
+
+<div class="card">
+  <h3>扫码（只在登录失效时需要）</h3>
+  <ol class="steps">
+    <li>启动后约 8 秒，浏览器自动打开 NapCat 登录页</li>
+    <li>手机 QQ 切到小号 <b>3837721803</b></li>
+    <li>扫页面上的二维码，手机上点「确认登录」</li>
+    <li>回控制台按 <code>6</code>，看到「机器人链路：已连通」就成了</li>
+  </ol>
+</div>
+
+<div class="card">
+  <h3>关闭</h3>
+  <ol class="steps">
+    <li>打开控制台，输入 <code>7</code> 回车</li>
+    <li>确认后机器人停止，普通 QQ 不受影响</li>
+  </ol>
+</div>
+
+<h3>控制台菜单对照</h3>
+<table>
+  <thead><tr><th>编号</th><th>功能</th><th>什么时候用</th></tr></thead>
+  <tbody>
+    <tr><td data-l="编号"><code>1</code></td><td data-l="功能">一键启动</td><td data-l="什么时候用">每天开机后第一条命令</td></tr>
+    <tr><td data-l="编号"><code>2</code></td><td data-l="功能">只启动 AstrBot</td><td data-l="什么时候用">只想改人格、看日志</td></tr>
+    <tr><td data-l="编号"><code>3</code></td><td data-l="功能">只启动 QQ 端</td><td data-l="什么时候用">AstrBot 开着，单独重启 QQ 端</td></tr>
+    <tr><td data-l="编号"><code>4</code></td><td data-l="功能">打开登录页</td><td data-l="什么时候用">二维码过期想重扫</td></tr>
+    <tr><td data-l="编号"><code>5</code></td><td data-l="功能">打开后台</td><td data-l="什么时候用">改人格、换模型、装插件</td></tr>
+    <tr><td data-l="编号"><code>6</code></td><td data-l="功能">刷新状态</td><td data-l="什么时候用">刚扫完码，确认是否连通</td></tr>
+    <tr><td data-l="编号"><code>7</code></td><td data-l="功能">全部关闭</td><td data-l="什么时候用">关机前，或想彻底重来</td></tr>
+    <tr><td data-l="编号"><code>8</code></td><td data-l="功能">开机自启开关</td><td data-l="什么时候用">想取消或恢复自动启动</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s3"><span class="n">3</span>已经配好的东西</h2>
+<div class="card tight">
+  <table>
+    <tbody>
+      <tr><td data-l="项目">大模型</td><td data-l="配置">DeepSeek（deepseek-chat）</td></tr>
+      <tr><td data-l="项目">人格</td><td data-l="配置">爱弥斯 / ams，2918 字，去 AI 腔、禁客服腔</td></tr>
+      <tr><td data-l="项目">回复方式</td><td data-l="配置">分段发送，像真人打字</td></tr>
+      <tr><td data-l="项目">唤醒前缀</td><td data-l="配置"><code>/</code>（群聊要加，私聊直接说话）</td></tr>
+      <tr><td data-l="项目">表情素材</td><td data-l="配置">305 张、30 个语义分类，回复时 65% 概率配图</td></tr>
+      <tr><td data-l="项目">主动消息间隔</td><td data-l="配置">60–120 分钟完全随机，不落整点</td></tr>
+      <tr><td data-l="项目">静默时段</td><td data-l="配置">12:30–14:00、23:00–09:00</td></tr>
+      <tr><td data-l="项目">准点问候</td><td data-l="配置">09:00 与 23:00 各一条，措辞每次现编</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="note">
+  <b>关于睡眠。</b>电脑休眠期间机器人不工作，唤醒后不会把错过的消息一次性补发——检测到任务晚点超过 10 分钟就直接丢弃并重新排期，重排还会避开静默段。所以合盖再打开不会被消息糊脸。
+</div>
+
+<h2 id="s4"><span class="n">4</span>插件清单</h2>
+<p style="font-size:14px;color:var(--ink3)">十四个功能插件，按职责分四组。标「未启用」的不是坏了，是故意留着不冲突。</p>
+
+<h3>对话与人格</h3>
+
+<div class="pl">
+  <div class="t"><span class="nm">好想成为人类啊</span><span class="vr">4.1.9</span></div>
+  <p class="ds">去 AI 味的一层：人类风格注入、痕迹抹除、打字延迟与多气泡、情绪惯性、语言风格趋同。不决定说什么，只决定说得像人。</p>
+  <div class="mt"><span class="pill on">生效中</span><span class="pill off">生活状态注入已关</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">动态生活状态</span><span class="vr">0.3.1</span></div>
+  <p class="ds">每天生成一条生活时间线，聊天时注入"这个点我在干嘛"，让它不至于 24 小时随时秒回。可指定模型、人格、模板与生效会话。</p>
+  <div class="mt"><span class="pill on">已配 835754222</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">自主学习</span><span class="vr">4.3.1</span></div>
+  <p class="ds">从真实对话里学你的用词、群里暗话、关系与好感度，并让人格缓慢演化。最"活"也最需要看住的一个。</p>
+  <div class="mt"><span class="pill on">生效中</span><span class="pill off">缺 scikit-learn，用基础统计</span></div>
+</div>
+
+<h3>主动行为</h3>
+
+<div class="pl">
+  <div class="t"><span class="nm">主动消息</span><span class="vr">1.2.6</span></div>
+  <p class="ds">随机闲聊主力。60–120 分钟随机、两段免打扰、上下文感知、动态情绪、未回复封顶，带独立管理页。</p>
+  <div class="mt"><span class="pill on">生效中</span><span class="pill off">管理页 :4100</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">准点问候</span><span class="vr">1.1.0 · 自写</span></div>
+  <p class="ds">只干一件事：每天 09:00 和 23:00 各一条，措辞现编，禁止"早安/晚安/早点睡"这类模板话。</p>
+  <div class="mt"><span class="pill on">生效中</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">我会永远陪着你</span><span class="vr">6.5.6</span></div>
+  <p class="ds">整套陪伴体系的核心：角色状态、日程、关系、私聊群聊理解、主动消息编排、运行诊断。体量最大。</p>
+  <div class="mt"><span class="pill warn">已装未启用</span><span class="pill off">自带主动消息，和上面那个冲突</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">虚拟人生</span><span class="vr">1.12.2</span></div>
+  <p class="ds">管长期阶段、虚拟日程、穿搭，按可打扰程度决定延迟回复。主动消息那项已关，留日程与穿搭。</p>
+  <div class="mt"><span class="pill warn">部分启用</span></div>
+</div>
+
+<h3>内容处理</h3>
+
+<div class="pl">
+  <div class="t"><span class="nm">万能解析器</span><span class="vr">1.5.7</span></div>
+  <p class="ds">丢链接就解析：B站、抖音、小红书、快手、微博、A站、油管、X，视频图集音频都行。</p>
+  <div class="mt"><span class="pill on">生效中</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">我想听歌！</span><span class="vr">0.1.3</span></div>
+  <p class="ds">说一句"想听晴天"，去 B站搜、列候选、你选一个，发音频过来。已装好 ffmpeg，能出声。</p>
+  <div class="mt"><span class="pill on">可用</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">表情包管理</span><span class="vr">5.2.2</span></div>
+  <p class="ds">表情体系地基：305 张、30 分类、按情绪自动挑图，带管理页与语义检索。</p>
+  <div class="mt"><span class="pill on">生效中</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">表情包小偷</span><span class="vr">3.1.6</span></div>
+  <p class="ds">看见别人的表情就收进库、打情绪标签、下次自己发。验收门槛是要有能看图的模型。</p>
+  <div class="mt"><span class="pill warn">已装未启用</span><span class="pill off">缺视觉模型</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">Anysearch 实时联网搜索</span><span class="vr">0.3</span></div>
+  <p class="ds">网页搜索、新闻文档检索、批量查询、正文提取，让回答带实时信息。</p>
+  <div class="mt"><span class="pill warn">已装待配</span><span class="pill off">需要 API Key</span></div>
+</div>
+
+<h3>基础设施</h3>
+
+<div class="pl">
+  <div class="t"><span class="nm">AstrNa</span><span class="vr">1.7.3</span></div>
+  <p class="ds">AstrBot 运行时优化补丁集，四十多项可独立开关：上下文瘦身（清历史图片 base64）、身份元数据、超长回复、发送链路、输出字数限制。默认全关。</p>
+  <div class="mt"><span class="pill on">已就位</span><span class="pill off">默认全关，不改变行为</span></div>
+</div>
+
+<div class="pl">
+  <div class="t"><span class="nm">掉线守护</span><span class="vr">1.0.0 · 自写</span></div>
+  <p class="ds">每 60 秒查登录状态，连续三次异常就把 QQ 端整进程重启，让它自己用票据快速登录；每小时最多三次，避免空转。</p>
+  <div class="mt"><span class="pill on">生效中</span></div>
+</div>
+
+<h2 id="s5"><span class="n">5</span>出问题先看这张表</h2>
+<table>
+  <thead><tr><th>现象</th><th>原因</th><th>怎么办</th></tr></thead>
+  <tbody>
+    <tr><td data-l="现象">控制台显示 AstrBot 未运行</td><td data-l="原因">没启动或被关掉</td><td data-l="怎么办">按 <code>2</code></td></tr>
+    <tr><td data-l="现象">启动后 20 秒面板没起来</td><td data-l="原因">普通 QQ 客户端开着抢单实例，或旧窗口没关</td><td data-l="怎么办">退出普通 QQ，按 <code>7</code> 全关后重试 <code>3</code></td></tr>
+    <tr><td data-l="现象">扫码了但发消息没反应</td><td data-l="原因">上下文太长，或人格没绑上</td><td data-l="怎么办">发 <code>/reset</code> 清一次</td></tr>
+    <tr><td data-l="现象">提示「你的用户身份已失效」</td><td data-l="原因">登录票据被腾讯清掉</td><td data-l="怎么办">重新扫码；守护会先自动尝试恢复</td></tr>
+    <tr><td data-l="现象">二维码扫了说已失效</td><td data-l="原因">二维码约 2 分钟有效期</td><td data-l="怎么办">按 <code>4</code> 重新拿一张</td></tr>
+    <tr><td data-l="现象">启动就闪退、没有报错</td><td data-l="原因">锁文件残留，程序以为自己已经在跑</td><td data-l="怎么办">启动脚本会自动清理；仍失败就重启电脑</td></tr>
+    <tr><td data-l="现象">主动消息一直不发</td><td data-l="原因">处于静默段，或未回复次数到上限</td><td data-l="怎么办">回一句话就会重置计数</td></tr>
+  </tbody>
+</table>
+
+<h2 id="s6"><span class="n">6</span>四个不要</h2>
+<div class="card">
+  <ul>
+    <li><b>不要用普通 QQ 客户端登录小号 3837721803</b>——两个电脑端登同一账号会互踢，机器人就掉了</li>
+    <li><b>不要删 B 盘 NapCat 目录</b>，也不要手动改里面的 <code>versions</code>、<code>resources\app\napcat</code></li>
+    <li><b>不要关掉那个黑色窗口</b>，它就是 QQ 端的命，关了机器人就停</li>
+    <li><b>不要同时开两个控制台</b>，会起两份实例抢端口，表现为「怎么都不通」</li>
+  </ul>
+</div>
+
+<div class="note danger">
+  <b>彻底乱了怎么办。</b>控制台按 <code>7</code> 全部关闭 → 等 5 秒 → 按 <code>1</code> 一键启动 → 需要就扫码。这个顺序能解决九成问题。
+</div>
+
+<h2 id="s7"><span class="n">7</span>文件在哪</h2>
+<table>
+  <thead><tr><th>位置</th><th>是什么</th></tr></thead>
+  <tbody>
+    <tr><td data-l="位置">桌面\大肥鱼控制台.bat</td><td data-l="是什么">唯一入口</td></tr>
+    <tr><td data-l="位置">AstrBot\bot_console.ps1</td><td data-l="是什么">控制台逻辑（菜单、状态检测）</td></tr>
+    <tr><td data-l="位置">AstrBot\start_astrbot.bat</td><td data-l="是什么">AstrBot 启动器（含防火墙规避）</td></tr>
+    <tr><td data-l="位置">AstrBot\start_bot_qq.bat</td><td data-l="是什么">QQ 端启动器</td></tr>
+    <tr><td data-l="位置">AstrBot\data\</td><td data-l="是什么">配置、人格、聊天记录、插件数据</td></tr>
+    <tr><td data-l="位置">AstrBot\boot.log</td><td data-l="是什么">最近一次启动的完整日志，排查先看它</td></tr>
+    <tr><td data-l="位置">AstrBot\data\personas_backup_20261023_0053.json</td><td data-l="是什么">人格全量备份，说话走样时用它还原</td></tr>
+    <tr><td data-l="位置">B:\DL\NapCat.52230.Shell</td><td data-l="是什么">机器人专用 QQ 内核，独立于日常 QQ</td></tr>
+  </tbody>
+</table>
+
+<footer>大肥鱼 · 机器人手册 · 2026-10-23</footer>
+
+</div>
+</body>
+</html>
