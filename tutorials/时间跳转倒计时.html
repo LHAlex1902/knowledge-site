@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间跳转倒计时</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  h1 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: #f0f6fc;
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 90px;
+  }
+  .field label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  input[type="number"], input[type="time"] {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  input:focus {
+    border-color: var(--accent);
+  }
+  .clock-row {
+    display: flex;
+    justify-content: space-between;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-family: var(--mono);
+    font-size: 14px;
+  }
+  .clock-row .k { color: var(--muted); }
+  .clock-row .v { color: var(--text); }
+  .clock-row .v.target { color: var(--accent); }
+
+  .remaining {
+    text-align: center;
+    margin: 8px 0 4px;
+  }
+  .remaining .label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .seconds {
+    font-family: var(--mono);
+    font-size: 72px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--green);
+    transition: color 0.2s;
+    word-break: break-all;
+  }
+  .seconds.warn { color: var(--yellow); }
+  .seconds.over {
+    color: var(--red);
+    animation: blink 1s steps(2, start) infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0.35; }
+  }
+  .readable {
+    font-family: var(--mono);
+    font-size: 18px;
+    color: var(--text);
+    margin-top: 10px;
+  }
+  .readable.over { color: var(--red); font-weight: 600; }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  button {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: #21262d;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  button:hover { background: #30363d; }
+  button.primary {
+    background: #238636;
+    border-color: #2ea043;
+    color: #fff;
+  }
+  button.primary:hover { background: #2ea043; }
+  button.primary.running {
+    background: #9e6a00;
+    border-color: #bb8009;
+  }
+  button.primary.running:hover { background: #bb8009; }
+
+  @media (max-width: 480px) {
+    .seconds { font-size: 52px; }
+    .clock-row { flex-direction: column; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>时间跳转倒计时</h1>
+    <div class="subtitle">计算当前时间到目标时间（可含提前量）的剩余秒数</div>
+
+    <div class="row">
+      <div class="field" style="flex: 2;">
+        <label for="targetTime">目标时间（时:分）</label>
+        <input type="time" id="targetTime" step="1">
+      </div>
+      <div class="field">
+        <label for="extraSeconds">额外秒</label>
+        <input type="number" id="extraSeconds" value="0" min="0" max="59" step="1">
+      </div>
+      <div class="field">
+        <label for="leadMinutes">提前量（分）</label>
+        <input type="number" id="leadMinutes" value="0" min="0" step="0.1">
+      </div>
+    </div>
+
+    <div class="clock-row">
+      <div><span class="k">当前时间：</span><span class="v" id="nowClock">--:--:--</span></div>
+      <div><span class="k">实际目标：</span><span class="v target" id="actualTarget">--:--:--</span></div>
+    </div>
+
+    <div class="remaining">
+      <div class="label">剩余秒数</div>
+      <div class="seconds" id="seconds">0</div>
+      <div class="readable" id="readable">--</div>
+    </div>
+
+    <div class="controls">
+      <button class="primary" id="startBtn">开始</button>
+      <button id="resetBtn">重置</button>
+    </div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var targetTimeInput = document.getElementById("targetTime");
+  var extraSecondsInput = document.getElementById("extraSeconds");
+  var leadMinutesInput = document.getElementById("leadMinutes");
+  var nowClock = document.getElementById("nowClock");
+  var actualTargetEl = document.getElementById("actualTarget");
+  var secondsEl = document.getElementById("seconds");
+  var readableEl = document.getElementById("readable");
+  var startBtn = document.getElementById("startBtn");
+  var resetBtn = document.getElementById("resetBtn");
+
+  var running = false;
+  var timerId = null;
+  // Frozen target timestamp (ms). Computed when starting / on reset so that
+  // the countdown can genuinely reach zero and show "已到达".
+  var frozenTargetMs = null;
+  // Pause bookkeeping: pauseStart records when the timer was paused;
+  // pauseOffset accumulates total paused duration (ms). On resume the frozen
+  // target is pushed forward by the paused duration so the remaining seconds
+  // stay identical to the moment of pausing (true freeze semantics).
+  var pauseStart = null;
+  var pauseOffset = 0;
+
+  function pad(n) {
+    return (n < 10 ? "0" : "") + n;
+  }
+
+  function formatClock(date) {
+    return pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":" + pad(date.getSeconds());
+  }
+
+  // Compute the actual target timestamp (ms) from current inputs.
+  // Rule: target is "the next upcoming occurrence" of the given HH:MM:SS.
+  // If the resulting time today has already passed (considering lead),
+  // roll to tomorrow. Used as a live preview when idle and frozen on start.
+  function computeActualTarget(now) {
+    var timeStr = targetTimeInput.value || "00:00:00";
+    var parts = timeStr.split(":");
+    var h = parseInt(parts[0], 10) || 0;
+    var m = parseInt(parts[1], 10) || 0;
+    var s = parseInt(parts[2], 10) || 0;
+    var extraSec = parseFloat(extraSecondsInput.value) || 0;
+    var leadMin = parseFloat(leadMinutesInput.value) || 0;
+
+    // Base target = today at HH:MM:SS (seconds from time input) + extra seconds
+    var base = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, s, 0);
+    var targetMs = base.getTime() + extraSec * 1000;
+
+    // Apply lead: actual target = target - lead minutes
+    var actualMs = targetMs - leadMin * 60 * 1000;
+
+    // If actual target already passed relative to now, roll to next day.
+    if (actualMs <= now.getTime()) {
+      actualMs += 24 * 60 * 60 * 1000;
+    }
+    return actualMs;
+  }
+
+  // Resolve which target timestamp to use for rendering.
+  // While running (or after start), use the frozen target so the countdown
+  // can genuinely reach zero. When idle, compute a live preview.
+  function resolveTarget(now) {
+    if (frozenTargetMs !== null) {
+      return frozenTargetMs;
+    }
+    return computeActualTarget(now);
+  }
+
+  function formatDuration(totalSeconds) {
+    var sec = Math.max(0, Math.floor(totalSeconds));
+    var h = Math.floor(sec / 3600);
+    var m = Math.floor((sec % 3600) / 60);
+    var s = sec % 60;
+    return h + " 时 " + m + " 分 " + s + " 秒";
+  }
+
+  function render() {
+    var now = new Date();
+    nowClock.textContent = formatClock(now);
+
+    var actualMs = resolveTarget(now);
+    var actualDate = new Date(actualMs);
+    actualTargetEl.textContent = formatClock(actualDate) +
+      (actualDate.getDate() !== now.getDate() ? " (次日)" : "");
+
+    var diffSec = (actualMs - now.getTime()) / 1000;
+
+    secondsEl.classList.remove("warn", "over");
+    readableEl.classList.remove("over");
+
+    if (diffSec <= 0) {
+      secondsEl.textContent = "已到达";
+      secondsEl.classList.add("over");
+      readableEl.textContent = "已到达 / 已过期";
+      readableEl.classList.add("over");
+      // Auto-stop the running timer once reached.
+      if (running) {
+        running = false;
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+        startBtn.textContent = "开始";
+        startBtn.classList.remove("running");
+        frozenTargetMs = null;
+        pauseStart = null;
+        pauseOffset = 0;
+      }
+      return;
+    }
+
+    // Remaining seconds (ceil so it hits 0 exactly at the target instant).
+    secondsEl.textContent = Math.ceil(diffSec).toString();
+    if (diffSec <= 60) {
+      secondsEl.classList.add("warn");
+    }
+    readableEl.textContent = formatDuration(diffSec);
+  }
+
+  function start() {
+    if (running) {
+      // pause: record the instant so resume can freeze the remaining time.
+      running = false;
+      pauseStart = Date.now();
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+      startBtn.textContent = "继续";
+      startBtn.classList.remove("running");
+      return;
+    }
+    // If no frozen target yet (fresh start, not a resume), freeze it now
+    // based on current inputs. Resuming from pause keeps the existing target.
+    if (frozenTargetMs === null) {
+      frozenTargetMs = computeActualTarget(new Date());
+    } else if (pauseStart !== null) {
+      // Resuming from pause: push the frozen target forward by the paused
+      // duration so the remaining seconds match the moment of pausing.
+      var pausedFor = Date.now() - pauseStart;
+      pauseOffset += pausedFor;
+      frozenTargetMs += pausedFor;
+      pauseStart = null;
+    }
+    running = true;
+    startBtn.textContent = "暂停";
+    startBtn.classList.add("running");
+    render();
+    // Align to next second boundary for stable updates.
+    var delay = 1000 - (Date.now() % 1000);
+    setTimeout(function () {
+      if (!running) return;
+      render();
+      timerId = setInterval(function () {
+        if (!running) return;
+        render();
+      }, 1000);
+    }, delay);
+  }
+
+  function reset() {
+    running = false;
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    }
+    frozenTargetMs = null;
+    pauseStart = null;
+    pauseOffset = 0;
+    startBtn.textContent = "开始";
+    startBtn.classList.remove("running");
+    // Reset inputs to defaults: target = now + 1 hour.
+    var now = new Date();
+    var target = new Date(now.getTime() + 60 * 60 * 1000);
+    targetTimeInput.value = pad(target.getHours()) + ":" + pad(target.getMinutes()) + ":00";
+    extraSecondsInput.value = "0";
+    leadMinutesInput.value = "0";
+    render();
+  }
+
+  function setDefaultTarget() {
+    var now = new Date();
+    var target = new Date(now.getTime() + 60 * 60 * 1000);
+    targetTimeInput.value = pad(target.getHours()) + ":" + pad(target.getMinutes()) + ":00";
+  }
+
+  startBtn.addEventListener("click", start);
+  resetBtn.addEventListener("click", reset);
+
+  // Live-update current clock even when not running.
+  setInterval(function () {
+    if (!running) {
+      var now = new Date();
+      nowClock.textContent = formatClock(now);
+    }
+  }, 1000);
+
+  setDefaultTarget();
+  render();
+})();
+</script>
+</body>
+</html>
